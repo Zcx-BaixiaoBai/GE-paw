@@ -230,7 +230,7 @@ def _sanitize_qq_text(text: str) -> tuple[str, bool]:
     """
     if not text:
         return "", False
-    sanitized, count = _URL_PATTERN.subn("[链接已省略]", text)
+    sanitized, count = _URL_PATTERN.subn("[]", text)
     return sanitized, count > 0
 
 
@@ -242,7 +242,7 @@ def _aggressive_sanitize_qq_text(text: str) -> tuple[str, bool]:
     """
     if not text:
         return "", False
-    sanitized, count = _BARE_DOMAIN_PATTERN.subn("[链接已省略]", text)
+    sanitized, count = _BARE_DOMAIN_PATTERN.subn("[]", text)
     return sanitized, count > 0
 
 

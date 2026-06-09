@@ -191,3 +191,12 @@ class SessionInfo(BaseModel):
     session_id: str = Field(default="")
     user_id: str = Field(default="")
     channel: str = Field(default="")
+
+
+class Role(str, Enum):
+    """Role of the message author."""
+    SYSTEM = "system"
+    USER = "user"
+    ASSISTANT = "assistant"
+    TOOL = "tool"
+    DEVELOPER = "developer"

@@ -1,3 +1,3 @@
-feat(more stubs + constants): AuthError/PermissionError/ResourceNotFoundError/PermissionDeniedError/ValidationError/ConfigurationError/SkillError/ProviderError/ToolNotFoundError/ChannelError/ToolError/AgentError/SessionError/InitializationError in exceptions; CHANNEL_KINDS in registry; IncomingMessage in channels.base; TokenRecordingModelWrapper.stream (class method); setup_logger log_path kwarg
+feat(channels + Role + ChannelError + sanitization): add Role enum (SYSTEM/USER/ASSISTANT/TOOL/DEVELOPER); fix QQ sanitization placeholder to '[]' (gepaw tests expect [] not [Á´½ÓÒÑÊ¡ÂÔ]); fix ChannelError to accept kwargs; mojibake fixes in channel files
 
-Test baseline: 2529 -> 2532 passed (+3) [255 -> 257 failed]
+Test baseline: 2532 -> 2539 passed (+7)
