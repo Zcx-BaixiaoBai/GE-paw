@@ -17,6 +17,41 @@ class EnvVarLoader:
     def get_str(name: str, default: str = "") -> str:
         return os.environ.get(name, default)
 
+    @staticmethod
+    def get_int(name: str, default: int = 0) -> int:
+        try:
+            return int(os.environ.get(name, default))
+        except (TypeError, ValueError):
+            return default
+
+
+def _resolve_working_dir() -> Path:
+    """Pick the gepaw working directory.
+
+    Priority:
+    1. ``GEPAW_WORKING_DIR`` env var (if set)
+    2. ``~/.gepaw`` (the canonical home for gepaw state)
+    """
+    explicit = os.environ.get("GEPAW_WORKING_DIR")
+    if explicit:
+        return Path(explicit).expanduser().resolve()
+    return Path("~/.gepaw").expanduser().resolve()
+
+
+WORKING_DIR = _resolve_working_dir()
+WORKING_DIR.mkdir(parents=True, exist_ok=True)
+
+
+SECRET_DIR = (
+    Path(
+        EnvVarLoader.get_str(
+            "GEPAW_SECRET_DIR",
+            str(WORKING_DIR / ".secret"),
+        ),
+    )
+    .expanduser()
+)
+
 
 PROJECT_NAME = "GE-paw"
 LOG_LEVEL_ENV = "GEPAW_LOG_LEVEL"
@@ -47,7 +82,7 @@ REFRESH_TOKEN_TTL_SECONDS = int(os.environ.get("GEPAW_REFRESH_TTL", str(7 * 24 *
 LLM_REQUEST_TIMEOUT = int(os.environ.get("GEPAW_LLM_TIMEOUT", "120"))
 
 WIKI_FILE_MAX_BYTES = int(os.environ.get("GEPAW_WIKI_MAX_BYTES", str(1 * 1024 * 1024)))
-WIKI_PREVIEW_MAX_BYTES = int(os.environ.get("GEPAW_WIKI_PREVIEW_PREVIEW", str(2 * 1024 * 1024)))
+WIKI_PREVIEW_MAX_BYTES = int(os.environ.get("GEPAW_WIKI_PREVIEW_MAX_BYTES", str(2 * 1024 * 1024)))
 
 DEFAULT_ADMIN_USERNAME = os.environ.get("GEPAW_ADMIN_USERNAME", "admin")
 DEFAULT_ADMIN_PASSWORD = os.environ.get("GEPAW_ADMIN_PASSWORD", "")
