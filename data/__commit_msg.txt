@@ -1,17 +1,3 @@
-feat(tauri/workspace/token_usage/routers/local_models + more stubs): mcp, acp (interfaces/schema/contrib.session_state/RequestError/etc), agentscope.{tool.Toolkit/ToolResponse, message.Base64Source/URLSource, mcp, agent._react_agent._MemoryMark, model._model_usage.ChatUsage, tool.Toolkit}, psutil, shortuuid, questionary, frontmatter; agentscope_runtime.engine.schemas.exception expanded (AppBaseException/Model*Exception/ConfigurationException/RateLimitExceededException/UnauthorizedModelAccessException/ModelContextLengthExceededException/ExternalServiceException/UnknownAgentException); agentscope_runtime.engine.runner.{Runner, AgentRunner}; gepaw.agents.prompt/agent_context/hooks.{__init__,bootstrap}/app.runner.__init__/config.__init__/exceptions/token_usage.{manager,model_wrapper}/utils.logging.get_logger ported; BUILTIN_QA_AGENT_SKILL_NAMES/MEMORY_DIR/CORS_ORIGINS/CUSTOM_CHANNELS_DIR/UPLOAD_MAX_SIZE_MB/TOOL_GUARD_APPROVAL_TIMEOUT_SECONDS and 17+ more constants added
+feat(more stubs + constants): AuthError/PermissionError/ResourceNotFoundError/PermissionDeniedError/ValidationError/ConfigurationError/SkillError/ProviderError/ToolNotFoundError/ChannelError/ToolError/AgentError/SessionError/InitializationError in exceptions; CHANNEL_KINDS in registry; IncomingMessage in channels.base; TokenRecordingModelWrapper.stream (class method); setup_logger log_path kwarg
 
-- New 3rd-party stubs: mcp.{__init__,client.__init__,client.stdio,client.sse,client.streamable_http}, acp.{__init__,interfaces,schema,contrib.__init__,contrib.session_state}, agentscope.mcp (HttpStatefulClient/StdIOStatefulClient/MCPToolFunction/StatefulClientBase/MCPClientBase)
-- agentscope.tool.Toolkit/ToolResponse added
-- agentscope.message.Base64Source/URLSource added
-- agentscope.agent._react_agent._MemoryMark added
-- agentscope.model._model_usage.ChatUsage added
-- psutil: Process, pid_exists, process_iter, Popen
-- shortuuid: ShortUUID
-- questionary: confirm/text/select/path/password/Choice/ask/form/Style
-- frontmatter: loads/load/dumps/Post
-- gepaw.utils.logging.get_logger
-- gepaw.token_usage.get_token_usage_manager
-- gepaw.token_usage.model_wrapper.stream (abstract) + record_usage function
-- gepaw.app.runner.AgentRunner
-
-Test baseline: 2495 -> 2529 passed (+34) [253 -> 255 failed, 9 -> 3 errors]
+Test baseline: 2529 -> 2532 passed (+3) [255 -> 257 failed]

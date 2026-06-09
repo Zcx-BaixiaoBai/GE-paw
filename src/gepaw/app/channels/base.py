@@ -1725,3 +1725,11 @@ class BaseChannel(ABC):
             session_id=session_id,
         )
         await self.send_message_content(to_handle, event, meta)
+
+
+class IncomingMessage:
+    """Stub `IncomingMessage` channel payload."""
+
+    def __init__(self, *args, **kwargs) -> None:
+        for k, v in kwargs.items():
+            setattr(self, k, v)

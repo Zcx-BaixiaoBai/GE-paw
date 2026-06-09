@@ -262,3 +262,63 @@ def convert_model_exception(  # pylint: disable=too-many-return-statements
 
     # Level 3: Model-related default catch-all
     return ModelExecutionException(model, details=details)
+
+
+class AuthError(Exception):
+    """Raised on authentication failures."""
+
+
+class PermissionError(Exception):
+    """Raised on permission denied."""
+
+
+class ResourceNotFoundError(Exception):
+    """Raised when a required resource is missing."""
+
+
+class PermissionDeniedError(Exception):
+    """Raised when an action is denied."""
+
+
+class ValidationError(Exception):
+    """Raised on input validation failures."""
+
+
+class ConfigurationError(Exception):
+    """Raised on configuration errors."""
+
+
+class SkillError(Exception):
+    """Raised on skill-related errors."""
+
+
+class ProviderError(Exception):
+    """Raised on provider-related errors."""
+
+
+class ToolNotFoundError(Exception):
+    """Raised when a tool is not found."""
+
+
+class ChannelError(Exception):
+    """Raised on channel-related errors."""
+
+
+class ToolError(Exception):
+    """Raised on tool execution errors."""
+
+
+class AgentError(Exception):
+    """Raised on agent-related errors."""
+
+
+class SessionError(Exception):
+    """Raised on session errors."""
+
+
+class InitializationError(Exception):
+    """Raised on initialization errors."""
+
+
+class TimeoutError_(Exception):
+    """Raised on timeout (avoid shadowing builtin)."""

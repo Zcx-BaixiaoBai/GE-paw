@@ -194,3 +194,24 @@ def get_channel_registry() -> dict[str, type[BaseChannel]]:
     out = _get_cached_builtin_channels()
     out.update(_discover_custom_channels())
     return out
+
+
+CHANNEL_KINDS = (
+    'telegram',
+    'discord',
+    'feishu',
+    'dingtalk',
+    'wecom',
+    'wechat',
+    'onebot',
+    'qq',
+    'matrix',
+    'imessage',
+    'mattermost',
+    'mqtt',
+    'xiaoyi',
+    'yuanbao',
+    'sip',
+    'voice',
+    'console',
+)

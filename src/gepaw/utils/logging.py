@@ -151,7 +151,7 @@ class SuppressPathAccessLogFilter(logging.Filter):
             return True
 
 
-def setup_logger(level: int | str = logging.INFO):
+def setup_logger(level: int | str = logging.INFO, *, log_path=None):
     """Configure logging to only output from this package, not deps."""
     log_format = "%(asctime)s | %(message)s"
     datefmt = "%Y-%m-%d %H:%M:%S"

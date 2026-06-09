@@ -14,6 +14,11 @@ from .manager import get_token_usage_manager
 
 
 class TokenRecordingModelWrapper(ChatModelBase):
+
+    async def stream(self, *args, **kwargs):
+        """Stub `stream` to satisfy the abstract base."""
+        yield None
+
     """Wraps a ChatModelBase to record token usage on each call."""
 
     _usage_by_session: dict[str, dict[str, Any]] = {}
