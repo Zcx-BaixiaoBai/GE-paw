@@ -90,3 +90,35 @@ DEFAULT_ORG_NAME = os.environ.get("GEPAW_ORG_NAME", "Default")
 
 CROSS_CHANNEL_MERGE_DEFAULT = False
 CRON_FAILURE_DISABLE_THRESHOLD = 3
+SUPPORTED_AGENT_LANGUAGES = ("en", "zh")
+
+
+# ---------------------------------------------------------------------------
+# Heartbeat defaults
+# ---------------------------------------------------------------------------
+
+HEARTBEAT_DEFAULT_EVERY = 1800
+HEARTBEAT_DEFAULT_TARGET = 8
+
+
+# ---------------------------------------------------------------------------
+# LLM rate limiting / retry defaults
+# ---------------------------------------------------------------------------
+
+LLM_MAX_CONCURRENT = 8
+LLM_MAX_QPM = 60
+LLM_ACQUIRE_TIMEOUT = 30
+LLM_MAX_RETRIES = 5
+LLM_BACKOFF_BASE = 1.0
+LLM_BACKOFF_CAP = 30.0
+LLM_RATE_LIMIT_PAUSE = 0.0
+LLM_RATE_LIMIT_JITTER = 0.2
+
+
+# ---------------------------------------------------------------------------
+# Multi-agent support
+# ---------------------------------------------------------------------------
+
+# gepaw keeps the same QwenPaw flag as a no-op so downstream code can
+# safely import it; behaviour is always enabled in gepaw for now.
+MULTI_AGENT_ENABLED = True

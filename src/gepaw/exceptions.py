@@ -46,3 +46,33 @@ class ConflictError(GepawError):
 class RateLimitError(GepawError):
     status_code = 429
     code = "rate_limited"
+
+
+class ProviderError(GepawError):
+    status_code = 502
+    code = "provider_error"
+
+
+class ModelFormatterError(GepawError):
+    status_code = 500
+    code = "model_formatter_error"
+
+
+class SystemCommandException(GepawError):
+    status_code = 500
+    code = "system_command_error"
+
+
+class ChannelError(GepawError):
+    status_code = 502
+    code = "channel_error"
+
+
+class AgentStateError(GepawError):
+    status_code = 409
+    code = "agent_state_error"
+
+
+class SkillsError(GepawError):
+    status_code = 500
+    code = "skills_error"

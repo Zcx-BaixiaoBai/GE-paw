@@ -1,0 +1,1 @@
+"""Minimal stub of agentscope.token for gepaw test isolation."""

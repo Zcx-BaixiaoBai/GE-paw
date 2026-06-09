@@ -1,0 +1,1 @@
+"""Minimal stub of agentscope_runtime for gepaw test isolation."""
