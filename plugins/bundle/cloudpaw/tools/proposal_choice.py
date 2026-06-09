@@ -6,7 +6,7 @@ their selection. Supports up to 5 proposals with resource details,
 including multi-strategy proposals from iac-code.
 
 Auto-corrects common LLM formatting mistakes:
-- Strips header rows (e.g. ["", "?, ...])
+- Strips header rows (e.g. ["", "", ...])
 - Splits flat 2D arrays into multiple proposals using "" rows
 """
 
@@ -30,7 +30,6 @@ _INTERACTION_TIMEOUT = 3600  # 1 hour
 # Fixed table headers for resource proposals
 _TABLE_HEADERS = [
     "",
-    "?,
     "",
     "",
     "",
@@ -38,11 +37,12 @@ _TABLE_HEADERS = [
     "",
     "",
     "",
-    "?,
+    "",
+    "",
 ]
 
 # Fixed proposal names (extended for multi-strategy support)
-_PROPOSAL_NAMES = ["", "?, "?, "?, "?]
+_PROPOSAL_NAMES = ["", "", "", "", ""]
 
 
 def _validate_cell(cell: Any) -> bool:
@@ -68,7 +68,7 @@ _HEADER_KEYWORDS = frozenset(h.lower() for h in _TABLE_HEADERS)
 
 
 def _is_header_row(row: List[Any]) -> bool:
-    """Detect if a row is a table header (e.g. ["", "?, ...])."""
+    """Detect if a row is a table header (e.g. ["", "", ...])."""
     if not _is_row(row):
         return False
     first = str(row[0]).strip().lower() if row[0] else ""
@@ -123,7 +123,7 @@ def _normalize_proposals(  # pylint: disable=too-many-return-statements
     - 3D array (multiple proposals): [[[row1], [row2]], [[row3]]]
     - 2D array with mixed proposals: auto-splits on "" rows
 
-    Also auto-strips header rows (e.g. ["", "?, ...]) that the
+    Also auto-strips header rows (e.g. ["", "", ...]) that the
     LLM sometimes inserts.
 
     Args:
@@ -228,7 +228,7 @@ async def proposal_choice(
             A JSON-encoded 2D array of resource rows (single proposal) or
             3D array (multiple proposals). Each row must have exactly 10
             columns matching the fixed headers:
-            , ? , , , , , , , ?
+            , ? , , , , , , , "
 
             Example (single proposal):
             ```json

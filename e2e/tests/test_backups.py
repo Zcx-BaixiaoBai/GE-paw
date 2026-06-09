@@ -760,7 +760,7 @@ class TestBackupRestoreModal:
                 # Check restore mode options
                 has_restore_content = (
                     "Full" in modal_text or "" in modal_text
-                    or "Custom" in modal_text or "? in modal_text
+                    or "Custom" in modal_text or "" in modal_text
                     or "Restore" in modal_text or "" in modal_text
                     or "snapshot" in modal_text.lower() or "" in modal_text
                 )

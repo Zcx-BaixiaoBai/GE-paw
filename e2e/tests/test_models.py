@@ -368,7 +368,7 @@ class TestModelManagement:
 
         # Step 2: Find the model action menu
         log_test_step("2. Find the model action menu")
-        more_btns = page.locator('button:has-text("?), button:has-text("?), .gepaw-btn-icon:has(.spark-icon-spark-more-line)').all()
+        more_btns = page.locator('button:has-text(""), button:has-text(""), .gepaw-btn-icon:has(.spark-icon-spark-more-line)').all()
 
         if len(more_btns) > 0:
             logger.info(f"Found {len(more_btns)} more-action buttons")
@@ -391,7 +391,7 @@ class TestModelManagement:
 
         # Step 4: Find running services
         log_test_step("4. Find running services")
-        running_status = page.locator('[class*=running], .gepaw-tag:has-text("?)').or_(page.get_by_text("?)).or_(page.get_by_text("Running")).first
+        running_status = page.locator('[class*=running], .gepaw-tag:has-text("")').or_(page.get_by_text("")).or_(page.get_by_text("Running")).first
 
         if running_status.is_visible(timeout=3000):
             logger.info("Running service found")

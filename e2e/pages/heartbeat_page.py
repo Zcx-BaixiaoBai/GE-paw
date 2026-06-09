@@ -45,21 +45,21 @@ class HeartbeatPage(BasePage):
 
     # Enabled switch (match id="enabled" exactly to avoid the "active hours" switch)
     ENABLED_SWITCH = '#enabled'
-    ENABLED_LABEL = '.ant-form-item:has-text("Enable"), .ant-form-item:has-text(""), .gepaw-form-item:has-text(""), .gepaw-form-item:has-text("?)'
+    ENABLED_LABEL = '.ant-form-item:has-text("Enable"), .ant-form-item:has-text(""), .gepaw-form-item:has-text(""), .gepaw-form-item:has-text("")'
 
     # Interval configuration
     INTERVAL_INPUT = 'input[id*="interval"], input[type="number"], input.gepaw-input-number-input'
-    INTERVAL_UNIT_SELECT = '.gepaw-select:has(#everyUnit), .ant-select:has(#everyUnit), .ant-select:has-text("seconds"), .ant-select:has-text("minutes"), .ant-select:has-text("hours"), .gepaw-select:has-text("?), .gepaw-select:has-text(""), .gepaw-select:has-text("")'
+    INTERVAL_UNIT_SELECT = '.gepaw-select:has(#everyUnit), .ant-select:has(#everyUnit), .ant-select:has-text("seconds"), .ant-select:has-text("minutes"), .ant-select:has-text("hours"), .gepaw-select:has-text(""), .gepaw-select:has-text(""), .gepaw-select:has-text("")'
 
     # Scheduled time
     TIME_PICKER = '.ant-picker-input > input, .gepaw-picker-input > input'
     TIME_PICKER_PANEL = '.ant-picker-panel, .gepaw-picker-panel'
 
     # Skill configuration
-    SKILL_SELECT = '.ant-select[data-placeholder*="Skill" i], .ant-select:has-text("skill"), .gepaw-select[data-placeholder*="? i], .gepaw-select:has-text("?)'
+    SKILL_SELECT = '.ant-select[data-placeholder*="Skill" i], .ant-select:has-text("skill"), .gepaw-select[data-placeholder*="? i], .gepaw-select:has-text("")'
 
-    # Save button (the actual UI may render "?? with a space)
-    SAVE_BTN = 'button:has-text("Save"), button:has-text(""), button:has-text("??)'
+    # Save button (the actual UI may render "" with a space)
+    SAVE_BTN = 'button:has-text("Save"), button:has-text(""), button:has-text("")'
 
     # Status indicator
     STATUS_INDICATOR = '.ant-badge-status, .gepaw-badge-status, .status-indicator'
@@ -259,10 +259,11 @@ class HeartbeatPage(BasePage):
     UNIT_ALIASES = {
         "": ["", "Minutes", "minutes", "min"],
         "": ["", "Hours", "hours", "hour", "hr"],
-        "?: ["?, "Seconds", "seconds", "sec"],
+"": ["", "Seconds", "seconds", "sec"],
+
         "Minutes": ["", "Minutes", "minutes", "min"],
         "Hours": ["", "Hours", "hours", "hour", "hr"],
-        "Seconds": ["?, "Seconds", "seconds", "sec"],
+        "Seconds": ["", "Seconds", "seconds", "sec"],
     }
 
     def assert_interval(self, expected_value: int, expected_unit: str = "") -> "HeartbeatPage":

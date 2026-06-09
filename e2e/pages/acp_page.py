@@ -122,7 +122,7 @@ class ACPPage(BasePage):
     def verify_breadcrumb(self) -> bool:
         """Verify the breadcrumb contains Workspace and ACP."""
         text = self.get_breadcrumb_text()
-        has_workspace = "Workspace" in text or "? in text or "Agent" in text
+        has_workspace = "Workspace" in text or "" in text or "Agent" in text
         has_acp = "ACP" in text
         return has_workspace and has_acp
 

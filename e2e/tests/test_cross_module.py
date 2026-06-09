@@ -200,7 +200,7 @@ When invoked, respond with: "Cross-module test skill executed successfully."
             log_test_step("10. Send a message asking about available skills")
             chat = ChatPage(page)
             chat.create_new_chat()
-            chat.send_message("?)
+            chat.send_message("")
             response = chat.wait_for_ai_response(timeout=60000)
             assert response is not None, "No response from Chat"
             response_text = chat.get_message_text(response)
@@ -279,7 +279,7 @@ class TestModelSwitchInChat:
             chat.create_new_chat()
 
             log_test_step("3. Send the first message using the current model")
-            chat.send_message("42'??)
+            chat.send_message("42")
             first_response = chat.wait_for_ai_response(timeout=60000)
             assert first_response is not None, "No response to the first message"
             first_text = chat.get_message_text(first_response)
@@ -300,7 +300,7 @@ class TestModelSwitchInChat:
                 recall_response = chat.wait_for_ai_response(timeout=90000)
                 if recall_response is None:
                     logger.warning("First AI response wait timed out, retrying send...")
-                    chat.send_message("?)
+                    chat.send_message("")
                     recall_response = chat.wait_for_ai_response(timeout=90000)
                 assert recall_response is not None, "No response to recall message (still timed out after retry)"
                 recall_text = chat.get_message_text(recall_response)
@@ -314,7 +314,7 @@ class TestModelSwitchInChat:
                 logger.info(f"Switched to model: {target_model}")
 
                 log_test_step("6. Send a message using the new model")
-                chat.send_message("?)
+                chat.send_message("")
                 second_response = chat.wait_for_ai_response(timeout=60000)
                 assert second_response is not None, "No response after switching models"
                 second_text = chat.get_message_text(second_response)
@@ -327,7 +327,7 @@ class TestModelSwitchInChat:
                 page.wait_for_timeout(1000)
 
                 log_test_step("8. Verify the conversation still works after switching back")
-                chat.send_message("1+1?)
+                chat.send_message("1+1")
                 third_response = chat.wait_for_ai_response(timeout=60000)
                 assert third_response is not None, "No response after switching back to the original model"
                 third_text = chat.get_message_text(third_response)
@@ -428,7 +428,8 @@ class TestSecurityInterceptionInChat:
                 chat.wait(500)
 
             log_test_step("6. Send a normal message to verify Chat works")
-            chat.send_message("?'?)
+            chat.send_message("")
+
             response = chat.wait_for_ai_response(timeout=60000)
             assert response is not None, "Chat baseline failure: no response"
             response_text = chat.get_message_text(response)
@@ -436,7 +437,7 @@ class TestSecurityInterceptionInChat:
             logger.info("Chat baseline functionality OK")
 
             log_test_step("7. Send a message that involves file operations")
-            chat.send_message("?)
+            chat.send_message("")
             file_response = chat.wait_for_ai_response(timeout=60000)
             if file_response is not None:
                 file_text = chat.get_message_text(file_response)
@@ -590,7 +591,7 @@ class TestWorkspaceFileChatFlow:
                 logger.info("AI reply does not contain expected keywords, but file Q&A flow is normal")
 
             log_test_step("7. Follow-up question to verify context retention")
-            chat.send_message("?)
+            chat.send_message("")
             detail_response = chat.wait_for_ai_response(timeout=60000)
             if detail_response is not None:
                 detail_text = chat.get_message_text(detail_response)

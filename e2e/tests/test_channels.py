@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-gepaw Channels module end-to-end test cases.
+QwenPaw Channels module end-to-end test cases.
 
 Framework: pytest + Playwright + Page Object Pattern.
 Run: pytest tests/test_channels.py -v
@@ -69,7 +69,7 @@ class TestChannelListAndFilter:
         log_test_step("1. Open the Channels page and verify the page title")
         channels_page.open()
         page_title = channels_page.page.title()
-        assert "gepaw" in page_title or "Channels" in page_title, f"Unexpected page title: {page_title}"
+        assert "QwenPaw" in page_title or "Channels" in page_title, f"Unexpected page title: {page_title}"
 
         log_test_step("2. Verify the filter buttons are visible")
         assert channels_page.page.locator(channels_page.FILTER_ALL_BTN).first.is_visible(), "All filter button not shown"
@@ -166,8 +166,8 @@ class TestConsoleEditConfig:
         assert channels_page.wait_for_drawer_open(), "Edit drawer did not open"
         drawer_title = channels_page.get_drawer_title()
         # Support CN/EN title matching (frontend has been localized to CN)
-        channel_name_cn = {"Console": "?, "DingTalk": "", "Feishu": "",
-                           "WeCom": "", "WeChat": ""}.get(channel_name, channel_name)
+        channel_name_cn = {"Console": "控制台", "DingTalk": "钉钉", "Feishu": "飞书",
+                           "WeCom": "企业微信", "WeChat": "微信"}.get(channel_name, channel_name)
         title_first_line = drawer_title.split('\n')[0].strip()
         assert channel_name in title_first_line or channel_name_cn in title_first_line, \
             f"Unexpected drawer title: {drawer_title}, expected to contain {channel_name} or {channel_name_cn}"
@@ -176,7 +176,7 @@ class TestConsoleEditConfig:
         log_test_step("3. Verify form fields")
         bot_input = channels_page.page.locator('#bot_prefix')
         assert bot_input.count() > 0 and bot_input.is_visible(), "Bot Prefix input not visible"
-        switch = channels_page.page.locator('.gepaw-switch, .ant-switch')
+        switch = channels_page.page.locator('.qwenpaw-switch, .ant-switch')
         assert switch.count() > 0, "Enable switch does not exist"
         logger.info("Form fields verified (Enable switch + Bot Prefix)")
 
@@ -300,7 +300,7 @@ class TestDiscordEnableDisable:
         logger.info(f"Drawer title: {drawer_title}")
 
         log_test_step("3. Read the current switch state")
-        switch = channels_page.page.locator('.gepaw-switch, .ant-switch').first
+        switch = channels_page.page.locator('.qwenpaw-switch, .ant-switch').first
         initial_checked = switch.get_attribute('aria-checked')
         logger.info(f"Initial switch aria-checked: {initial_checked}")
 
@@ -397,15 +397,15 @@ class TestMultipleChannelFormFields:
 
             drawer_title = channels_page.get_drawer_title()
             # Support CN/EN title matching
-            channel_name_cn = {"Console": "?, "DingTalk": "", "Feishu": "",
-                               "WeCom": "", "WeChat": "", "QQ": "QQ",
+            channel_name_cn = {"Console": "控制台", "DingTalk": "钉钉", "Feishu": "飞书",
+                               "WeCom": "企业微信", "WeChat": "微信", "QQ": "QQ",
                                "Telegram": "Telegram"}.get(channel_name, channel_name)
             title_first_line = drawer_title.split('\n')[0].strip()
             assert channel_name in title_first_line or channel_name_cn in title_first_line, \
                 f"{channel_name} unexpected drawer title: {drawer_title}"
 
             # Read all text inside the drawer and verify the expected field keywords are present
-            drawer_content = channels_page.page.locator('.gepaw-drawer-body, .ant-drawer-body').inner_text()
+            drawer_content = channels_page.page.locator('.qwenpaw-drawer-body, .ant-drawer-body').inner_text()
             found_keywords = []
             for keyword in expected_field_keywords:
                 if keyword.lower() in drawer_content.lower():
@@ -573,14 +573,14 @@ class TestMessageFilterSwitches:
 
             channels_page.page.wait_for_timeout(500)
 
-            drawer_body = channels_page.page.locator('.gepaw-drawer-body, .ant-drawer-body')
+            drawer_body = channels_page.page.locator('.qwenpaw-drawer-body, .ant-drawer-body')
             drawer_text = drawer_body.inner_text()
 
             has_tool_messages = any(kw in drawer_text.lower() for kw in [
-                'show tool messages', '', '',
+                'show tool messages', '显示工具消息', '工具消息',
             ])
             has_thinking = any(kw in drawer_text.lower() for kw in [
-                'show thinking', '?, '?,
+                'show thinking', '显示思考', '思考过程',
             ])
 
             if not (has_tool_messages or has_thinking):
@@ -594,7 +594,7 @@ class TestMessageFilterSwitches:
 
             # Find the switch corresponding to Show Tool Messages / Show Thinking and toggle it.
             # The switch is near its text label; here we match by position among all switch elements.
-            switches = drawer_body.locator('.gepaw-switch, .ant-switch').all()
+            switches = drawer_body.locator('.qwenpaw-switch, .ant-switch').all()
             # The Enable switch is the first one; Show Tool Messages usually comes after.
             # Skip the first (Enabled switch) and take the second (Show Tool Messages).
             target_switch = None
@@ -689,18 +689,18 @@ class TestWeComFormFields:
 
         log_test_step("3. Verify the drawer title")
         drawer_title = channels_page.get_drawer_title()
-        channel_name_cn = {"WeCom": ""}.get(channel_name, channel_name)
+        channel_name_cn = {"WeCom": "企业微信"}.get(channel_name, channel_name)
         title_first_line = drawer_title.split('\n')[0].strip()
         assert channel_name in title_first_line or channel_name_cn in title_first_line, \
             f"Unexpected drawer title: {drawer_title}, expected to contain {channel_name} or {channel_name_cn}"
         logger.info(f"Drawer title: {drawer_title}")
 
         log_test_step("4. Verify the unique WeCom form fields exist")
-        drawer_content = channels_page.page.locator('.gepaw-drawer-body, .ant-drawer-body').inner_text()
+        drawer_content = channels_page.page.locator('.qwenpaw-drawer-body, .ant-drawer-body').inner_text()
         # WeCom-unique fields (CN/EN both supported)
         expected_keywords = [
             "Bot ID", "Secret", "DM Policy", "Group Policy", "Require @Mention",
-            "", "", "?@", "", "?,
+            "私聊策略", "群聊策略", "需要 @提及", "扫码授权", "白名单",
         ]
         found_keywords = [kw for kw in expected_keywords if kw.lower() in drawer_content.lower()]
 
@@ -761,18 +761,18 @@ class TestWeChatFormFields:
 
         log_test_step("3. Verify the drawer title")
         drawer_title = channels_page.get_drawer_title()
-        channel_name_cn = {"WeChat": ""}.get(channel_name, channel_name)
+        channel_name_cn = {"WeChat": "微信"}.get(channel_name, channel_name)
         title_first_line = drawer_title.split('\n')[0].strip()
         assert channel_name in title_first_line or channel_name_cn in title_first_line, \
             f"Unexpected drawer title: {drawer_title}, expected to contain {channel_name} or {channel_name_cn}"
         logger.info(f"Drawer title: {drawer_title}")
 
         log_test_step("4. Verify WeChat-unique description and fields")
-        drawer_content = channels_page.page.locator('.gepaw-drawer-body, .ant-drawer-body').inner_text()
+        drawer_content = channels_page.page.locator('.qwenpaw-drawer-body, .ant-drawer-body').inner_text()
         # WeChat-unique markers (CN/EN both supported)
         wechat_unique_keywords = [
             "iLink", "QR code", "Bot Token", "Bot ID", "Secret",
-            "", "?, "", "", "?@", "?,
+            "扫码授权", "二维码", "私聊策略", "群聊策略", "需要 @提及", "白名单",
         ]
         found_unique = [kw for kw in wechat_unique_keywords if kw.lower() in drawer_content.lower()]
 
@@ -837,7 +837,7 @@ class TestOneBotFormFields:
         logger.info(f"Drawer title: {drawer_title}")
 
         log_test_step("4. Verify the form fields exist")
-        drawer_content = channels_page.page.locator('.gepaw-drawer-body, .ant-drawer-body').inner_text()
+        drawer_content = channels_page.page.locator('.qwenpaw-drawer-body, .ant-drawer-body').inner_text()
         # OneBot should have URL, Access Token, etc.
         expected_keywords = ["URL", "Access Token", "Token"]
         found_keywords = []

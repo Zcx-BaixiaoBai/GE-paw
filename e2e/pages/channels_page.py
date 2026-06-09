@@ -41,7 +41,7 @@ class ChannelsPage(BasePage):
     # Filter buttons (UI text is Chinese; use button[class*=filterTab] to match the button rather than the parent container)
     FILTER_ALL_BTN = 'button[class*=filterTab]:has-text(""), button:has-text("All")'
     FILTER_BUILTIN_BTN = 'button[class*=filterTab]:has-text(""), button:has-text("Built-in")'
-    FILTER_CUSTOM_BTN = 'button[class*=filterTab]:has-text("?), button:has-text("Custom")'
+    FILTER_CUSTOM_BTN = 'button[class*=filterTab]:has-text(""), button:has-text("Custom")'
 
     # Channel cards
     CHANNEL_CARD = '[class*=channelCard]'
@@ -68,8 +68,8 @@ class ChannelsPage(BasePage):
     FORM_INPUT = 'input.ant-input, input.gepaw-input'
     FORM_SWITCH = '.ant-switch, .gepaw-switch'
     FORM_SELECT = '.ant-select-selector, .gepaw-select-selector'
-    FORM_SUBMIT_BTN = '.gepaw-drawer button:has-text("??), .gepaw-drawer button:has-text(""), .gepaw-drawer button:has-text("Save"), .ant-drawer button:has-text("Save")'
-    FORM_CANCEL_BTN = '.gepaw-drawer button:has-text("??), .gepaw-drawer button:has-text(""), .gepaw-drawer button:has-text("Cancel"), .ant-drawer button:has-text("Cancel")'
+    FORM_SUBMIT_BTN = '.gepaw-drawer button:has-text(""), .gepaw-drawer button:has-text(""), .gepaw-drawer button:has-text("Save"), .ant-drawer button:has-text("Save")'
+    FORM_CANCEL_BTN = '.gepaw-drawer button:has-text(""), .gepaw-drawer button:has-text(""), .gepaw-drawer button:has-text("Cancel"), .ant-drawer button:has-text("Cancel")'
 
     # Channel-specific field selectors (composed dynamically per channel type)
     BOT_PREFIX_INPUT = '.gepaw-drawer input[placeholder*="@bot"], .gepaw-drawer input[placeholder*="bot prefix" i], input[placeholder*="Bot Prefix" i], input[placeholder*="" i]'
@@ -148,8 +148,9 @@ class ChannelsPage(BasePage):
         "WeChat": ["WeChat", "Wechat", "wechat", ""],
         "": ["WeCom", "Wecom", "wecom", "", "WeChat Work"],
         "WeCom": ["WeCom", "Wecom", "wecom", ""],
-        "?: ["Console", "console", "?],
-        "Console": ["Console", "console", "?],
+"": ["Console", "console", ""],
+
+        "Console": ["Console", "console", ""],
     }
 
     def _resolve_channel_aliases(self, channel_name: str) -> List[str]:
@@ -216,7 +217,7 @@ class ChannelsPage(BasePage):
             raise Exception(f"Channel card not found: {channel_name}")
 
         card_text = card.inner_text()
-        if '? in card_text or 'Enabled' in card_text:
+        if '' in card_text or 'Enabled' in card_text:
             return 'enabled'
         return 'disabled'
 
@@ -241,7 +242,7 @@ class ChannelsPage(BasePage):
                 line = line.strip()
                 if ":" in line or "Bot Prefix:" in line or "bot prefix:" in line:
                     prefix = line.split(":")[-1].strip()
-                    if prefix == "Not Set" or prefix == "?:
+                    if prefix == "Not Set" or prefix == "":
                         return ""
                     return prefix
             return ""
@@ -441,7 +442,7 @@ class ChannelsPage(BasePage):
             for card in cards:
                 try:
                     card_text = card.inner_text()
-                    if "? not in card_text and "Custom" not in card_text:
+                    if "" not in card_text and "Custom" not in card_text:
                         return False
                 except Exception:
                     return False

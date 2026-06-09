@@ -70,14 +70,14 @@ def generate_metadata(
             "zh-CN": "macOS Tauri",
             "en-US": "for macOS (Tauri)",
         },
-        "win": {"zh-CN": "Windows ?, "en-US": "for Windows"},
-        "mac": {"zh-CN": "macOS ?, "en-US": "for macOS"},
-        "linux": {"zh-CN": "Linux ?, "en-US": "for Linux"},
+        "win": {"zh-CN": "Windows 版", "en-US": "for Windows"},
+        "mac": {"zh-CN": "macOS ", "en-US": "for macOS"},
+        "linux": {"zh-CN": "Linux ", "en-US": "for Linux"},
     }
 
     product_names = {
-        "desktop": {"zh-CN": "?, "en-US": "Desktop Client"},
-        "cli": {"zh-CN": "?, "en-US": "CLI Tool"},
+        "desktop": {"zh-CN": "", "en-US": "Desktop Client"},
+        "cli": {"zh-CN": "", "en-US": "CLI Tool"},
     }
 
     platform_suffix = platform_names.get(
@@ -96,7 +96,7 @@ def generate_metadata(
             "en-US": f"{product_name['en-US']} {platform_suffix['en-US']}",
         },
         "description": {
-            "zh-CN": f"?{platform_suffix['zh-CN']}{product_name['zh-CN']}?,
+            "zh-CN": f"{platform_suffix['zh-CN']}{product_name['zh-CN']}",
             "en-US": f"{product_name['en-US']} installer {platform_suffix['en-US']}",
         },
         "product": product,
@@ -195,7 +195,7 @@ def main():
 
     with open(args.output, "w", encoding="utf-8") as f:
         json.dump(metadata, f, indent=2, ensure_ascii=False)
-    print(f"?Metadata written to: {args.output}")
+    print(f"Metadata written to: {args.output}")
     print(f"  ID: {metadata['id']}")
     print(f"  Size: {metadata['size']}")
     print(f"  SHA256: {metadata['sha256'][:16]}...")
@@ -208,7 +208,7 @@ def main():
         )
         with open(args.output_index, "w", encoding="utf-8") as f:
             json.dump(merged_index, f, indent=2, ensure_ascii=False)
-        print(f"?Desktop index written to: {args.output_index}")
+        print(f"Desktop index written to: {args.output_index}")
         print(
             f"  Latest {args.platform}: {merged_index['platforms'][args.platform]['latest']}"
         )

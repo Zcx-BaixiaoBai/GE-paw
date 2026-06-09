@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 MCP_URL = f"{config.base_url}/mcp"
 MCP_CARD_SELECTOR = 'div[class*="mcpCard"]'
 TOGGLE_BTN_SELECTOR = 'button[class*="toggleButton"]'
-CREATE_BTN_SELECTOR = 'button.gepaw-btn-primary:has-text("?), button.gepaw-btn-primary:has-text("Create Client"), button.gepaw-btn-primary:has-text("Create")'
+CREATE_BTN_SELECTOR = 'button.gepaw-btn-primary:has-text(""), button.gepaw-btn-primary:has-text("Create Client"), button.gepaw-btn-primary:has-text("Create")'
 
 
 def navigate_to_mcp(page: Page):
@@ -111,7 +111,7 @@ class TestMCPListAndOperations:
         status_el = first_card.locator('span[class*="statusText"]').first
         expect(status_el).to_be_visible(timeout=3000)
         status_text = status_el.inner_text()
-        assert status_text in ["?, "?, "Enabled", "Disabled"], f"Unexpected status label: {status_text}"
+        assert status_text in ["", "", "Enabled", "Disabled"], f"Unexpected status label: {status_text}"
         logger.info(f"Status: {status_text}")
 
         # Step 5: Test enable/disable toggle
@@ -203,7 +203,7 @@ class TestCreateMCPClient:
         modal_title = modal.locator('.gepaw-spark-modal-title').first
         expect(modal_title).to_be_visible(timeout=3000)
         title_text = modal_title.inner_text()
-        assert "? in title_text or "Create" in title_text, f"Unexpected dialog title: {title_text}"
+        assert "" in title_text or "Create" in title_text, f"Unexpected dialog title: {title_text}"
         logger.info(f"Dialog title: {title_text}")
 
         # Step 5: Verify format hint
@@ -211,7 +211,7 @@ class TestCreateMCPClient:
         import_hint = modal.locator('[class*="importHint"]').first
         expect(import_hint).to_be_visible(timeout=3000)
         hint_text = import_hint.inner_text()
-        assert "? in hint_text or "Supported format" in hint_text, f"Unexpected format hint: {hint_text[:50]}"
+        assert "" in hint_text or "Supported format" in hint_text, f"Unexpected format hint: {hint_text[:50]}"
         logger.info("Format hint validation passed")
 
         # Step 6: Fill stdio-type JSON config
@@ -257,7 +257,7 @@ class TestCreateMCPClient:
 
         # Step 8: Cancel creation and verify dialog closes
         log_test_step("8. Cancel creation and verify dialog closes")
-        cancel_btn = modal.locator('button:has-text("??), button:has-text(""), button:has-text("Cancel")').first
+        cancel_btn = modal.locator('button:has-text(""), button:has-text(""), button:has-text("Cancel")').first
         expect(cancel_btn).to_be_visible(timeout=3000)
 
         cancel_btn.click()
@@ -351,7 +351,7 @@ class TestMCPClientCreateAndDelete:
 
             # Step 6: Click confirm/create button
             log_test_step("6. Click confirm/create button")
-            confirm_btn = modal.locator('button.gepaw-btn-primary:has-text("??), button:has-text(""), button:has-text("")').first
+            confirm_btn = modal.locator('button.gepaw-btn-primary:has-text(""), button:has-text(""), button:has-text("")').first
             if not confirm_btn.is_visible():
                 confirm_btn = modal.locator('button.gepaw-btn-primary').last
             expect(confirm_btn).to_be_visible(timeout=5000)
@@ -411,7 +411,7 @@ class TestMCPClientCreateAndDelete:
                                 if delete_btn.is_visible():
                                     delete_btn.click()
                                     page.wait_for_timeout(1000)
-                                    confirm_delete_btn = page.locator('button.gepaw-btn-danger:has-text(""), .gepaw-modal-confirm button.gepaw-btn-primary, button:has-text("??), button:has-text("")').first
+                                    confirm_delete_btn = page.locator('button.gepaw-btn-danger:has-text(""), .gepaw-modal-confirm button.gepaw-btn-primary, button:has-text(""), button:has-text("")').first
                                     if confirm_delete_btn.is_visible():
                                         confirm_delete_btn.click()
                                         page.wait_for_timeout(2000)

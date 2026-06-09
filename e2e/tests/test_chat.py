@@ -141,9 +141,9 @@ class TestMultiTurnConversation:
         """
         test_name = request.node.name
         conversation_flow = [
-            "1+1?,
-            "2?,
-            "?,
+            "1+1",
+            "2",
+            "",
         ]
 
         log_test_step("1. Open the Chat page and create a new chat")
@@ -216,7 +216,7 @@ class TestFileUploadAndQA:
         assert clean_chat_page.verify_file_uploaded(timeout=10000), "File upload failed"
 
         log_test_step("5. Ask a question based on the file content")
-        clean_chat_page.send_message("?)
+        clean_chat_page.send_message("")
         ai_response = clean_chat_page.wait_for_ai_response(timeout=60000)
         assert ai_response is not None, "AI response timed out"
 
@@ -283,11 +283,11 @@ class TestSessionManagement:
 
         log_test_step("2. Create the first session and send a message")
         clean_chat_page.create_new_chat()
-        clean_chat_page.send_message_and_wait("1+1?)
+        clean_chat_page.send_message_and_wait("1+1")
 
         log_test_step("3. Create the second session and send a message")
         clean_chat_page.create_new_chat()
-        clean_chat_page.send_message_and_wait("2+3?)
+        clean_chat_page.send_message_and_wait("2+3")
 
         log_test_step("4. Open the session list and verify the count")
         # Close any lingering dropdown/overlay
@@ -299,7 +299,7 @@ class TestSessionManagement:
         assert initial_count >= 2, f"Not enough sessions: {initial_count}"
 
         log_test_step("5. Rename the first session")
-        clean_chat_page.rename_session(0, "?)
+        clean_chat_page.rename_session(0, "")
 
         log_test_step("6. Pin the first session and verify pinned state")
         clean_chat_page.pin_session(0)
@@ -397,7 +397,7 @@ class TestAdvancedFeatures:
             clean_chat_page.wait(500)
 
         log_test_step("4. Send a message using the current model and verify the response")
-        clean_chat_page.send_message("1+1?)
+        clean_chat_page.send_message("1+1")
         model_response = clean_chat_page.wait_for_ai_response(timeout=60000)
         assert model_response is not None, "No response after switching models"
         model_response_text = clean_chat_page.get_message_text(model_response)
@@ -405,7 +405,7 @@ class TestAdvancedFeatures:
         logger.info(f"Model response: {model_response_text[:200]}")
 
         log_test_step("5. Send a skills query")
-        clean_chat_page.send_message("?)
+        clean_chat_page.send_message("")
         skills_response = clean_chat_page.wait_for_ai_response(timeout=60000)
         assert skills_response is not None, "No response to skills query"
 
@@ -551,7 +551,7 @@ class TestChatMessageSearch:
         clean_chat_page.create_new_chat()
 
         log_test_step("2. Send a message containing the specific keyword")
-        clean_chat_page.send_message(f"?{search_keyword} ")
+        clean_chat_page.send_message(f"{search_keyword}")
 
         log_test_step("3. Wait for the AI response")
         ai_response = clean_chat_page.wait_for_ai_response(timeout=30000)
@@ -664,7 +664,7 @@ class TestChatMessageSearch:
         logger.info(f"Search panel content: {result_count_text[:200]}")
 
         # Decide whether the search actually returned results (rule out "0 results found")
-        has_zero_results = " 0" in result_count_text or "? in result_count_text or "no result" in result_count_text.lower()
+        has_zero_results = " 0" in result_count_text or "" in result_count_text or "no result" in result_count_text.lower()
 
         # Keep the "latest drawer text" for the final assertion (may be refreshed after retry)
         latest_drawer_text = result_count_text
@@ -683,7 +683,7 @@ class TestChatMessageSearch:
 
             retry_text = clean_chat_page.page.locator('.gepaw-drawer-body').text_content() or ""
             logger.info(f"Retry search '{short_keyword}' result: {retry_text[:200]}")
-            has_zero_results = " 0" in retry_text or "? in retry_text or "no result" in retry_text.lower()
+            has_zero_results = " 0" in retry_text or "" in retry_text or "no result" in retry_text.lower()
             latest_drawer_text = retry_text  # Use new text for final assertion after retry
             # After retry, also re-fetch result elements to replace the stale search_results
             try:
@@ -867,7 +867,7 @@ class TestChatStopGeneration:
         log_test_step("Find the send button")
         send_btn = page.locator(
             'button:has(.anticon-send), button[aria-label*="send"], '
-            'button[aria-label*="?], [class*="sendButton"], '
+            'button[aria-label*=""], [class*="sendButton"], '
             'button:has(.anticon-arrow-up)'
         ).first
         if send_btn.count() > 0:
@@ -928,7 +928,7 @@ class TestChatLongMessage:
             return
 
         log_test_step("Type a very long text")
-        long_text = "? * 200
+        long_text = "" * 200
         input_area.fill(long_text)
         page.wait_for_timeout(1000)
 

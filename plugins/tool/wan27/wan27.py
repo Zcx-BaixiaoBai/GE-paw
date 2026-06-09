@@ -50,7 +50,7 @@ class Wan27ToolPlugin:
             tool_name="image_to_video_wan",
             tool_func=tool.image_to_video_wan,
             description=("Generate videos from images using Wan 2.7"),
-            icon="?,
+            icon="",
         )
 
         api.register_tool(

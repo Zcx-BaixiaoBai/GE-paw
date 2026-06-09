@@ -104,7 +104,7 @@ class TestSkillListAndFilter:
         status_badge = first_card.locator('[class*="statusBadge"]').first
         if status_badge.is_visible():
             status_text = status_badge.inner_text()
-            assert status_text in ["?, "?, "Enabled", "Disabled"], f"Unexpected status badge: {status_text}"
+            assert status_text in ["", "", "Enabled", "Disabled"], f"Unexpected status badge: {status_text}"
             logger.info(f"Status: {status_text}")
 
         # Description

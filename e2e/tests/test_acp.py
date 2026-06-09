@@ -74,7 +74,7 @@ class TestACPPageDisplay:
             page_text = page.locator("body").inner_text()
             has_all_tab = "All" in page_text or "" in page_text
             has_builtin_tab = "Builtin" in page_text or "" in page_text
-            has_custom_tab = "Custom" in page_text or "? in page_text
+            has_custom_tab = "Custom" in page_text or "" in page_text
 
             assert has_all_tab, "Page should contain All tab"
             logger.info("All tab visible")

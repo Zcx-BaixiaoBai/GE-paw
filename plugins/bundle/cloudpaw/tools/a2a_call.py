@@ -7,7 +7,7 @@ applied from the stored registration.
 
 The tool is an ``AsyncGenerator`` that yields intermediate
 ``ToolResponse(stream=True, is_last=False)`` chunks as SSE events
-arrive from the remote agent, so the gepaw frontend can render
+arrive from the remote agent, so the QwenPaw frontend can render
 incremental progress in real time via the tool renderer.  The final
 chunk carries ``is_last=True``.
 """
@@ -28,24 +28,24 @@ async def a2a_call(  # pylint: disable=too-many-branches,too-many-statements
     agent_url: str = "",
     context_id: str = "",
 ) -> AsyncGenerator[ToolResponse, None]:
-    """?A2A Agent ?
+    """向远程 A2A Agent 发送消息并获取响应。
 
-     ``agent_alias``?``agent_url``URL?Agent?
-    ?
+    通过 ``agent_alias``（已注册的别名）或 ``agent_url``（URL）指定目标 Agent。
+    使用别名时自动应用已注册的认证配置。
 
     Args:
-        message:      Agent ?
-        agent_alias:  Agent  a2a_list ?
-        agent_url:    A2A Agent  URLalias 
-        context_id:  ?ID?contextId?
+        message:     发送给远程 Agent 的文本消息
+        agent_alias: 已注册的远程 Agent 别名（优先使用，通过 a2a_list 查看可用别名）
+        agent_url:   远程 A2A Agent 的基础 URL（alias 为空时使用）
+        context_id:  可选，会话上下文 ID（多轮对话时传入上次返回的 contextId）
 
     Yields:
-        ToolResponse:  Agent ?
-        - response_text: Agent ?
-        - task_id:  ID
-        - context_id: ?ID
-        - task_state: ?
-        - event_count: 
+        ToolResponse: 远程 Agent 的流式响应，包含：
+        - response_text: Agent 回复的文本内容（累积）
+        - task_id: 任务 ID（如有）
+        - context_id: 会话上下文 ID（用于多轮对话）
+        - task_state: 任务最终状态
+        - event_count: 收到的事件总数
     """
     from modules.a2a.client_manager import get_a2a_manager
 
@@ -92,8 +92,8 @@ async def a2a_call(  # pylint: disable=too-many-branches,too-many-statements
             if _has_call_stream:
                 finish_stream()
             yield _error_response(
-                f" '{agent_alias}'  A2A Agent?
-                f" a2a_list ?Agent?,
+                f"未找到别名为 '{agent_alias}' 的已注册 A2A Agent。"
+                f"请先通过 a2a_list 查看可用的 Agent。",
             )
             return
         resolved_url = reg["url"]
@@ -114,14 +114,14 @@ async def a2a_call(  # pylint: disable=too-many-branches,too-many-statements
                 if _has_call_stream:
                     finish_stream()
                 yield _error_response(
-                    f" '{agent_alias}' ({resolved_url}) : {e}",
+                    f"连接 '{agent_alias}' ({resolved_url}) 失败: {e}",
                 )
                 return
 
     if not resolved_url:
         if _has_call_stream:
             finish_stream()
-        yield _error_response(" agent_alias ?agent_url ?)
+        yield _error_response("必须提供 agent_alias 或 agent_url 之一。")
         return
 
     events: list[dict] = []
@@ -181,7 +181,7 @@ async def a2a_call(  # pylint: disable=too-many-branches,too-many-statements
             _push(stream_queue, {**result, "final": True})
 
     except Exception as e:
-        logger.exception("A2A call failed: %s ?%s", resolved_url, e)
+        logger.exception("A2A call failed: %s — %s", resolved_url, e)
         result = {
             "response_text": "",
             "error": str(e),
@@ -224,7 +224,7 @@ class _StepTracker:
     - thinking: LLM thinking tokens, accumulated into a single text block.
                 Finalized (done=True) once a non-thinking event arrives.
     - tool_call: Remote agent tool invocation.
-                 status cycles: running ?done / error.
+                 status cycles: running → done / error.
     - text: Agent response text (artifact / message).
     """
 
@@ -415,7 +415,7 @@ def _build_result(  # pylint: disable=too-many-branches,too-many-statements
     if not response_text and status_texts:
         response_text = "\n".join(status_texts)
     if not response_text and final_state:
-        response_text = f"[? {final_state}]"
+        response_text = f"[任务状态: {final_state}]"
 
     return {
         "response_text": response_text,

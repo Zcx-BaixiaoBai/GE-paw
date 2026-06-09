@@ -56,8 +56,8 @@ class A2AListCommandHandler(BaseControlCommandHandler):
         if not agents_cfg:
             return (
                 " A2A Agent\n\n"
-                " POST /a2a/agents  Agent?
-                " A2A ?
+                " POST /a2a/agents  Agent\n"
+                " A2A "
             )
 
         manager = get_a2a_manager()
@@ -72,7 +72,7 @@ class A2AListCommandHandler(BaseControlCommandHandler):
             )
             name = card_info.get("name", "") if card_info else ""
             desc = card_info.get("description", "") if card_info else ""
-            status_icon = "" if status == "connected" else "?
+            status_icon = "" if status == "connected" else ""
 
             line = f"\n{status_icon} **{alias}**"
             if name:
@@ -84,7 +84,7 @@ class A2AListCommandHandler(BaseControlCommandHandler):
             lines.append(line)
 
         lines.append(
-            "\n---\n `/a2a <agent_name> <message>` " + "?Agent ?,
+            "\n---\n `/a2a <agent_name> <message>` " + "Agent",
         )
         for alias in agents_cfg:
             lines.append(f"  `/a2a {alias}  ECS`")
@@ -105,16 +105,16 @@ class A2AListCommandHandler(BaseControlCommandHandler):
         if len(parts) < 2:
             return (
                 "`/a2a <agent_name> <message>`\n\n"
-                " `/a2a` ?agent ?
+                " `/a2a` ?agent "
             )
 
         agent_name = parts[0].strip()
 
         if agent_name not in agents_cfg:
-            available = ", ".join(agents_cfg.keys()) if agents_cfg else "?
+            available = ", ".join(agents_cfg.keys()) if agents_cfg else ""
             return (
                 f" '{agent_name}'  A2A Agent\n\n"
                 f"{available}"
             )
 
-        return f" Agent '{agent_name}' ? f"?.."
+        return f" Agent '{agent_name}' ? f"".."

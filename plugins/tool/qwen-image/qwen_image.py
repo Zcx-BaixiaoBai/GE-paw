@@ -45,7 +45,7 @@ class QwenImageToolPlugin:
             description=(
                 "Generate images from text prompts " "using Qwen-Image"
             ),
-            icon="?,
+            icon="",
         )
 
         api.register_tool(

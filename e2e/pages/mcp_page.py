@@ -96,7 +96,7 @@ class McpPage(BasePage):
         status_el = card.locator(self.STATUS_TEXT_SELECTOR).first
         expect(status_el).to_be_visible(timeout=3000)
         status_text = status_el.inner_text()
-        is_enabled = status_text == "?
+        is_enabled = status_text == ""
         logger.debug(f"MCP status: {'enabled' if is_enabled else 'disabled'}")
         return is_enabled
 

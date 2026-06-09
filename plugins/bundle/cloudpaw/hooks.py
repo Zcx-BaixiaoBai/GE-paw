@@ -66,19 +66,19 @@ def _check_environment_ready() -> (  # pylint: disable=too-many-branches
     """
     issues: list[str] = []
 
-    # 1. iac-code installed?
+    # 1. iac-code installed"
     if not shutil.which("iac-code"):
         issues.append(
-            "?iac-code \n"
+            "iac-code \n"
             "   : pip install --ignore-requires-python -U iac-code",
         )
 
-    # 2. Alibaba Cloud AK-SK configured?
+    # 2. Alibaba Cloud AK-SK configured"
     ak = os.environ.get("ALIBABA_CLOUD_ACCESS_KEY_ID", "")
     sk = os.environ.get("ALIBABA_CLOUD_ACCESS_KEY_SECRET", "")
     if not ak or not sk:
         issues.append(
-            "??AK-SK \n"
+            "AK-SK \n"
             f"    AccessKey: {_AK_CONSOLE_URL}\n"
             "   :\n"
             "     gepaw env set ALIBABA_CLOUD_ACCESS_KEY_ID <your-ak>\n"
@@ -86,7 +86,7 @@ def _check_environment_ready() -> (  # pylint: disable=too-many-branches
             "     gepaw env set ALIBABA_CLOUD_REGION_ID cn-hangzhou",
         )
 
-    # 3. gepaw model configured?
+    # 3. gepaw model configured"
     gepaw_model_ok = False
     try:
         from gepaw.providers.provider_manager import ProviderManager
@@ -99,13 +99,13 @@ def _check_environment_ready() -> (  # pylint: disable=too-many-branches
         pass
     if not gepaw_model_ok:
         issues.append(
-            "?gepaw \n" + "   : gepaw models config",
+            "gepaw \n" + "   : gepaw models config",
         )
 
-    # 4. iac-code model configured?
+    # 4. iac-code model configured"
     if not _check_iac_model_configured():
         issues.append(
-            "?iac-code \n"
+            "iac-code \n"
             "   :\n"
             "     1.  'iac-code' \n"
             "     2.  ~/.iac-code/settings.yml "
@@ -119,8 +119,8 @@ def _check_environment_ready() -> (  # pylint: disable=too-many-branches
 
     header = " CloudPaw \n\n"
     footer = (
-        "\n\n CloudPaw ?
-        "?
+        "\n\n CloudPaw "
+        ""
     )
     return header + "\n\n".join(issues) + footer
 
@@ -262,7 +262,7 @@ def setup_acp_auto_approve() -> None:
 
     1. Emits the same ``permission_request`` UI event as upstream so the
        console / frontend still sees what tool is being invoked.
-    2. Honours ``is_hard_blocked`` (rm -rf /, mkfs, paths escaping cwd, ? ?
+    2. Honours ``is_hard_blocked`` (rm -rf /, mkfs, paths escaping cwd, ? "
        those are denied just like before.
     3. Otherwise picks the most permissive allow-like option and returns
        immediately, without suspending the tool for an external respond.
@@ -609,10 +609,13 @@ def _try_rewrite_a2a_query(  # pylint: disable=too-many-return-statements
         return None
 
     return (
-        f"?a2a_call  A2A Agent\n"
-        f'agent_alias="{agent_name}"?
+        f"a2a_call  A2A Agent\n"
+
+        f'agent_alias="{agent_name}"'
+
         f'message="{message}"\n\n'
-        f"?a2a_call ?
+        f"a2a_call "
+
     )
 
 

@@ -366,7 +366,7 @@ class CronJobsPage(BasePage):
         else:
             # Fall back to text check
             row_text = row.inner_text()
-            assert "" in row_text or "enabled" in row_text.lower() or "? in row_text, f"Job '{job_name}' should be enabled; row text: {row_text[:100]}"
+            assert "" in row_text or "enabled" in row_text.lower() or "" in row_text, f"Job '{job_name}' should be enabled; row text: {row_text[:100]}"
         return self
 
     def assert_job_disabled(self, job_name: str) -> "CronJobsPage":
@@ -378,5 +378,5 @@ class CronJobsPage(BasePage):
             assert not is_enabled, f"Job '{job_name}' should be disabled"
         else:
             row_text = row.inner_text()
-            assert "" in row_text or "disabled" in row_text.lower() or "? in row_text, f"Job '{job_name}' should be disabled; row text: {row_text[:100]}"
+            assert "" in row_text or "disabled" in row_text.lower() or "" in row_text, f"Job '{job_name}' should be disabled; row text: {row_text[:100]}"
         return self

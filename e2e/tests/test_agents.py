@@ -67,7 +67,7 @@ class TestAgentList:
         # Step 2: Verify page title (supports CN/EN)
         log_test_step("2. Verify page title")
         try:
-            header_cn = page.locator('span[class*="breadcrumbCurrent"]:has-text("?)').first
+            header_cn = page.locator('span[class*="breadcrumbCurrent"]:has-text("")').first
             header_en = page.locator('span[class*="breadcrumbCurrent"]:has-text("Agents")').first
             if header_cn.is_visible(timeout=3000):
                 logger.info("Page title verified (CN)")
@@ -81,7 +81,7 @@ class TestAgentList:
         # Step 3: Verify breadcrumb (supports CN/EN)
         log_test_step("3. Verify breadcrumb")
         try:
-            breadcrumb_cn = page.locator('span[class*="breadcrumbCurrent"]:has-text("?)').first
+            breadcrumb_cn = page.locator('span[class*="breadcrumbCurrent"]:has-text("")').first
             breadcrumb_en = page.locator('span[class*="breadcrumbCurrent"]:has-text("Agents")').first
             if breadcrumb_cn.is_visible(timeout=3000):
                 logger.info("Breadcrumb verified (CN)")
@@ -555,7 +555,7 @@ class TestToggleAgent:
             log_test_step("1. Create the test agent")
             agents_page = AgentsPage(page)
             agents_page.goto()
-            agents_page.create_agent(agent_name, "?, "zh")
+            agents_page.create_agent(agent_name, "", "zh")
             page.wait_for_timeout(2000)
 
             # Step 2: Verify the agent's initial state is enabled
@@ -770,7 +770,7 @@ class TestAgentProtection:
         for agent in agents:
             agent_id = agent.get("id", "").lower()
             agent_name = agent.get("name", "").lower()
-            if agent_id == "default" or "default" in agent_id or agent_name in ("?, "copaw"):
+            if agent_id == "default" or "default" in agent_id or agent_name in ("", "copaw"):
                 default_agent = agent["element"]
                 logger.info(f"Found default agent: name={agent.get('name')}, id={agent.get('id')}")
                 break
@@ -971,7 +971,7 @@ class TestAgentSkillAssociation:
         page_content = page.locator('body').inner_text()
 
         # Verify the detail view contains agent-related config sections
-        config_keywords = ['Skills', '?, 'Model', '', 'Prompt', '?,
+        config_keywords = ['Skills', '', 'Model', '', 'Prompt', '',
                           'Name', '', 'Config', '', 'System', 'Setting']
         found_keywords = [kw for kw in config_keywords if kw in page_content]
         assert len(found_keywords) > 0, \
@@ -989,7 +989,7 @@ class TestAgentSkillAssociation:
 
         # Look for the skill association section
         skill_section = page.locator(
-            ':text("Skills"), :text("?), '
+            ':text("Skills"), :text(""), '
             '[class*="skill"], [class*="Skill"]'
         ).first
         if skill_section.count() > 0:

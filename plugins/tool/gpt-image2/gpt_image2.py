@@ -53,7 +53,7 @@ class GPTImage2ToolPlugin:
                 "Edit or generate images using reference images "
                 "with OpenAI GPT Image 2"
             ),
-            icon="?,
+            icon="",
         )
 
         logger.info("GPT Image 2 tool plugin registered")
