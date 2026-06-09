@@ -44,3 +44,32 @@ def get_current_recent_max_bytes() -> Optional[int]:
 
 def set_current_recent_max_bytes(value: Optional[int]) -> object:
     return current_recent_max_bytes.set(value)
+# Per-agent shell command configuration overrides.
+current_shell_command_executable: ContextVar[Optional[str]] = ContextVar(
+    "current_shell_command_executable",
+    default=None,
+)
+current_shell_command_timeout: ContextVar[Optional[int]] = ContextVar(
+    "current_shell_command_timeout",
+    default=None,
+)
+
+
+def get_current_shell_command_executable() -> Optional[str]:
+    """Return the current agent's shell executable override, or ``None``."""
+    return current_shell_command_executable.get()
+
+
+def set_current_shell_command_executable(
+    value: Optional[str],
+) -> object:
+    return current_shell_command_executable.set(value)
+
+
+def get_current_shell_command_timeout() -> Optional[int]:
+    """Return the current agent's shell command timeout (seconds)."""
+    return current_shell_command_timeout.get()
+
+
+def set_current_shell_command_timeout(value: Optional[int]) -> object:
+    return current_shell_command_timeout.set(value)

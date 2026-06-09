@@ -122,3 +122,39 @@ LLM_RATE_LIMIT_JITTER = 0.2
 # gepaw keeps the same QwenPaw flag as a no-op so downstream code can
 # safely import it; behaviour is always enabled in gepaw for now.
 MULTI_AGENT_ENABLED = True
+
+# Marker injected by formatters when tool-result output has been truncated.
+TRUNCATION_NOTICE_MARKER = "<<<TRUNCATED>>>"
+
+# Placeholder used when media (image/audio/video) is stripped because the
+# current model does not support that media type. Shown to both the user
+# (in conversation history) and the model (in normalized requests).
+MEDIA_UNSUPPORTED_PLACEHOLDER = (
+    "[Media content removed - model does not support this media type]"
+)
+# ---------------------------------------------------------------------------
+# File-based persistence helpers
+# ---------------------------------------------------------------------------
+
+JOBS_FILE = EnvVarLoader.get_str("GEPAW_JOBS_FILE", "jobs.json")
+CHATS_FILE = EnvVarLoader.get_str("GEPAW_CHATS_FILE", "chats.json")
+HEARTBEAT_FILE = EnvVarLoader.get_str("GEPAW_HEARTBEAT_FILE", "HEARTBEAT.md")
+PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH_ENV = "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH"
+
+
+def _running_in_container() -> bool:
+    """Best-effort detection of whether gepaw is running inside a container."""
+    import os as _os
+
+    if _os.path.exists("/.dockerenv"):
+        return True
+    if _os.environ.get("GEPAW_RUNNING_IN_CONTAINER", "").lower() in (
+        "1",
+        "true",
+        "yes",
+    ):
+        return True
+    return False
+
+
+RUNNING_IN_CONTAINER = _running_in_container()

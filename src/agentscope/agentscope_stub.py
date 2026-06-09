@@ -1,0 +1,1 @@
+"""Stub: agentscope package surface for gepaw test isolation."""
