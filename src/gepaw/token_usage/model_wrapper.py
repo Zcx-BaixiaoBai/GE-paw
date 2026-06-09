@@ -1,91 +1,146 @@
-"""Single entry point for recording LLM token usage.
+# -*- coding: utf-8 -*-
+"""Model wrapper that records token usage from LLM responses."""
 
-All LLM call sites (chat, cron, wiki query) call record_usage() exactly once per
-LLM call. The wrapper computes cost from the configured cost table and inserts
-a TokenUsageLog row.
+from datetime import date, datetime, timezone
+from typing import Any, AsyncGenerator, Literal, Type
 
-Usage:
-    from gepaw.token_usage import record_usage
-    record_usage(
-        db, org_id=..., user_id=..., session_id=..., model=...,
-        prompt_tokens=..., completion_tokens=...,
-    )
-"""
-from __future__ import annotations
+from agentscope.model import ChatModelBase
+from agentscope.model._model_response import ChatResponse
+from agentscope.model._model_usage import ChatUsage
+from pydantic import BaseModel
 
-from typing import Optional
+from .buffer import _UsageEvent
+from .manager import get_token_usage_manager
 
-from sqlalchemy.orm import Session
 
-from ..models import TokenUsageLog
-from ..utils.logging import get_logger
-from .cost_table import compute_cost_cents
+class TokenRecordingModelWrapper(ChatModelBase):
+    """Wraps a ChatModelBase to record token usage on each call."""
 
-logger = get_logger("token_usage")
+    _usage_by_session: dict[str, dict[str, Any]] = {}
 
+    def __init__(self, provider_id: str, model: ChatModelBase) -> None:
+        super().__init__(
+            model_name=getattr(model, "model_name", "unknown"),
+            stream=getattr(model, "stream", True),
+        )
+        self._model = model
+        self._provider_id = provider_id
+
+    def _record_usage(self, usage: ChatUsage | None) -> None:
+        """Enqueue a usage event synchronously — never blocks the caller."""
+        if usage is None:
+            return
+        pt = getattr(usage, "input_tokens", 0) or 0
+        ct = getattr(usage, "output_tokens", 0) or 0
+        if pt <= 0 and ct <= 0:
+            return
+
+        event = _UsageEvent(
+            provider_id=self._provider_id,
+            model_name=self.model_name,
+            prompt_tokens=pt,
+            completion_tokens=ct,
+            date_str=date.today().isoformat(),
+            now_iso=datetime.now(tz=timezone.utc).isoformat(
+                timespec="seconds",
+            ),
+        )
+        # Fire-and-forget: synchronous put_nowait, ~100 ns, no await needed.
+        get_token_usage_manager().enqueue(event)
+
+        usage_data = {
+            "provider_id": self._provider_id,
+            "model_name": self.model_name,
+            "prompt_tokens": pt,
+            "completion_tokens": ct,
+            "total_tokens": pt + ct,
+        }
+        self._store_usage(usage_data)
+
+    @classmethod
+    def pop_usage_for_session(cls, session_id: str) -> dict[str, Any] | None:
+        return cls._usage_by_session.pop(session_id, None)
+
+    def _store_usage(self, usage: dict[str, Any] | None) -> None:
+        from ..app.agent_context import get_current_session_id
+
+        session_id = get_current_session_id()
+        if session_id and usage:
+            TokenRecordingModelWrapper._usage_by_session[session_id] = usage
+
+    async def __call__(
+        self,
+        messages: list[dict],
+        tools: list[dict] | None = None,
+        tool_choice: Literal["auto", "none", "required"] | str | None = None,
+        structured_model: Type[BaseModel] | None = None,
+        **kwargs: Any,
+    ) -> ChatResponse | AsyncGenerator[ChatResponse, None]:
+        # Fix: Omit tool_choice="auto" for vLLM compatibility
+        # vLLM without --enable-auto-tool-choice will reject requests when
+        # tool_choice="auto" is present, even if tools are provided.
+        # By omitting tool_choice when it's "auto", we bypass the check
+        # while keeping tools available for correct tool calling behavior.
+        if tool_choice == "auto":
+            tool_choice = None
+
+        result = await self._model(
+            messages=messages,
+            tools=tools,
+            tool_choice=tool_choice,
+            structured_model=structured_model,
+            **kwargs,
+        )
+
+        if isinstance(result, AsyncGenerator):
+            return self._wrap_stream(result)
+        self._record_usage(getattr(result, "usage", None))
+        return result
+
+    async def _wrap_stream(
+        self,
+        stream: AsyncGenerator[ChatResponse, None],
+    ) -> AsyncGenerator[ChatResponse, None]:
+        last_usage: ChatUsage | None = None
+        async for chunk in stream:
+            if getattr(chunk, "usage", None) is not None:
+                last_usage = chunk.usage
+            yield chunk
+        self._record_usage(last_usage)
+
+
+
+async def stream(self, *args, **kwargs):
+    """Stub `stream` to satisfy the abstract base."""
+    yield None
 
 def record_usage(
-    db: Optional[Session],
-    *,
-    org_id: str,
-    model: str,
-    prompt_tokens: int,
-    completion_tokens: int,
-    user_id: Optional[str] = None,
-    session_id: Optional[str] = None,
-    message_id: Optional[str] = None,
-    commit: bool = False,
-) -> int:
-    """Insert a TokenUsageLog row.
+    provider_id: str,
+    model_name: str,
+    prompt_tokens: int = 0,
+    completion_tokens: int = 0,
+    cache_read_tokens: int = 0,
+    cache_write_tokens: int = 0,
+    cost_cents: float = 0.0,
+    session_id: str = '',
+    user_id: str = '',
+    agent_id: str = '',
+    raw: dict = None,
+) -> None:
+    """Convenience wrapper to record a usage event via the manager."""
+    from .manager import get_token_usage_manager
 
-    By default the row is added to the caller's session and flushed but not
-    committed; the caller controls the transaction. Set commit=True to commit
-    in a fresh short-lived session so the write persists even if the caller's
-    transaction is later rolled back (e.g. LLM call raised and converted to 500).
-    """
-    p = max(0, int(prompt_tokens or 0))
-    c = max(0, int(completion_tokens or 0))
-    if not org_id:
-        logger.warning("record_usage: missing org_id, skipping")
-        return 0
-    model_name = (model or "unknown").strip() or "unknown"
-    cost = compute_cost_cents(model_name, p, c)
-    from ..app.db import session_scope
-    if commit or db is None:
-        try:
-            with session_scope() as s:
-                entry = TokenUsageLog(
-                    org_id=org_id,
-                    user_id=user_id,
-                    session_id=session_id,
-                    message_id=message_id,
-                    model=model_name,
-                    prompt_tokens=p,
-                    completion_tokens=c,
-                    total_tokens=p + c,
-                    cost_cents=cost,
-                )
-                s.add(entry)
-                s.flush()
-                return int(entry.id or 0)
-        except Exception as e:
-            logger.warning("record_usage failed: %s", e)
-            return 0
-    try:
-        entry = TokenUsageLog(
-            org_id=org_id,
-            user_id=user_id,
-            session_id=session_id,
-            message_id=message_id,
-            model=model_name,
-            prompt_tokens=p,
-            completion_tokens=c,
-            total_tokens=p + c,
-            cost_cents=cost,
-        )
-        db.add(entry)
-        db.flush()
-        return int(entry.id or 0)
-    except Exception as e:
-        logger.warning("record_usage failed: %s", e)
-        return 0
+    manager = get_token_usage_manager()
+    manager.enqueue(
+        provider_id=provider_id,
+        model_name=model_name,
+        prompt_tokens=prompt_tokens,
+        completion_tokens=completion_tokens,
+        cache_read_tokens=cache_read_tokens,
+        cache_write_tokens=cache_write_tokens,
+        cost_cents=cost_cents,
+        session_id=session_id,
+        user_id=user_id,
+        agent_id=agent_id,
+        raw=raw or {},
+    )

@@ -1,55 +1,127 @@
-"""Stub: agentscope_runtime.engine.schemas.exception for gepaw tests."""
+"""Stub for agentscope_runtime.engine.schemas.exception."""
 from __future__ import annotations
 
-from typing import Any
 
+class AgentException(Exception):
+    """Stub for `agentscope_runtime.engine.schemas.exception.AgentException`."""
 
-class _BaseAgentError(Exception):
-    """Common base for agent-runtime exceptions."""
-
-    def __init__(self, message: str = "", **kwargs: Any) -> None:
-        super().__init__(message)
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args)
         for k, v in kwargs.items():
             setattr(self, k, v)
 
 
-class AgentRuntimeErrorException(_BaseAgentError):
-    """Generic agent runtime error."""
+class AgentError(AgentException):
+    pass
 
 
-class ModelNotFoundException(_BaseAgentError):
-    """Raised when a referenced model is not registered."""
+class AgentRunError(AgentException):
+    pass
 
 
-class AgentNotFoundException(_BaseAgentError):
-    """Raised when a referenced agent is not found."""
+class ConfigurationException(AgentException):
+    pass
 
 
-class RequestRejectedException(_BaseAgentError):
-    """Raised when a request is rejected."""
+class AgentRuntimeErrorException(AgentRuntimeError if False else AgentException):
+    pass
 
 
-class ExternalServiceException(_BaseAgentError):
-    """Raised when an external service is unavailable."""
+class RunnerError(AgentException):
+    pass
 
 
-class ConfigurationException(_BaseAgentError):
-    """Raised when a configuration value is missing or invalid."""
+class SessionError(AgentException):
+    pass
 
 
-class JsonOutputParsingException(_BaseAgentError):
-    """Raised when JSON output cannot be parsed."""
+class AppBaseException(AgentException):
+    pass
 
 
-class AuthorizationException(_BaseAgentError):
-    """Raised when an operation is not authorised."""
+class AppException(AgentException):
+    pass
 
 
-class RateLimitExceededException(_BaseAgentError):
-    """Raised when a rate limit is exceeded."""
+class ServiceException(AgentException):
+    pass
 
 
-class QuotaExceededException(_BaseAgentError):
-    """Raised when a quota is exceeded."""
-class AppBaseException(Exception):
-    """Generic application base exception used across gepaw routes."""
+class ModelNotFoundException(AgentException):
+    pass
+
+
+class ModelError(AgentException):
+    pass
+
+
+class ModelAuthenticationError(AgentException):
+    pass
+
+
+class ToolNotFoundException(AgentException):
+    pass
+
+
+class ToolExecutionException(AgentException):
+    pass
+
+
+class ToolArgumentException(AgentException):
+    pass
+
+
+class ModelExecutionException(AgentException):
+    pass
+
+
+class ModelTimeoutException(AgentException):
+    pass
+
+
+class ModelRateLimitException(AgentException):
+    pass
+
+
+class RequestTimeoutException(AgentException):
+    pass
+
+
+class UnauthorizedModelAccessException(AgentException):
+    pass
+
+
+class TokenUsageException(AgentException):
+    pass
+
+
+class SessionNotFoundException(AgentException):
+    pass
+
+
+class AgentExecutionException(AgentException):
+    pass
+
+
+class UserNotFoundException(AgentException):
+    pass
+
+
+class ModelQuotaExceededException(AgentException):
+    pass
+
+
+class RateLimitExceededException(AgentException):
+    pass
+
+
+class ModelContextLengthExceededException(AgentException):
+    pass
+
+
+class ExternalServiceException(AgentException):
+    pass
+
+
+class UnknownAgentException(AgentException):
+    pass

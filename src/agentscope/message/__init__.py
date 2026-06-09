@@ -18,3 +18,14 @@ __all__ = [
     "ToolUseBlock",
     "VideoBlock",
 ]
+
+class Base64Source:
+    def __init__(self, *args, **kwargs) -> None:
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+
+class URLSource:
+    def __init__(self, *args, **kwargs) -> None:
+        for k, v in kwargs.items():
+            setattr(self, k, v)

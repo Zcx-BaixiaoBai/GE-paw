@@ -259,3 +259,10 @@ MODEL_PROVIDER_CHECK_TIMEOUT = 5.0
 PLUGINS_DIR = WORKING_DIR / 'plugins'
 
 TOKEN_USAGE_FILE = WORKING_DIR / 'token_usage.jsonl'
+
+
+# Upload media max size in MB
+UPLOAD_MAX_SIZE_MB = 50
+
+# Tool guard approval timeout
+TOOL_GUARD_APPROVAL_TIMEOUT_SECONDS = 60

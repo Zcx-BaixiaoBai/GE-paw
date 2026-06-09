@@ -28,3 +28,6 @@ __all__ = [
     "known_models",
     "manager",
 ]
+
+
+from .manager import get_token_usage_manager  # noqa: E402, F401

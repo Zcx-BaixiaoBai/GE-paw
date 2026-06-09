@@ -223,3 +223,13 @@ def add_project_file_handler(log_path: Path) -> None:
         PlainFormatter("%(asctime)s | %(message)s", "%Y-%m-%d %H:%M:%S"),
     )
     logger.addHandler(file_handler)
+
+
+def get_logger(name: str | None = None) -> "logging.Logger":
+    """Return a logger under the gepaw namespace."""
+    ns = LOG_NAMESPACE
+    if not name:
+        return logging.getLogger(ns)
+    if not name.startswith(ns):
+        return logging.getLogger(f"{ns}.{name}")
+    return logging.getLogger(name)

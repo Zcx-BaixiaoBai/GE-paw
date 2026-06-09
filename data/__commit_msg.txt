@@ -1,38 +1,17 @@
-feat(cli + utils + rest of qwenpaw + stubs + constants): port all remaining qwenpaw modules, frontmatter stub, BUILTIN_QA_AGENT_SKILL_NAMES, MEMORY_DIR, CORS_ORIGINS, CUSTOM_CHANNELS_DIR, etc.
+feat(tauri/workspace/token_usage/routers/local_models + more stubs): mcp, acp (interfaces/schema/contrib.session_state/RequestError/etc), agentscope.{tool.Toolkit/ToolResponse, message.Base64Source/URLSource, mcp, agent._react_agent._MemoryMark, model._model_usage.ChatUsage, tool.Toolkit}, psutil, shortuuid, questionary, frontmatter; agentscope_runtime.engine.schemas.exception expanded (AppBaseException/Model*Exception/ConfigurationException/RateLimitExceededException/UnauthorizedModelAccessException/ModelContextLengthExceededException/ExternalServiceException/UnknownAgentException); agentscope_runtime.engine.runner.{Runner, AgentRunner}; gepaw.agents.prompt/agent_context/hooks.{__init__,bootstrap}/app.runner.__init__/config.__init__/exceptions/token_usage.{manager,model_wrapper}/utils.logging.get_logger ported; BUILTIN_QA_AGENT_SKILL_NAMES/MEMORY_DIR/CORS_ORIGINS/CUSTOM_CHANNELS_DIR/UPLOAD_MAX_SIZE_MB/TOOL_GUARD_APPROVAL_TIMEOUT_SECONDS and 17+ more constants added
 
-- 254 new gepaw.* modules ported (cli/* + utils/* + remaining app/* + agents/* + backup/* + providers/* + local_models/* + security/* + tauri/* + market/* + plugins/* + security.skill_scanner + tunnel + everything else)
-- gepaw.cli: 30 modules (acp_cmd, agents_cmd, app_cmd, auth_cmd, channels_cmd, chats_cmd, clean_cmd, cron_cmd, daemon_cmd, desktop_cmd, doctor_*, env_cmd, http, init_cmd, main, mission_cmd, plugin_commands, process_utils, providers_cmd, shutdown_cmd, skills_cmd, task_cmd, uninstall_cmd, update_cmd, utils)
-- gepaw.utils: 9 modules (command_runner, console_static, http, logging, startup_display, stdio, system_info, telemetry)
-- gepaw.app.auth, gepaw.app.push_router, etc.
-- gepaw.agents.* (full)
-- gepaw.providers.*
-- gepaw.local_models.*
-- gepaw.security.* (skill_scanner, tool_guard sub-modules)
-- gepaw.tauri.* (env, sidecar_logging)
-- gepaw.tunnel
-- gepaw.market.providers.aliyun
-- gepaw.backup._utils.safe_swap
-- gepaw.plugins.* (registry, api, architecture, loader, validation, etc.)
-- gepaw.providers.openai_provider, multimodal_prober, provider
-- gepaw.local_models.tag_parser
+- New 3rd-party stubs: mcp.{__init__,client.__init__,client.stdio,client.sse,client.streamable_http}, acp.{__init__,interfaces,schema,contrib.__init__,contrib.session_state}, agentscope.mcp (HttpStatefulClient/StdIOStatefulClient/MCPToolFunction/StatefulClientBase/MCPClientBase)
+- agentscope.tool.Toolkit/ToolResponse added
+- agentscope.message.Base64Source/URLSource added
+- agentscope.agent._react_agent._MemoryMark added
+- agentscope.model._model_usage.ChatUsage added
+- psutil: Process, pid_exists, process_iter, Popen
+- shortuuid: ShortUUID
+- questionary: confirm/text/select/path/password/Choice/ask/form/Style
+- frontmatter: loads/load/dumps/Post
+- gepaw.utils.logging.get_logger
+- gepaw.token_usage.get_token_usage_manager
+- gepaw.token_usage.model_wrapper.stream (abstract) + record_usage function
+- gepaw.app.runner.AgentRunner
 
-Constants added:
-- BUILTIN_QA_AGENT_SKILL_NAMES (29 skills)
-- BUILTIN_QA_AGENT_ID/NAME, LEGACY_QA_AGENT_ID
-- CODING_PROJECT_SUBDIR
-- CORS_ORIGINS
-- CUSTOM_CHANNELS_DIR
-- DEBUG_HISTORY_FILE
-- DEFAULT_LOCAL_PROVIDER_DIR
-- HEARTBEAT_TARGET_INBOX/LAST
-- MAX_LOAD_HISTORY_COUNT
-- MEMORY_COMPACT_KEEP_RECENT/RATIO
-- MODELS_DIR
-- MODEL_PROVIDER_CHECK_TIMEOUT
-- PLUGINS_DIR
-- TOKEN_USAGE_FILE
-
-3rd-party stubs:
-- frontmatter (loads/load/dumps/Post)
-
-Test baseline: 2202 -> 2495 passed (+293) [217 failed -> 253 failed (cli adds new tests)]
+Test baseline: 2495 -> 2529 passed (+34) [253 -> 255 failed, 9 -> 3 errors]
