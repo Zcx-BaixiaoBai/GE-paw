@@ -23,10 +23,18 @@ class ProviderError(AgentRuntimeErrorException):
 
     def __init__(
         self,
-        message: str,
+        message: str = "",
         details: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
     ) -> None:
         super().__init__("PROVIDER_ERROR", message, details)
+        # Expose the user-facing message as the exception text so that
+        # `str(exc)` matches what callers raise with (e.g. for
+        # `pytest.raises(..., match=...)`).
+        if message:
+            self.args = (message,)
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
 
 class ModelFormatterError(AgentRuntimeErrorException):
@@ -291,27 +299,6 @@ class ConfigurationError(Exception):
 class SkillError(Exception):
     """Raised on skill-related errors."""
 
-
-class ProviderError(Exception):
-    """Raised on provider-related errors."""
-
-
-class ToolNotFoundError(Exception):
-    """Raised when a tool is not found."""
-
-
-class ChannelError(Exception):
-    """Raised on channel-related errors."""
-    def __init__(self, *args, **kwargs):
-        # Prefer 'message' kwarg as the primary exception text so that
-        # `str(exc)` exposes it for `pytest.raises(..., match=...)`.
-        msg = kwargs.pop("message", None)
-        if msg is None and args:
-            msg = args[0]
-            args = args[1:]
-        super().__init__(msg, *args)
-        for k, v in kwargs.items():
-            setattr(self, k, v)
 
 
 class ToolError(Exception):

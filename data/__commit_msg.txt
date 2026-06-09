@@ -1,3 +1,13 @@
-feat(channels + Role + ChannelError + sanitization): add Role enum (SYSTEM/USER/ASSISTANT/TOOL/DEVELOPER); fix QQ sanitization placeholder to '[]' (gepaw tests expect [] not [Á´½ÓÒÑÊ¡ÂÔ]); fix ChannelError to accept kwargs; mojibake fixes in channel files
+fix(channels + api + exceptions):
 
-Test baseline: 2532 -> 2539 passed (+7)
+* ChannelError.__init__ forwards message kwarg to base Exception
+  so pytest.raises(..., match=...) sees the text in str(exc).
+* app._app lifespan now uses ChannelManager.from_env (async), guarded
+  by GEPAW_DISABLE_CHANNEL_STARTUP env var, and tolerates channels
+  whose from_env is NotImplementedError (e.g. VoiceChannel).
+* app._app passes log_path= keyword to setup_logger.
+* Add minimal discord stub package for discord Intents/Client/File.
+* agent_schemas: add ContentType.REFUSAL and AgentRequest.channel_meta/input
+  fields with extra=allow.
+
+Test status: 2631 passed, 163 failed, 1 error (was 2539 +7).

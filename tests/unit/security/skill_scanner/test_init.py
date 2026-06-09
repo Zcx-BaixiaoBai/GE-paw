@@ -17,6 +17,7 @@ Covers:
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -84,6 +85,7 @@ class TestComputeSkillContentHash:
         assert isinstance(h, str)
         assert len(h) == 64
 
+    @pytest.mark.skipif(sys.platform == "win32", reason="symlinks require admin privileges on Windows")
     def test_skips_symlinks(self, tmp_path):
         """Symlinks should be skipped."""
         (tmp_path / "real.txt").write_text("content")

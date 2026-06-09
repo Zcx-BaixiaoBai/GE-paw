@@ -10,6 +10,7 @@ Covers:
 - Deduplication of findings
 """
 # pylint: disable=redefined-outer-name,protected-access,unused-argument
+import sys
 from unittest.mock import MagicMock
 
 import pytest
@@ -215,6 +216,7 @@ class TestSkillScannerDiscoverFiles:
         assert len(files) == 1
         assert files[0].relative_path == "code.py"
 
+    @pytest.mark.skipif(sys.platform == "win32", reason="symlinks require admin privileges on Windows")
     def test_skips_symlinks(self, scanner, tmp_path):
         """Should skip symlinks to prevent path traversal."""
         target = tmp_path / "real.txt"
