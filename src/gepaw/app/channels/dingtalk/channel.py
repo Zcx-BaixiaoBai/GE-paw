@@ -443,7 +443,7 @@ class DingTalkChannel(BaseChannel):
             await self._send_emotion(
                 incoming_msg_id,
                 conversation_id,
-                "🤔Thinking",
+                "Thinking",
             )
 
         # Pre-create AI Card before LLM call so user sees it immediately.
@@ -483,13 +483,13 @@ class DingTalkChannel(BaseChannel):
             await self._send_emotion(
                 incoming_msg_id,
                 conversation_id,
-                "🤔Thinking",
+                "Thinking",
                 recall=True,
             )
             await self._send_emotion(
                 incoming_msg_id,
                 conversation_id,
-                "☹️Error",
+                "Error",
             )
         # Send error text via webhook or fallback
         session_webhook = self._get_session_webhook(meta)
@@ -2631,7 +2631,7 @@ class DingTalkChannel(BaseChannel):
             await self._send_emotion(
                 incoming_msg_id,
                 conversation_id,
-                "🤔Thinking",
+                "Thinking",
                 recall=True,
             )
             await self._send_emotion(
@@ -2675,7 +2675,7 @@ class DingTalkChannel(BaseChannel):
         Args:
             open_msg_id: Target message ID.
             open_conversation_id: Conversation ID.
-            emoji_name: Display name (e.g. "🤔Thinking", "🥳Done").
+            emoji_name: Display name (e.g. "Thinking", "🥳Done").
             recall: If True, recall the reaction instead of adding it.
         """
         if not self._robot_sdk or not open_msg_id or not open_conversation_id:

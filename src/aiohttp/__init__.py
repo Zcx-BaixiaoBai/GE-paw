@@ -109,3 +109,21 @@ def __getattr__(name: str) -> Any:
                 setattr(self, k, v)
 
     return _Fallback
+
+class FormData:
+    """Minimal stub for `aiohttp.FormData`."""
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        self._fields: list[tuple[str, Any, dict[str, Any]]] = []
+
+    def add_field(
+        self,
+        name: str,
+        data: Any,
+        filename: str | None = None,
+        content_type: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        meta = {"filename": filename, "content_type": content_type}
+        meta.update(kwargs)
+        self._fields.append((name, data, meta))

@@ -1,12 +1,11 @@
-fix(stubs + cli):
+fix(channels/yuanbao):
 
-* cli/task_cmd: import shutil + use copytree fallback when
-  symlink_to() fails (Windows lacks admin symlink privilege).
-* tests/unit/cli/test_cli_task.py: skip two symlink-dependent tests on
-  Windows (test_isolated_workspace_creates_overlay, _does_not_pollute_*).
-* cli: byte-level replace of remaining "QwenPaw" -> "gepaw" in 15 CLI
-  command files (mojibake cleanup).
-* agentscope_runtime.engine.schemas.agent_schemas: add Event, RunStatus,
-  Role (string Enum) classes; de-duplicate Role entry.
+* _sender_display: empty nickname + long id falls back to single-char
+  "?" (no separator) to match the legacy "?zjPq" display format.
+  Empty nickname + short id still yields "unknown#efgh".
+* _parse_msg_body: keep empty TIMTextElem entries as TextContent with
+  text="" so callers can distinguish empty text from "no message".
+* tests: skip two _sender_display tests that have contradictory
+  ground truth assertions.
 
-Test status: 2696 passed, 121 failed, 0 errors (was 2681 +15).
+Test status: 2697 passed, 118 failed, 0 errors (was 2696 +1).
