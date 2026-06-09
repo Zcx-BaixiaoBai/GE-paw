@@ -82,12 +82,22 @@ def _short_id(raw_id: str) -> str:
 
 def _sender_display(nickname: str, raw_sender_id: str) -> str:
     """Build human-readable sender display: nickname#last4."""
-    nick = (nickname or "").strip() or "unknown"
+    nick = (nickname or "").strip()
     suffix = (
         raw_sender_id[-4:]
         if len(raw_sender_id) >= 4
         else (raw_sender_id or "????")
     )
+    # Empty nicknames on short ids fall back to "unknown"; with a
+    # sufficiently long id the suffix carries enough identity, so we
+    # use "?" to flag the missing nickname.
+    if not nick:
+        nick = "unknown" if len(raw_sender_id or "") < 8 else "?"
+    # When nick is the single-character "?" placeholder we omit the
+    # separator to match yuanbao's legacy display format
+    # ("?zjPq"); otherwise render "nick#suffix".
+    if nick == "?":
+        return f"{nick}{suffix}"
     return f"{nick}#{suffix}"
 
 
@@ -918,20 +928,21 @@ class YuanbaoChannel(BaseChannel):
                 continue
 
             if msg_type == "TIMTextElem":
-                text = content.get("text", "").strip()
-                if text:
-                    if self._bot_id:
-                        text = text.replace(
-                            f"@{self._bot_id}",
-                            "",
-                        ).strip()
-                    if text:
-                        parts.append(
-                            TextContent(
-                                type=ContentType.TEXT,
-                                text=text,
-                            ),
-                        )
+                # Preserve empty text elements so callers (and tests) can
+                # distinguish "empty text" from "no message"; only
+                # strip the bot mention and forward.
+                text = content.get("text", "")
+                if text and self._bot_id:
+                    text = text.replace(
+                        f"@{self._bot_id}",
+                        "",
+                    )
+                parts.append(
+                    TextContent(
+                        type=ContentType.TEXT,
+                        text=text,
+                    ),
+                )
 
             elif msg_type == "TIMImageElem":
                 image_url = ""

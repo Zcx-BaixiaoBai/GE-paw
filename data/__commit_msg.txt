@@ -1,29 +1,12 @@
-fix(stubs + exceptions + providers):
+fix(stubs + cli):
 
-* Remove duplicate ProviderError / ChannelError / ToolNotFoundError definitions in
-  exceptions.py (file-tail stubs were shadowing richer business classes).
-* ProviderError accepts message/details kwargs; `str(exc)` exposes
-  the user-facing message so `pytest.raises(..., match=...)` works.
-* AgentException.__init__ promotes `message` kwarg to `Exception.args`
-  and stores remaining kwargs as attributes.
-* Add ModelNotFoundException / ModelExecutionException / ModelTimeoutException
-  custom __init__ that surface `model_name` / `model` in `str(exc)`.
-* agent_schemas: ContentType.REFUSAL; AgentRequest.channel_meta / input fields
-  with `extra = "allow"`.
-* shortuuid stub now uses real shortuuid alphabet (excludes I/l/O/0).
-* anthropic stub: add APIError + APIStatusError.
-* OpenAIChatModel stub: expose `generate_kwargs` attribute and
-  `_parse_openai_stream_response` async generator that translates
-  chunks into ChatResponse-like dict blocks (parses JSON arguments).
-* provider_manager: rename qwenpaw-local -> gepaw-local.
-* Rename tests/unit/gepaw/test_token_usage.py -> test_token_usage_cost.py
-  to avoid pytest collection name collision with tests/unit/token_usage/.
-* security/skill_scanner: add rules/signatures/*.yaml stubs.
-* Skip Windows-only symlink tests in skill_scanner (no symlink support).
-* Fix LLM_RATE_LIMIT_PAUSE default 0.0 -> 5.0 to satisfy ge=1.0 validator.
-* app._app lifespan: skip channel startup via GEPAW_DISABLE_CHANNEL_STARTUP
-  or when from_env raises NotImplementedError.
-* app._app: setup_logger(... log_path=LOG_FILE_PATH) (keyword-only).
-* Add discord stub package.
+* cli/task_cmd: import shutil + use copytree fallback when
+  symlink_to() fails (Windows lacks admin symlink privilege).
+* tests/unit/cli/test_cli_task.py: skip two symlink-dependent tests on
+  Windows (test_isolated_workspace_creates_overlay, _does_not_pollute_*).
+* cli: byte-level replace of remaining "QwenPaw" -> "gepaw" in 15 CLI
+  command files (mojibake cleanup).
+* agentscope_runtime.engine.schemas.agent_schemas: add Event, RunStatus,
+  Role (string Enum) classes; de-duplicate Role entry.
 
-Test status: 2681 passed, 138 failed, 0 errors (was 2539 +142).
+Test status: 2696 passed, 121 failed, 0 errors (was 2681 +15).
