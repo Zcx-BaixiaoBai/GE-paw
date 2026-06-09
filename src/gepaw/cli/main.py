@@ -1,150 +1,172 @@
-"""GE-paw 命令行入口。"""
+# -*- coding: utf-8 -*-
 from __future__ import annotations
 
-import argparse
-import os
-import secrets
-import string
+import logging
 import sys
-from pathlib import Path
-from typing import Optional
+import time
 
-from gepaw import __version__
-from ..constant import PROJECT_NAME
-from ..utils.logging import get_logger, setup_logger
+import click
 
-logger = get_logger("cli")
+from ..utils.stdio import ensure_standard_streams
 
-
-def _gen_password(n: int = 16) -> str:
-    alphabet = string.ascii_letters + string.digits
-    return "".join(secrets.choice(alphabet) for _ in range(n))
-
-
-def _ensure_secret_key() -> None:
-    if os.environ.get("GEPAW_SECRET_KEY"):
-        return
-    key = secrets.token_urlsafe(48)
-    os.environ["GEPAW_SECRET_KEY"] = key
-    env_path = Path(".env")
-    if not env_path.exists():
-        env_path.write_text(f"GEPAW_SECRET_KEY={key}\n", encoding="utf-8")
-    else:
-        with env_path.open("a", encoding="utf-8") as f:
-            f.write(f"\nGEPAW_SECRET_KEY={key}\n")
-
-
-def cmd_init(args: argparse.Namespace) -> int:
-    from ..app.db import init_db, session_scope
-    from ..app.settings import get_settings
-    from ..models import Membership, Org, User
-    from ..security.passwords import hash_password
-
-    _ensure_secret_key()
-    s = get_settings()
-    init_db()
-    setup_logger(s.log_level)
-    username = args.username or s.admin_username
-    password = args.password or s.admin_password or _gen_password()
-    org_name = args.org_name or s.org_name
-    org_slug = args.org_slug or "default"
-
-    with session_scope() as db:
-        org: Optional[Org] = db.query(Org).filter(Org.slug == org_slug).first()
-        if org is None:
-            org = Org(name=org_name, slug=org_slug)
-            db.add(org); db.flush()
-        user: Optional[User] = db.query(User).filter(User.username == username).first()
-        if user is None:
-            user = User(
-                username=username,
-                display_name=username,
-                password_hash=hash_password(password),
-                is_super_admin=True,
-            )
-            db.add(user); db.flush()
-            db.add(Membership(user_id=user.id, org_id=org.id, role="admin"))
-        else:
-            user.is_super_admin = True
-            user.password_hash = hash_password(password)
-            existing = next((m for m in user.memberships if m.org_id == org.id), None)
-            if existing is None:
-                db.add(Membership(user_id=user.id, org_id=org.id, role="admin"))
-    print()
-    print(f"== {PROJECT_NAME} 初始化完成 ==")
-    print(f"  管理员用户名: {username}")
-    print(f"  管理员密码 : {password}")
-    print(f"  默认组织   : {org_name} (slug: {org_slug})")
-    print(f"  数据目录   : {s.data_dir}")
-    print(f"  数据库     : {s.database_url}")
-    print()
-    return 0
-
-
-def cmd_serve(args: argparse.Namespace) -> int:
-    from ..app.settings import get_settings
-    import uvicorn
-
-    _ensure_secret_key()
-    s = get_settings()
-    setup_logger(s.log_level)
-    uvicorn.run(
-        "gepaw.app._app:app",
-        host=args.host or s.host,
-        port=args.port or s.port,
-        reload=args.reload,
-        log_level=s.log_level,
-    )
-    return 0
-
-
-def cmd_health(args: argparse.Namespace) -> int:
-    import httpx
-    base = args.base
+# On Windows, force UTF-8 for stdout/stderr so cron and other commands
+# can handle Chinese and other non-ASCII (Linux is UTF-8 by default).
+if sys.platform == "win32":
+    ensure_standard_streams()
     try:
-        r = httpx.get(f"{base.rstrip('/')}/api/health", timeout=5.0)
-        r.raise_for_status()
-        print(r.json())
-        return 0
-    except Exception as e:
-        print(f"health check failed: {e}")
-        return 1
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except (AttributeError, OSError):
+        pass
+
+# pylint: disable=wrong-import-position
+
+logger = logging.getLogger(__name__)
+# Store init timings so app_cmd can re-log after setting log level to debug.
+_init_timings: list[tuple[str, float]] = []
+_t0_main = time.perf_counter()
+_init_timings.append(("main.py loaded", 0.0))
 
 
-def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="gepaw", description=f"{PROJECT_NAME} CLI")
-    p.add_argument("--version", action="version", version=f"{PROJECT_NAME} v{__version__}")
-    sub = p.add_subparsers(dest="cmd", required=True)
-
-    p_init = sub.add_parser("init", help="初始化首位管理员与默认组织")
-    p_init.add_argument("--username", default=None)
-    p_init.add_argument("--password", default=None)
-    p_init.add_argument("--org-name", default=None)
-    p_init.add_argument("--org-slug", default="default")
-    p_init.set_defaults(func=cmd_init)
-
-    p_serve = sub.add_parser("serve", help="启动 API 服务（默认 0.0.0.0:8765）")
-    p_serve.add_argument("--host", default=None)
-    p_serve.add_argument("--port", type=int, default=None)
-    p_serve.add_argument("--reload", action="store_true")
-    p_serve.set_defaults(func=cmd_serve)
-
-    p_health = sub.add_parser("health", help="探测 /api/health")
-    p_health.add_argument("--base", default="http://127.0.0.1:8765")
-    p_health.set_defaults(func=cmd_health)
-
-    return p
+def _record(label: str, elapsed: float) -> None:
+    _init_timings.append((label, elapsed))
+    logger.debug("%.3fs %s", elapsed, label)
 
 
-def main(argv: Optional[list[str]] = None) -> int:
-    parser = build_parser()
-    args = parser.parse_args(argv)
-    return args.func(args)
+# Timed imports below: order and placement are intentional (E402/C0413).
+_t = time.perf_counter()
+from ..config.utils import read_last_api  # noqa: E402
+
+_record("..config.utils", time.perf_counter() - _t)
+
+_t = time.perf_counter()
+from ..__version__ import __version__  # noqa: E402
+
+_record("..__version__", time.perf_counter() - _t)
+
+_total = time.perf_counter() - _t0_main
+_init_timings.append(("(total imports)", _total))
+logger.debug("%.3fs (total imports)", _total)
 
 
-def cli() -> None:
-    sys.exit(main())
+def log_init_timings() -> None:
+    """Emit init timing debug lines after setup_logger(debug) in app_cmd."""
+    for label, elapsed in _init_timings:
+        logger.debug("%.3fs %s", elapsed, label)
 
 
-if __name__ == "__main__":
-    cli()
+class LazyGroup(click.Group):
+    """Click group that supports lazy loading of subcommands."""
+
+    def __init__(self, *args, lazy_subcommands=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.lazy_subcommands = lazy_subcommands or {}
+
+    def list_commands(self, ctx):
+        """Return all command names (both eager and lazy)."""
+        base = super().list_commands(ctx)
+        return sorted(set(base) | set(self.lazy_subcommands.keys()))
+
+    def get_command(self, ctx, cmd_name):
+        """Get command, loading lazily if needed."""
+        # Try eager commands first
+        cmd = super().get_command(ctx, cmd_name)
+        if cmd is not None:
+            return cmd
+
+        # Try lazy commands
+        if cmd_name in self.lazy_subcommands:
+            module_path, attr_name, label = self.lazy_subcommands[cmd_name]
+            _t = time.perf_counter()
+            try:
+                module = __import__(module_path, fromlist=[attr_name])
+                cmd = getattr(module, attr_name)
+                _record(label, time.perf_counter() - _t)
+                # Cache for next time
+                self.add_command(cmd, cmd_name)
+                return cmd
+            except Exception as e:
+                logger.error(f"Failed to load command '{cmd_name}': {e}")
+                return None
+
+        return None
+
+
+@click.group(
+    cls=LazyGroup,
+    context_settings={"help_option_names": ["-h", "--help"]},
+    lazy_subcommands={
+        "acp": ("gepaw.cli.acp_cmd", "acp_cmd", ".acp_cmd"),
+        "app": ("gepaw.cli.app_cmd", "app_cmd", ".app_cmd"),
+        "channels": (
+            "gepaw.cli.channels_cmd",
+            "channels_group",
+            ".channels_cmd",
+        ),
+        "channel": (
+            "gepaw.cli.channels_cmd",
+            "channels_group",
+            ".channels_cmd",
+        ),
+        "daemon": ("gepaw.cli.daemon_cmd", "daemon_group", ".daemon_cmd"),
+        "chats": ("gepaw.cli.chats_cmd", "chats_group", ".chats_cmd"),
+        "chat": ("gepaw.cli.chats_cmd", "chats_group", ".chats_cmd"),
+        "clean": ("gepaw.cli.clean_cmd", "clean_cmd", ".clean_cmd"),
+        "cron": ("gepaw.cli.cron_cmd", "cron_group", ".cron_cmd"),
+        "env": ("gepaw.cli.env_cmd", "env_group", ".env_cmd"),
+        "init": ("gepaw.cli.init_cmd", "init_cmd", ".init_cmd"),
+        "models": (
+            "gepaw.cli.providers_cmd",
+            "models_group",
+            ".providers_cmd",
+        ),
+        "skills": ("gepaw.cli.skills_cmd", "skills_group", ".skills_cmd"),
+        "uninstall": (
+            "gepaw.cli.uninstall_cmd",
+            "uninstall_cmd",
+            ".uninstall_cmd",
+        ),
+        "desktop": ("gepaw.cli.desktop_cmd", "desktop_cmd", ".desktop_cmd"),
+        "update": ("gepaw.cli.update_cmd", "update_cmd", ".update_cmd"),
+        "shutdown": (
+            "gepaw.cli.shutdown_cmd",
+            "shutdown_cmd",
+            ".shutdown_cmd",
+        ),
+        "auth": ("gepaw.cli.auth_cmd", "auth_group", ".auth_cmd"),
+        "agents": ("gepaw.cli.agents_cmd", "agents_group", ".agents_cmd"),
+        "agent": ("gepaw.cli.agents_cmd", "agents_group", ".agents_cmd"),
+        "plugin": (
+            "gepaw.cli.plugin_commands",
+            "plugin",
+            ".plugin_commands",
+        ),
+        "task": ("gepaw.cli.task_cmd", "task_cmd", ".task_cmd"),
+        "doctor": ("gepaw.cli.doctor_cmd", "doctor_cmd", ".doctor_cmd"),
+    },
+)
+@click.version_option(version=__version__, prog_name="QwenPaw")
+@click.option("--host", default=None, help="API Host")
+@click.option(
+    "--port",
+    default=None,
+    type=int,
+    help="API Port",
+)
+@click.pass_context
+def cli(ctx: click.Context, host: str | None, port: int | None) -> None:
+    """QwenPaw CLI."""
+    # default from last run if not provided
+    last = read_last_api()
+    if host is None or port is None:
+        if last:
+            host = host or last[0]
+            port = port or last[1]
+
+    # final fallback
+    host = host or "127.0.0.1"
+    port = port or 8088
+
+    ctx.ensure_object(dict)
+    ctx.obj["host"] = host
+    ctx.obj["port"] = port

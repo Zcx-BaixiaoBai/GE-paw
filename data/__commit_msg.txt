@@ -1,13 +1,38 @@
-feat(channels + stubs): nio (responses/event_builders/events/crypto), telegram, dingtalk_stream, alibabacloud_dingtalk, paho, segno, google.protobuf, console_push_store; MessageType + Role; PLUGIN_CALL/MCP_TOOL_CALL enum values
+feat(cli + utils + rest of qwenpaw + stubs + constants): port all remaining qwenpaw modules, frontmatter stub, BUILTIN_QA_AGENT_SKILL_NAMES, MEMORY_DIR, CORS_ORIGINS, CUSTOM_CHANNELS_DIR, etc.
 
-- channels/* ported (telegram, console, dingtalk, discord, feishu, imessage, matrix, mattermost, mqtt, onebot, qq, qrcode_auth_handler, voice, wechat, wecom, xiaoyi, yuanbao, sip, base, manager, registry, schema, renderer, utils, unified_queue_manager, command_registry, access_control)
-- 3rd-party stubs: nio (AsyncClientConfig/KeysUploadResponse/KeyVerification*/ToDevice*/RoomEncrypted*/SyncResponse/UploadResponse/LocalProtocolError), telegram (BotCommand/Message/User/Chat/InlineKeyboard*/Update/CallbackQuery/InputFile + ext.Application/MessageHandler/CommandHandler/CallbackQueryHandler/ContextTypes + constants.ParseMode + error.*)
-- 3rd-party stubs: dingtalk_stream (ChatbotMessage/CallbackMessage/Credential/DingTalkStreamClient/CallbackHandler/ChatbotHandler), alibabacloud_tea_openapi (Config/RuntimeOptions/Credential), alibabacloud_tea_util, alibabacloud_dingtalk.{oauth2_1_0,robot_1_0,card_1_0}.{client,models}, Tea.exceptions.TeaException
-- paho.mqtt.client (Client/MQTTMessage/MQTTv311/CallbackAPIVersion/reason_codes), paho.mqtt.MQTTException
-- segno (make + save/png_data/svg_data)
-- google.protobuf stubs (descriptor_pool/descriptor_pb2/FileDescriptorProto/json_format/descriptor/message_factory)
-- gepaw.app.console_push_store (append/get/clear/consume)
-- agent_schemas: add PLUGIN_CALL, PLUGIN_CALL_OUTPUT, MCP_TOOL_CALL, MCP_TOOL_CALL_OUTPUT to MessageType
-- agent_schemas: add Role enum (USER/ASSISTANT/SYSTEM/TOOL/DEVELOPER/...)
+- 254 new gepaw.* modules ported (cli/* + utils/* + remaining app/* + agents/* + backup/* + providers/* + local_models/* + security/* + tauri/* + market/* + plugins/* + security.skill_scanner + tunnel + everything else)
+- gepaw.cli: 30 modules (acp_cmd, agents_cmd, app_cmd, auth_cmd, channels_cmd, chats_cmd, clean_cmd, cron_cmd, daemon_cmd, desktop_cmd, doctor_*, env_cmd, http, init_cmd, main, mission_cmd, plugin_commands, process_utils, providers_cmd, shutdown_cmd, skills_cmd, task_cmd, uninstall_cmd, update_cmd, utils)
+- gepaw.utils: 9 modules (command_runner, console_static, http, logging, startup_display, stdio, system_info, telemetry)
+- gepaw.app.auth, gepaw.app.push_router, etc.
+- gepaw.agents.* (full)
+- gepaw.providers.*
+- gepaw.local_models.*
+- gepaw.security.* (skill_scanner, tool_guard sub-modules)
+- gepaw.tauri.* (env, sidecar_logging)
+- gepaw.tunnel
+- gepaw.market.providers.aliyun
+- gepaw.backup._utils.safe_swap
+- gepaw.plugins.* (registry, api, architecture, loader, validation, etc.)
+- gepaw.providers.openai_provider, multimodal_prober, provider
+- gepaw.local_models.tag_parser
 
-Test baseline: 1090 -> 2202 passed (+1112) [255 failed -> 217 failed]
+Constants added:
+- BUILTIN_QA_AGENT_SKILL_NAMES (29 skills)
+- BUILTIN_QA_AGENT_ID/NAME, LEGACY_QA_AGENT_ID
+- CODING_PROJECT_SUBDIR
+- CORS_ORIGINS
+- CUSTOM_CHANNELS_DIR
+- DEBUG_HISTORY_FILE
+- DEFAULT_LOCAL_PROVIDER_DIR
+- HEARTBEAT_TARGET_INBOX/LAST
+- MAX_LOAD_HISTORY_COUNT
+- MEMORY_COMPACT_KEEP_RECENT/RATIO
+- MODELS_DIR
+- MODEL_PROVIDER_CHECK_TIMEOUT
+- PLUGINS_DIR
+- TOKEN_USAGE_FILE
+
+3rd-party stubs:
+- frontmatter (loads/load/dumps/Post)
+
+Test baseline: 2202 -> 2495 passed (+293) [217 failed -> 253 failed (cli adds new tests)]

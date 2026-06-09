@@ -1,129 +1,225 @@
-"""统一日志配置。"""
-from __future__ import annotations
+# -*- coding: utf-8 -*-
+"""Logging setup for application logging and optional file output."""
 
 import logging
+import logging.handlers
+import os
+import platform
 import sys
-from logging.handlers import RotatingFileHandler
 from pathlib import Path
-from typing import Optional, Union
 
-LOG_NAMESPACE = "gepaw"
+from ..constant import PROJECT_NAME, WORKING_DIR
 
-_LEVEL_MAP: dict = {
-    "debug": logging.DEBUG,
-    "info": logging.INFO,
-    "warning": logging.WARNING,
-    "warn": logging.WARNING,
-    "error": logging.ERROR,
+# Rotating file handler limits (idempotent add avoids duplicate handlers)
+_LOG_MAX_BYTES = 5 * 1024 * 1024  # 5 MiB
+_LOG_BACKUP_COUNT = 3
+
+
+_LEVEL_MAP = {
     "critical": logging.CRITICAL,
-    "fatal": logging.CRITICAL,
+    "error": logging.ERROR,
+    "warning": logging.WARNING,
+    "info": logging.INFO,
+    "debug": logging.DEBUG,
 }
 
-LOG_FILE_PATH = None
+# Top-level name for this package; only loggers under this name are shown.
+LOG_NAMESPACE = PROJECT_NAME.lower()
+
+# Canonical log file name and path — import these instead of reconstructing.
+LOG_FILE_BASENAME = f"{LOG_NAMESPACE}.log"
+LOG_FILE_PATH = WORKING_DIR / LOG_FILE_BASENAME
 
 
-def _resolve_level(level):
-    if isinstance(level, int):
-        return level
-    if isinstance(level, str):
-        return _LEVEL_MAP.get(level.strip().lower(), logging.INFO)
-    return logging.INFO
+def _enable_windows_ansi() -> None:
+    """Enable ANSI escape code support on Windows 10+."""
+    if platform.system() != "Windows":
+        return
+    try:
+        import ctypes
+
+        kernel32 = ctypes.windll.kernel32  # type: ignore[attr-defined]
+        # STD_OUTPUT_HANDLE = -11, ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004
+        handle = kernel32.GetStdHandle(-11)
+        mode = ctypes.c_ulong()  # pylint: disable=no-value-for-parameter
+        kernel32.GetConsoleMode(handle, ctypes.byref(mode))
+        kernel32.SetConsoleMode(handle, mode.value | 0x0004)
+    except Exception:
+        pass
+
+
+# Call once at import time
+_enable_windows_ansi()
 
 
 class ColorFormatter(logging.Formatter):
     COLORS = {
-        logging.DEBUG: chr(27) + "[37m",
-        logging.INFO: chr(27) + "[36m",
-        logging.WARNING: chr(27) + "[33m",
-        logging.ERROR: chr(27) + "[31m",
-        logging.CRITICAL: chr(27) + "[1;31m",
+        logging.DEBUG: "\033[34m",
+        logging.INFO: "\033[32m",
+        logging.WARNING: "\033[33m",
+        logging.ERROR: "\033[31m",
+        logging.CRITICAL: "\033[41m\033[97m",
     }
-    RESET = chr(27) + "[0m"
-
-    def __init__(self, fmt=None, datefmt=None, style="%"):
-        if fmt is None:
-            fmt = "%(message)s"
-        super().__init__(fmt=fmt, datefmt=datefmt, style=style)
+    RESET = "\033[0m"
 
     def format(self, record):
-        body = super().format(record)
-        level_name = logging.getLevelName(record.levelno)
-        prefix = "[%s] %s:%d - " % (level_name, record.pathname, record.lineno)
-        rendered = prefix + body
-        if not sys.stderr.isatty():
-            return rendered
-        color = self.COLORS.get(record.levelno, "")
-        if not color:
-            return rendered
-        return color + rendered + self.RESET
+        # Disable colors if output is not a terminal (e.g. piped/redirected)
+        use_color = hasattr(sys.stderr, "isatty") and sys.stderr.isatty()
+        color = self.COLORS.get(record.levelno, "") if use_color else ""
+        reset = self.RESET if use_color else ""
+        level = f"{color}{record.levelname}{reset}"
+
+        full_path = record.pathname
+        cwd = os.getcwd()
+        # Use os.path for cross-platform path prefix stripping
+        try:
+            if os.path.commonpath([full_path, cwd]) == cwd:
+                full_path = os.path.relpath(full_path, cwd)
+        except ValueError:
+            # Different drives on Windows (e.g., C: vs D:) are not comparable.
+            pass
+
+        prefix = f"{level} {full_path}:{record.lineno}"
+        original_msg = super().format(record)
+
+        return f"{prefix} | {original_msg}"
+
+
+class _SafeRotatingFileHandler(logging.handlers.RotatingFileHandler):
+    """RotatingFileHandler that tolerates Windows file-locking errors.
+
+    On Windows, ``os.rename()`` inside ``doRollover()`` raises
+    ``PermissionError`` when the log file is held open by another
+    process (e.g. a log viewer or the debug-log console reader).
+    This subclass catches the error, reopens the stream so logging
+    continues without data loss, and defers rotation to the next
+    size-exceeding emit.
+    """
+
+    def doRollover(self):
+        try:
+            super().doRollover()
+        except PermissionError:
+            if self.stream:
+                self.stream.close()
+            self.stream = self._open()
+
+
+class PlainFormatter(logging.Formatter):
+    def format(self, record: logging.LogRecord) -> str:
+        full_path = record.pathname
+        cwd = os.getcwd()
+        try:
+            if os.path.commonpath([full_path, cwd]) == cwd:
+                full_path = os.path.relpath(full_path, cwd)
+        except ValueError:
+            pass
+
+        prefix = f"{record.levelname} | {full_path}:{record.lineno}"
+        formatted_time = self.formatTime(record, self.datefmt)
+        msg = f"{formatted_time} | {prefix} | {record.getMessage()}"
+
+        if record.exc_info and not record.exc_text:
+            record.exc_text = self.formatException(record.exc_info)
+        if record.exc_text:
+            msg = msg + "\n" + record.exc_text
+        if record.stack_info:
+            msg = msg + "\n" + self.formatStack(record.stack_info)
+
+        return msg
 
 
 class SuppressPathAccessLogFilter(logging.Filter):
-    def __init__(self, substrings=None):
-        super().__init__()
-        self.substrings = list(substrings) if substrings else []
+    """
+    Filter out uvicorn access log lines whose message contains any of the
+    given path substrings. path_substrings: list of substrings; if any
+    appears in the log message, the record is suppressed.
+    Empty list = allow all.
+    """
 
-    def filter(self, record):
+    def __init__(self, path_substrings: list[str]) -> None:
+        super().__init__()
+        self.path_substrings = path_substrings
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        if not self.path_substrings:
+            return True
         try:
             msg = record.getMessage()
+            return not any(s in msg for s in self.path_substrings)
         except Exception:
             return True
-        for needle in self.substrings:
-            if needle in msg:
-                return False
-        return True
 
 
-def _stream_formatter():
-    return logging.Formatter(
-        "%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-        datefmt="%Y-%m-%dT%H:%M:%S",
+def setup_logger(level: int | str = logging.INFO):
+    """Configure logging to only output from this package, not deps."""
+    log_format = "%(asctime)s | %(message)s"
+    datefmt = "%Y-%m-%d %H:%M:%S"
+
+    if isinstance(level, str):
+        level = _LEVEL_MAP.get(level.lower(), logging.INFO)
+
+    formatter = ColorFormatter(log_format, datefmt)
+
+    # Suppress third-party: set root logger level and configure handlers.
+    root = logging.getLogger()
+    for handler in root.handlers:
+        if isinstance(
+            handler,
+            (logging.FileHandler, logging.handlers.RotatingFileHandler),
+        ):
+            handler.setLevel(logging.INFO)
+        else:
+            handler.setLevel(logging.WARNING)
+
+    # Only attach handler to the project namespace
+    # so only app logs are printed.
+    logger = logging.getLogger(LOG_NAMESPACE)
+    logger.setLevel(level)
+    logger.propagate = False
+    if not logger.handlers:
+        # Use sys.stderr directly. Wrapping sys.stderr.buffer in a
+        # TextIOWrapper takes ownership of the buffer and closes it on GC,
+        # which corrupts sys.stderr for subsequent tests/code.
+        handler = logging.StreamHandler(sys.stderr)
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+
+    return logger
+
+
+def add_project_file_handler(log_path: Path) -> None:
+    """Add a rotating file handler to the project logger for daemon logs.
+
+    Uses _SafeRotatingFileHandler on all platforms with automatic log
+    rotation (max 5 MiB per file, 3 backups).  On Windows, rotation
+    errors caused by file locking are tolerated gracefully.
+
+    Idempotent: if the logger already has a file handler for the same path,
+    no new handler is added (avoids duplicate lines and leaked descriptors
+    when lifespan runs multiple times in the same process).
+
+    Args:
+        log_path: Path to the log file.
+    """
+    log_path = Path(log_path).resolve()
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    logger = logging.getLogger(LOG_NAMESPACE)
+    for handler in logger.handlers:
+        base = getattr(handler, "baseFilename", None)
+        if base is not None and Path(base).resolve() == log_path:
+            return
+
+    file_handler = _SafeRotatingFileHandler(
+        log_path,
+        encoding="utf-8",
+        maxBytes=_LOG_MAX_BYTES,
+        backupCount=_LOG_BACKUP_COUNT,
     )
 
+    file_handler.setLevel(logger.level or logging.INFO)
 
-def _has_stream_handler(logger):
-    for h in logger.handlers:
-        if isinstance(h, logging.StreamHandler) and not isinstance(h, logging.FileHandler):
-            return True
-    return False
-
-
-def add_project_file_handler(path):
-    global LOG_FILE_PATH
-    file_path = Path(path)
-    file_path.parent.mkdir(parents=True, exist_ok=True)
-    logger = logging.getLogger(LOG_NAMESPACE)
-    target = file_path.resolve()
-    for h in logger.handlers:
-        if isinstance(h, logging.FileHandler):
-            base = getattr(h, "baseFilename", None)
-            if base:
-                try:
-                    if Path(base).resolve() == target:
-                        return logger
-                except OSError:
-                    continue
-    fh = RotatingFileHandler(file_path, maxBytes=10 * 1024 * 1024, backupCount=5, encoding="utf-8")
-    fh.setFormatter(_stream_formatter())
-    logger.addHandler(fh)
-    LOG_FILE_PATH = file_path
-    return logger
-
-
-def setup_logger(level="info", log_file=None):
-    logger = logging.getLogger(LOG_NAMESPACE)
-    logger.setLevel(_resolve_level(level))
-    logger.propagate = False
-    if not _has_stream_handler(logger):
-        sh = logging.StreamHandler(sys.stderr)
-        sh.setFormatter(_stream_formatter())
-        logger.addHandler(sh)
-    if log_file is not None:
-        add_project_file_handler(log_file)
-    return logger
-
-
-def get_logger(name):
-    if name.startswith(LOG_NAMESPACE):
-        return logging.getLogger(name)
-    return logging.getLogger(LOG_NAMESPACE + "." + name)
+    file_handler.setFormatter(
+        PlainFormatter("%(asctime)s | %(message)s", "%Y-%m-%d %H:%M:%S"),
+    )
+    logger.addHandler(file_handler)

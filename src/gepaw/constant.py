@@ -191,3 +191,71 @@ CONFIG_FILE = EnvVarLoader.get_str("GEPAW_CONFIG_FILE", "config.json")
 
 DEFAULT_MEDIA_DIR = (DATA_DIR / "media").resolve()
 DEFAULT_MEDIA_DIR.mkdir(parents=True, exist_ok=True)
+# Built-in QA agent skill names (mirrors qwenpaw defaults)
+BUILTIN_QA_AGENT_SKILL_NAMES = (
+    "ask_user_question",
+    "background_task",
+    "convert_schemas",
+    "create_file",
+    "create_plan",
+    "edit_file",
+    "enter_plan_mode",
+    "file_search",
+    "get_current_datetime",
+    "glob_files",
+    "grep_files",
+    "list_files",
+    "multi_edit_file",
+    "notebook_edit",
+    "read_file",
+    "schedule_task",
+    "search_code",
+    "share_memory",
+    "skill_manage",
+    "task_done",
+    "task_kill",
+    "task_output",
+    "task_status",
+    "view_image",
+    "view_media",
+    "view_video",
+    "web_extraction",
+    "web_search",
+    "write_file",
+)
+
+# Memory directory (mirrors qwenpaw defaults)
+from pathlib import Path as _Path
+MEMORY_DIR = (WORKING_DIR / "memory") if isinstance(WORKING_DIR, _Path) else _Path.home() / ".gepaw" / "memory"
+
+
+# ---------------- additional channels/CLI/runtime constants ----------------
+BUILTIN_QA_AGENT_ID = 'qa-bot'
+BUILTIN_QA_AGENT_NAME = 'Q&A Bot'
+LEGACY_QA_AGENT_ID = 'qa_bot'
+
+CODING_PROJECT_SUBDIR = 'coding_projects'
+
+CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+
+CUSTOM_CHANNELS_DIR = WORKING_DIR / 'custom_channels'
+
+DEBUG_HISTORY_FILE = WORKING_DIR / 'debug_history.jsonl'
+
+DEFAULT_LOCAL_PROVIDER_DIR = WORKING_DIR / 'local_models'
+
+HEARTBEAT_TARGET_INBOX = 'inbox'
+HEARTBEAT_TARGET_LAST = 'last'
+
+MAX_LOAD_HISTORY_COUNT = 100
+
+MEMORY_COMPACT_KEEP_RECENT = 20
+MEMORY_COMPACT_RATIO = 0.5
+
+MODELS_DIR = WORKING_DIR / 'models'
+
+MODEL_PROVIDER_CHECK_TIMEOUT = 5.0
+
+PLUGINS_DIR = WORKING_DIR / 'plugins'
+
+TOKEN_USAGE_FILE = WORKING_DIR / 'token_usage.jsonl'
