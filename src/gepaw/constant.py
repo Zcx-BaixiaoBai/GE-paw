@@ -2,6 +2,22 @@
 import os
 from pathlib import Path
 
+
+class EnvVarLoader:
+    """Lightweight helper for reading environment variables.
+
+    gepaw's various subsystems consult configuration through this
+    loader so tests can patch ``gepaw.constant.EnvVarLoader.get_str``
+    in one place.  Implementation-wise it is a thin wrapper around
+    :func:`os.environ.get` with a default of empty string (instead of
+    ``None``) and an optional fallback.
+    """
+
+    @staticmethod
+    def get_str(name: str, default: str = "") -> str:
+        return os.environ.get(name, default)
+
+
 PROJECT_NAME = "GE-paw"
 LOG_LEVEL_ENV = "GEPAW_LOG_LEVEL"
 CORS_ORIGINS_ENV = "GEPAW_CORS_ORIGINS"
@@ -31,7 +47,7 @@ REFRESH_TOKEN_TTL_SECONDS = int(os.environ.get("GEPAW_REFRESH_TTL", str(7 * 24 *
 LLM_REQUEST_TIMEOUT = int(os.environ.get("GEPAW_LLM_TIMEOUT", "120"))
 
 WIKI_FILE_MAX_BYTES = int(os.environ.get("GEPAW_WIKI_MAX_BYTES", str(1 * 1024 * 1024)))
-WIKI_PREVIEW_MAX_BYTES = int(os.environ.get("GEPAW_WIKI_PREVIEW_MAX_BYTES", str(2 * 1024 * 1024)))
+WIKI_PREVIEW_MAX_BYTES = int(os.environ.get("GEPAW_WIKI_PREVIEW_PREVIEW", str(2 * 1024 * 1024)))
 
 DEFAULT_ADMIN_USERNAME = os.environ.get("GEPAW_ADMIN_USERNAME", "admin")
 DEFAULT_ADMIN_PASSWORD = os.environ.get("GEPAW_ADMIN_PASSWORD", "")
