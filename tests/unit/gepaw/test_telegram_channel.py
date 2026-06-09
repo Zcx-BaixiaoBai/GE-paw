@@ -22,15 +22,9 @@ from typing import Any, Dict, List
 from urllib.error import URLError
 
 
-def _isolated_env():
-    tmp = tempfile.mkdtemp(prefix="gepaw-tg-")
-    os.environ["GEPAW_SECRET_KEY"] = "test-secret-key-32-bytes-padding-padding-pad"
-    os.environ["GEPAW_DATA_DIR"] = tmp
-    os.environ["GEPAW_DATABASE_URL"] = f"sqlite:///{tmp}/test.db"
-    os.environ["GEPAW_DOCS"] = "0"
-    for mod in [m for m in list(sys.modules) if m.startswith("gepaw")]:
-        del sys.modules[mod]
-
+def _isolated_env() -> str:
+    from conftest import _isolated_env as _cf_isolated_env
+    return _cf_isolated_env("gepaw-tg")
 
 class _FakeResp:
     def __init__(self, payload: Dict[str, Any]):

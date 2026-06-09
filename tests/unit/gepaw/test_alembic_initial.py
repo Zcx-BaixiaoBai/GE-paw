@@ -9,15 +9,8 @@ import uuid
 
 
 def _isolated_env() -> str:
-    tmp = tempfile.mkdtemp(prefix="gepaw-alembic-")
-    os.environ["GEPAW_SECRET_KEY"] = "test-secret-key-32-bytes-padding-padding-pad"
-    os.environ["GEPAW_DATA_DIR"] = tmp
-    os.environ["GEPAW_DATABASE_URL"] = f"sqlite:///{tmp}/test.db"
-    os.environ["GEPAW_DOCS"] = "0"
-    for mod in [m for m in list(sys.modules) if m.startswith("gepaw")]:
-        del sys.modules[mod]
-    return tmp
-
+    from conftest import _isolated_env as _cf_isolated_env
+    return _cf_isolated_env("gepaw-alembic")
 
 def test_alembic_initial_creates_all_tables():
     tmp = _isolated_env()

@@ -21,15 +21,9 @@ from datetime import datetime
 pytestmark = pytest.mark.skip(reason="cross-channel merge dispatch not yet implemented")
 
 
-def _isolated_env():
-    tmp = tempfile.mkdtemp(prefix="gepaw-ccm-")
-    os.environ["GEPAW_SECRET_KEY"] = "test-secret-key-32-bytes-padding-padding-pad"
-    os.environ["GEPAW_DATA_DIR"] = tmp
-    os.environ["GEPAW_DATABASE_URL"] = f"sqlite:///{tmp}/test.db"
-    os.environ["GEPAW_DOCS"] = "0"
-    for mod in [m for m in list(sys.modules) if m.startswith("gepaw")]:
-        del sys.modules[mod]
-
+def _isolated_env() -> str:
+    from conftest import _isolated_env as _cf_isolated_env
+    return _cf_isolated_env("gepaw-ccm")
 
 def _bootstrap_org_with_two_accounts(org_merge: bool):
     """Create one Org, two ChannelAccounts (telegram + feishu), return (org_id, acc_tg, acc_fs)."""

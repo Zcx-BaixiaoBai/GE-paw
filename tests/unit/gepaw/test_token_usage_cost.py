@@ -7,17 +7,10 @@ import tempfile
 from pathlib import Path
 
 
-def _isolated_env():
-    tmp = tempfile.mkdtemp(prefix="gepaw-tok-")
-    os.environ["GEPAW_SECRET_KEY"] = "test-secret-key-32-bytes-padding-padding-pad"
-    os.environ["GEPAW_DATA_DIR"] = tmp
-    os.environ["GEPAW_DATABASE_URL"] = f"sqlite:///{tmp}/test.db"
-    os.environ["GEPAW_DOCS"] = "0"
+def _isolated_env() -> str:
+    from conftest import _isolated_env as _cf_isolated_env
+    return _cf_isolated_env("gepaw-tok")
     # Make the package pick up the new env vars
-    for mod in [m for m in list(sys.modules) if m.startswith("gepaw")]:
-        del sys.modules[mod]
-    return tmp
-
 
 def test_cost_table_known_models():
     _isolated_env()
