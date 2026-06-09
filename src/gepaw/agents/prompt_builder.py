@@ -41,10 +41,10 @@ class PromptBuilder:
             "multimodal": multimodal,
             "env_context": env_context,
         }
-        sections = self.registry.get_sections(agent_id)
+        sections = self.registry.get_prompt_sections(agent_id)
         by_anchor: dict = {a: [] for a in self._ANCHOR_ORDER}
         for s in sections:
-            by_anchor[s["after"]].append(s)
+            by_anchor[s.after].append(s)
 
         parts: List[str] = []
         for anchor in self._ANCHOR_ORDER:
@@ -58,15 +58,15 @@ class PromptBuilder:
         return "\n\n".join(parts)
 
     @staticmethod
-    def _safe_call(section: dict, agent: Any) -> str:
-        provider = section["provider"]
+    def _safe_call(section, agent: Any) -> str:
+        provider = section.provider
         try:
             text = provider(agent)
         except Exception:  # noqa: BLE001 - prompt section errors are non-fatal
             logger.exception(
                 "prompt section %s (plugin=%s) provider raised",
-                section.get("name"),
-                section.get("plugin_id"),
+                section.name,
+                section.plugin_id,
             )
             return ""
         return text or ""
