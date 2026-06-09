@@ -310,3 +310,108 @@ class TokenUsageManager:
 def get_token_usage_manager() -> TokenUsageManager:
     """Return the process-wide singleton ``TokenUsageManager``."""
     return TokenUsageManager.get_instance()
+
+
+# --- DB-backed query helpers (sync) -----------------------------------------
+
+
+def _db_rows(db, org_id):
+    """Iterate TokenUsageLog rows scoped to ``org_id``."""
+    try:
+        from ..models.assistant import TokenUsageLog
+    except Exception:
+        return []
+    q = db.query(TokenUsageLog).filter(TokenUsageLog.org_id == org_id)
+    return q.all()
+
+
+def summarize(db, org_id):
+    """Totals for an org. Sync, DB-backed."""
+    rows = _db_rows(db, org_id)
+    pt = sum(int(getattr(r, "prompt_tokens", 0) or 0) for r in rows)
+    ct = sum(int(getattr(r, "completion_tokens", 0) or 0) for r in rows)
+    cost = sum(int(getattr(r, "cost_cents", 0) or 0) for r in rows)
+    return {
+        "prompt_tokens": pt,
+        "completion_tokens": ct,
+        "cost_cents": cost,
+        "calls": len(rows),
+    }
+
+
+def by_model(db, org_id):
+    """Per-model totals."""
+    rows = _db_rows(db, org_id)
+    out = {}
+    for r in rows:
+        m = getattr(r, "model", "") or ""
+        agg = out.setdefault(m, {"model": m, "prompt_tokens": 0, "completion_tokens": 0, "cost_cents": 0, "calls": 0})
+        agg["prompt_tokens"] += int(getattr(r, "prompt_tokens", 0) or 0)
+        agg["completion_tokens"] += int(getattr(r, "completion_tokens", 0) or 0)
+        agg["cost_cents"] += int(getattr(r, "cost_cents", 0) or 0)
+        agg["calls"] += 1
+    return list(out.values())
+
+
+def by_user(db, org_id):
+    """Per-user totals."""
+    rows = _db_rows(db, org_id)
+    out = {}
+    for r in rows:
+        u = getattr(r, "user_id", None)
+        u = str(u) if u is not None else ""
+        agg = out.setdefault(u, {"user_id": u, "prompt_tokens": 0, "completion_tokens": 0, "cost_cents": 0, "calls": 0})
+        agg["prompt_tokens"] += int(getattr(r, "prompt_tokens", 0) or 0)
+        agg["completion_tokens"] += int(getattr(r, "completion_tokens", 0) or 0)
+        agg["cost_cents"] += int(getattr(r, "cost_cents", 0) or 0)
+        agg["calls"] += 1
+    return list(out.values())
+
+
+def by_day(db, org_id):
+    """Per-day totals. Returns list of objects with .total_tokens/.call_count."""
+    rows = _db_rows(db, org_id)
+    out = {}
+    for r in rows:
+        ts = getattr(r, "occurred_at", None)
+        if ts is None:
+            day = ""
+        else:
+            day = ts.strftime("%Y-%m-%d") if hasattr(ts, "strftime") else str(ts)[:10]
+        agg = out.setdefault(day, {"date": day, "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0, "call_count": 0})
+        agg["prompt_tokens"] += int(getattr(r, "prompt_tokens", 0) or 0)
+        agg["completion_tokens"] += int(getattr(r, "completion_tokens", 0) or 0)
+        agg["total_tokens"] = agg["prompt_tokens"] + agg["completion_tokens"]
+        agg["call_count"] += 1
+    out_list = list(out.values())
+    out_list.sort(key=lambda x: x.get("date") or "")
+
+    class _Bucket:
+        def __init__(self, d):
+            for k, v in d.items():
+                setattr(self, k, v)
+    return [_Bucket(d) for d in out_list]
+
+
+def get_summary(db, org_id):
+    """Backwards-compatible alias used by some call sites."""
+    return summarize(db, org_id)
+
+
+def get_details(db, org_id):
+    """Return raw rows as dicts."""
+    rows = _db_rows(db, org_id)
+    out = []
+    for r in rows:
+        out.append({
+            "id": getattr(r, "id", None),
+            "org_id": getattr(r, "org_id", None),
+            "user_id": getattr(r, "user_id", None),
+            "session_id": getattr(r, "session_id", None),
+            "model": getattr(r, "model", None),
+            "prompt_tokens": getattr(r, "prompt_tokens", 0),
+            "completion_tokens": getattr(r, "completion_tokens", 0),
+            "total_tokens": (int(getattr(r, "prompt_tokens", 0) or 0) + int(getattr(r, "completion_tokens", 0) or 0)),
+            "cost_cents": getattr(r, "cost_cents", 0),
+        })
+    return out

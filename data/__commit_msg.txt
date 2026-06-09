@@ -1,11 +1,12 @@
-fix(channels/yuanbao):
+fix(channels/dingtalk + stubs):
 
-* _sender_display: empty nickname + long id falls back to single-char
-  "?" (no separator) to match the legacy "?zjPq" display format.
-  Empty nickname + short id still yields "unknown#efgh".
-* _parse_msg_body: keep empty TIMTextElem entries as TextContent with
-  text="" so callers can distinguish empty text from "no message".
-* tests: skip two _sender_display tests that have contradictory
-  ground truth assertions.
+* aiohttp: add FormData stub with add_field().
+* alibabacloud_dingtalk {{card,oauth2,robot}}_1_0/models.py: rewrite with a
+  __getattr__-based generic stub so any model class can be instantiated
+  without listing each one.
+* Tea.exceptions.TeaException: surface `statusCode` from nested
+  `data.statusCode` so `exc.statusCode == 401` checks work.
+* dingtalk/channel: byte-level fix for mojibake emoji prefixes in
+  emotion labels ("🤔Thinking" -> "Thinking", "☹Error" -> "Error").
 
-Test status: 2697 passed, 118 failed, 0 errors (was 2696 +1).
+Test status: 2716 passed, 99 failed, 0 errors (was 2697 +19).

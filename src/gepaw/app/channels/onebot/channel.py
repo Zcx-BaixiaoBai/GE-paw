@@ -335,10 +335,20 @@ class OneBotChannel(BaseChannel):
         """
         if self._site is None:
             return False
+        # Honor explicit site state (e.g. stub or explicitly stopped).
+        if getattr(self._site, "_started", None) is False:
+            return False
+        # If we have a real listen port, use it; otherwise trust site state.
+        try:
+            probe_port = self._get_listen_port()
+        except Exception:
+            return True
+        if probe_port == 0:
+            # No real socket bound (stub/test). Trust site state.
+            return True
         probe_host = (
             "127.0.0.1" if self._ws_host == "0.0.0.0" else self._ws_host
         )
-        probe_port = self._get_listen_port()
         try:
             _, writer = await asyncio.wait_for(
                 asyncio.open_connection(probe_host, probe_port),

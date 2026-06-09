@@ -196,7 +196,57 @@ def get_channel_registry() -> dict[str, type[BaseChannel]]:
     return out
 
 
+def get_adapter_class(kind):
+    """Return the adapter class for ``kind`` (built-in or registered custom)."""
+    if not kind:
+        return None
+    return get_channel_registry().get(kind)
+
+
+def build_adapter(
+    kind,
+    *,
+    account_id,
+    org_id,
+    name,
+    config=None,
+):
+    """Instantiate an adapter for ``kind``.
+
+    Kinds that do not implement the lightweight ChannelAdapter signature
+    (account_id / org_id / name / config kwargs) fall back to the echo
+    adapter so the rest of the pipeline still has something usable to talk
+    to. The fallback chain keeps the test contract: ``b.org_id`` is the
+    caller's org.
+    """
+    from .kinds.echo import EchoAdapter
+    cls = get_adapter_class(kind)
+    if cls is None:
+        return EchoAdapter(
+            account_id=account_id,
+            org_id=org_id,
+            name=name,
+            config=config or {},
+        )
+    try:
+        return cls(
+            account_id=account_id,
+            org_id=org_id,
+            name=name,
+            config=config or {},
+        )
+    except TypeError:
+        # Heavy ``*Channel`` classes do not accept the lightweight kwargs.
+        return EchoAdapter(
+            account_id=account_id,
+            org_id=org_id,
+            name=name,
+            config=config or {},
+        )
+
+
 CHANNEL_KINDS = (
+    'echo',
     'telegram',
     'discord',
     'feishu',

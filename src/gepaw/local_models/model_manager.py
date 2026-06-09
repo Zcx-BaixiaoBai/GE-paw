@@ -212,9 +212,9 @@ class ModelManager:
             "staging_dir": str(staging_dir),
         }
         spec = ProcessDownloadTaskSpec(
-            process_name=f"qwenpaw-model-download-{task_id}",
+            process_name=f"gepaw-model-download-{task_id}",
             command=[
-                "qwenpaw-model-download",
+                "gepaw-model-download",
                 repo_id,
                 resolved_source.value,
             ],

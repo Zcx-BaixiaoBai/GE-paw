@@ -9,6 +9,8 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import threading
+import time
 from abc import ABC
 from typing import (
     Optional,
@@ -1731,5 +1733,127 @@ class IncomingMessage:
     """Stub `IncomingMessage` channel payload."""
 
     def __init__(self, *args, **kwargs) -> None:
+        self.raw: Optional[Dict[str, Any]] = None
         for k, v in kwargs.items():
             setattr(self, k, v)
+        if not hasattr(self, "raw") or self.raw is None:
+            self.raw = {}
+
+
+class OutgoingMessage:
+    """Reply payload from the agent back to a channel."""
+
+    def __init__(
+        self,
+        kind: str,
+        external_chat_id: str,
+        text: str = "",
+        external_user_id: Optional[str] = None,
+        media: Optional[List[Any]] = None,
+        meta: Optional[Dict[str, Any]] = None,
+        raw: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        self.kind = kind
+        self.external_chat_id = external_chat_id
+        self.text = text
+        self.external_user_id = external_user_id
+        self.media = list(media or [])
+        self.meta = dict(meta or {})
+        self.raw = dict(raw or {})
+
+
+class ChannelAdapter:
+    """Base class for the lightweight channel adapter layer used by the
+    background poller / webhook handler. Subclasses must implement
+    ``open``, ``close``, ``fetch``, and ``send``.
+    """
+
+    kind: str = ""
+
+    def __init__(
+        self,
+        *,
+        account_id: str,
+        org_id: str,
+        name: str,
+        config: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        self.account_id = account_id
+        self.org_id = org_id
+        self.name = name
+        self.config: Dict[str, Any] = dict(config or {})
+        self._handler: Optional[Any] = None
+        self._thread: Optional[Any] = None
+        self._stop = False
+
+    def open(self) -> None:
+        return
+
+    def close(self) -> None:
+        return
+
+    def fetch(self) -> List[IncomingMessage]:
+        return []
+
+    def send(self, message: OutgoingMessage) -> None:
+        return
+
+    def bind(self, handler: Any) -> None:
+        self._handler = handler
+
+    def start(self) -> None:
+        if self._thread is not None:
+            return
+        self._stop = False
+        self.open()
+        self._thread = threading.Thread(
+            target=self._run,
+            name=f"channel-{self.kind}-{self.name}",
+            daemon=True,
+        )
+        self._thread.start()
+
+    def stop(self) -> None:
+        self._stop = True
+        try:
+            self.close()
+        except Exception:
+            pass
+        if self._thread is not None:
+            self._thread.join(timeout=2.0)
+            self._thread = None
+
+    def _run(self) -> None:
+        interval = float(self.config.get("poll_interval", 1.0))
+        while not self._stop:
+            try:
+                msgs = self.fetch()
+            except Exception:
+                logger.exception("channel %s fetch failed", self.name)
+                msgs = []
+            for m in msgs:
+                if self._stop:
+                    break
+                if m.raw is None:
+                    m.raw = {}
+                m.raw.setdefault("account_id", self.account_id)
+                if self._handler is None:
+                    continue
+                try:
+                    reply = self._handler(m)
+                except Exception:
+                    logger.exception("channel %s handler raised", self.name)
+                    continue
+                if reply is None:
+                    continue
+                if not isinstance(reply, OutgoingMessage):
+                    reply = OutgoingMessage(
+                        kind=self.kind,
+                        external_chat_id=m.external_chat_id,
+                        text=str(reply),
+                    )
+                try:
+                    self.send(reply)
+                except Exception:
+                    logger.exception("channel %s send failed", self.name)
+            time.sleep(interval)

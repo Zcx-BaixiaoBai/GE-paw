@@ -17,6 +17,7 @@ class MessageType(str, Enum):
     PLUGIN_CALL_OUTPUT = "plugin_call_output"
     MCP_TOOL_CALL = "mcp_tool_call"
     MCP_TOOL_CALL_OUTPUT = "mcp_tool_call_output"
+    REASONING = "reasoning"
 
 
 class ContentType(str, Enum):
@@ -42,28 +43,33 @@ class ImageContent(BaseModel):
     """Image content."""
 
     type: ContentType = Field(default=ContentType.IMAGE)
-    image_url: str = Field(default="")
+    image_url: Optional[str] = Field(default=None)
+    data: Optional[str] = Field(default=None)
 
 
 class AudioContent(BaseModel):
     """Audio content."""
 
     type: ContentType = Field(default=ContentType.AUDIO)
-    audio_url: str = Field(default="")
+    audio_url: Optional[str] = Field(default=None)
+    data: Optional[str] = Field(default=None)
 
 
 class VideoContent(BaseModel):
     """Video content."""
 
     type: ContentType = Field(default=ContentType.VIDEO)
-    video_url: str = Field(default="")
+    video_url: Optional[str] = Field(default=None)
+    data: Optional[str] = Field(default=None)
 
 
 class FileContent(BaseModel):
     """File content."""
 
     type: ContentType = Field(default=ContentType.FILE)
-    file_url: str = Field(default="")
+    file_url: Optional[str] = Field(default=None)
+    file_id: Optional[str] = Field(default=None)
+    data: Optional[str] = Field(default=None)
     filename: str = Field(default="")
 
 

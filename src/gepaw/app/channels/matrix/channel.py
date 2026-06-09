@@ -50,6 +50,7 @@ from nio import (
     ToDeviceError,
     UploadResponse,
 )
+
 from nio.event_builders.direct_messages import ToDeviceMessage
 from nio.events.to_device import RoomKeyRequest, RoomKeyRequestCancellation
 from nio.responses import (
@@ -158,7 +159,7 @@ CURRENT_MESSAGE_MARKER = "[Current message - respond to this]"
 DEFAULT_HISTORY_LIMIT = 50
 
 
-class QwenPawMatrixClient(AsyncClient):
+class gepawMatrixClient(AsyncClient):
     """Keep query-token auth for homeservers/proxies that drop auth headers."""
 
     async def send(
@@ -463,7 +464,7 @@ class MatrixChannel(BaseChannel):
         client_config = self._build_client_config(
             encryption=self.encryption,
         )
-        self._client = QwenPawMatrixClient(
+        self._client = gepawMatrixClient(
             self.homeserver,
             # Keep user neutral before auth; token/whoami or login response
             # will set the canonical MXID.

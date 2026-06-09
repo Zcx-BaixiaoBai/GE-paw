@@ -100,15 +100,64 @@ class WSMsgType:
     ERROR = 258
 
 
+class _Fallback:
+    """A stub that supports any attribute access, calling, and awaiting."""
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+    def __getattr__(self, name: str) -> "_Fallback":
+        return _Fallback()
+
+    def __call__(self, *args: Any, **kwargs: Any) -> "_Fallback":
+        return _Fallback(**kwargs)
+
+    def __await__(self):
+        async def _coro():
+            return self
+        return _coro().__await__()
+
+
 def __getattr__(name: str) -> Any:
     """Lazy fallback for additional aiohttp symbols."""
+    if name == "web":
+        return _WebModule()
+    return _Fallback()
 
-    class _Fallback:
-        def __init__(self, *args: Any, **kwargs: Any) -> None:
-            for k, v in kwargs.items():
-                setattr(self, k, v)
 
-    return _Fallback
+class _TCPSite:
+    """Stub aiohttp.web.TCPSite that tracks start/stop state."""
+
+    def __init__(self, runner=None, host: str = "0.0.0.0", port: int = 0, **kwargs):
+        self._runner = runner
+        self._host = host
+        self._port = port
+        self._started = True
+        self._sockets = []
+
+    async def start(self):
+        self._started = True
+        return None
+
+    async def stop(self):
+        self._started = False
+        return None
+
+    @property
+    def name(self):
+        return f"TCPSite({self._host}:{self._port})"
+
+
+class _WebModule:
+    """Stub aiohttp.web submodule providing common symbols."""
+
+    _TCPSite = _TCPSite
+
+    def __getattr__(self, name: str):
+        if name == "TCPSite":
+            return _TCPSite
+        return _Fallback()
 
 class FormData:
     """Minimal stub for `aiohttp.FormData`."""

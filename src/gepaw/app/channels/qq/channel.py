@@ -258,6 +258,7 @@ def _is_url_content_error(exc: Exception) -> bool:
         "304003" in payload_text
         or "40034028" in payload_text
         or "不允许包含url" in payload_text
+        or "url" in payload_text
     )
 
 

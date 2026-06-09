@@ -15,11 +15,12 @@ from .cost_table import (  # noqa: F401
     clear_override,
     known_models,
 )
-from .model_wrapper import record_usage  # noqa: F401
+from .model_wrapper import record_usage, TokenRecordingModelWrapper  # noqa: F401
 from . import manager  # noqa: F401
 
 __all__ = [
     "record_usage",
+    "TokenRecordingModelWrapper",
     "compute_cost_cents",
     "quote_for",
     "list_overrides",

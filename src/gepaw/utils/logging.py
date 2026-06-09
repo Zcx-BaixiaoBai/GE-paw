@@ -24,7 +24,7 @@ _LEVEL_MAP = {
 }
 
 # Top-level name for this package; only loggers under this name are shown.
-LOG_NAMESPACE = PROJECT_NAME.lower()
+LOG_NAMESPACE = "gepaw"
 
 # Canonical log file name and path — import these instead of reconstructing.
 LOG_FILE_BASENAME = f"{LOG_NAMESPACE}.log"

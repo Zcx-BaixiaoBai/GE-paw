@@ -25,7 +25,19 @@ class Toolkit:
         self.tools.append(func)
 
     def get_json_schemas(self) -> list:
-        return []
+        schemas: list = []
+        for func in self.tools:
+            name = getattr(func, "__name__", "") or ""
+            doc = (getattr(func, "__doc__", "") or "").strip()
+            schemas.append({
+                "type": "function",
+                "function": {
+                    "name": name,
+                    "description": doc,
+                    "parameters": {"type": "object", "properties": {}},
+                },
+            })
+        return schemas
 
 
 class ToolResponse:

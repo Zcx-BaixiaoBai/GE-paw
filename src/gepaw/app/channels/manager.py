@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import threading
 from pathlib import Path
 
 from typing import (
@@ -841,3 +842,136 @@ class ChannelManager:
             [TextContent(type=ContentType.TEXT, text=text)],
             merged_meta,
         )
+
+
+
+# --- Module-level facade for the new ChannelAdapter system ---------------
+
+
+_RUNNING: dict = {}
+_RUNNING_LOCK = threading.Lock()
+
+
+def _find_account_rows():
+    """Return a best-effort list of (org_id, account_id, kind, name, config)
+    from the DB. Returns [] when DB is unavailable or uninitialised.
+    """
+    try:
+        from ..db import get_session_factory, init_db
+        from ...models import Org, ChannelAccount
+    except Exception:
+        return []
+    try:
+        init_db()
+    except Exception:
+        pass
+    try:
+        factory = get_session_factory()
+    except Exception:
+        return []
+    try:
+        with factory() as db:
+            rows = (
+                db.query(ChannelAccount)
+                .filter(ChannelAccount.enabled.is_(True))
+                .all()
+            )
+            out = []
+            for r in rows:
+                cfg = {}
+                try:
+                    import json as _json
+                    cfg = _json.loads(r.config_json or "{}")
+                except Exception:
+                    cfg = {}
+                out.append((r.org_id, r.id, r.kind, r.name, cfg))
+            return out
+    except Exception:
+        return []
+
+
+def start_all() -> int:
+    """Start lightweight ChannelAdapter instances for every enabled account.
+
+    Returns the number of adapters started. Safe to call multiple times.
+    """
+    started = 0
+    rows = _find_account_rows()
+    for org_id, acc_id, kind, name, config in rows:
+        key = f"{kind}:{acc_id}"
+        with _RUNNING_LOCK:
+            if key in _RUNNING:
+                continue
+        try:
+            from .registry import build_adapter
+            adapter = build_adapter(
+                kind,
+                account_id=acc_id,
+                org_id=org_id,
+                name=name,
+                config=config,
+            )
+        except Exception:
+            logger.exception("failed to build adapter for %s", key)
+            continue
+        try:
+            adapter._handler = _handle_incoming
+            adapter.start()
+        except Exception:
+            logger.exception("failed to start adapter for %s", key)
+            continue
+        with _RUNNING_LOCK:
+            _RUNNING[key] = adapter
+        started += 1
+    return started
+
+
+def stop_all() -> None:
+    """Stop every running adapter started via :func:`start_all`."""
+    with _RUNNING_LOCK:
+        adapters = list(_RUNNING.values())
+        _RUNNING.clear()
+    for a in adapters:
+        try:
+            a.stop()
+        except Exception:
+            logger.exception("failed to stop adapter %s", a)
+
+
+def running_keys() -> list:
+    """Return the ``"kind:account_id"`` keys of every running adapter."""
+    with _RUNNING_LOCK:
+        return list(_RUNNING.keys())
+
+
+def _dispatch_to_handler(msg):
+    """Route an IncomingMessage into a ChatSession and trigger the agent.
+
+    Returns the OutgoingMessage the agent produced (or None). The webhook
+    router uses this when an external POST cannot be handled by the
+    adapter alone.
+    """
+    try:
+        from .base import OutgoingMessage
+    except Exception:
+        return None
+    try:
+        from .dispatch import dispatch_incoming  # type: ignore
+    except Exception:
+        dispatch_incoming = None
+    if dispatch_incoming is not None:
+        try:
+            reply = dispatch_incoming(msg)
+            if reply is not None:
+                return reply
+        except Exception:
+            logger.exception("dispatch_incoming failed")
+    return OutgoingMessage(
+        kind=msg.kind,
+        external_chat_id=msg.external_chat_id,
+        text="",
+    )
+
+
+# Backwards-compat alias for the legacy name used by tests/webhook router.
+_handle_incoming = _dispatch_to_handler

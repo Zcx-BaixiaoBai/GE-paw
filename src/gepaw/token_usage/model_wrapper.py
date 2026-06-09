@@ -120,32 +120,89 @@ async def stream(self, *args, **kwargs):
     yield None
 
 def record_usage(
-    provider_id: str,
-    model_name: str,
+    db = None,
+    *,
+    org_id: str = "",
+    model: str = "",
+    provider_id: str = "",
+    model_name: str = "",
     prompt_tokens: int = 0,
     completion_tokens: int = 0,
     cache_read_tokens: int = 0,
     cache_write_tokens: int = 0,
     cost_cents: float = 0.0,
-    session_id: str = '',
-    user_id: str = '',
-    agent_id: str = '',
+    session_id = "",
+    user_id = None,
+    agent_id: str = "",
     raw: dict = None,
-) -> None:
-    """Convenience wrapper to record a usage event via the manager."""
-    from .manager import get_token_usage_manager
+    commit: bool = True,
+) -> int:
+    """Convenience wrapper to record a usage event via the manager.
 
+    Supports two call shapes:
+
+    1. New style (with ``db``) -- inserts a row directly and returns its id.
+    2. Legacy style (no ``db``) -- enqueues an event on the background
+       manager for fire-and-forget recording.
+    """
+    if not model_name and model:
+        model_name = model
+    if not provider_id and model:
+        provider_id = model
+
+    if db is not None:
+        try:
+            from ..models.assistant import TokenUsageLog
+        except Exception:
+            TokenUsageLog = None  # type: ignore[assignment]
+        if TokenUsageLog is None:
+            return 0
+        # Auto-compute cost_cents when caller did not pass one.
+        if not cost_cents and model_name:
+            try:
+                from .cost_table import compute_cost_cents
+                cost_cents = compute_cost_cents(
+                    model_name,
+                    int(prompt_tokens or 0),
+                    int(completion_tokens or 0),
+                )
+            except Exception:
+                cost_cents = 0
+        # model_name is the canonical model field; provider_id is ignored here.
+        kwargs = {
+            "org_id": org_id,
+            "user_id": user_id,
+            "session_id": str(session_id or "") or None,
+            "model": model_name or "",
+            "prompt_tokens": int(prompt_tokens or 0),
+            "completion_tokens": int(completion_tokens or 0),
+            "total_tokens": int(prompt_tokens or 0) + int(completion_tokens or 0),
+            "cost_cents": int(cost_cents or 0),
+        }
+        # Filter to columns the table actually has.
+        valid = {k: v for k, v in kwargs.items() if k in TokenUsageLog.__table__.columns}
+        row = TokenUsageLog(**valid)
+        db.add(row)
+        if commit:
+            try:
+                db.flush()
+            except Exception:
+                pass
+        return getattr(row, "id", 0) or 0
+
+    from .manager import get_token_usage_manager
     manager = get_token_usage_manager()
     manager.enqueue(
-        provider_id=provider_id,
+        provider_id=provider_id or model_name,
         model_name=model_name,
         prompt_tokens=prompt_tokens,
         completion_tokens=completion_tokens,
         cache_read_tokens=cache_read_tokens,
         cache_write_tokens=cache_write_tokens,
         cost_cents=cost_cents,
-        session_id=session_id,
-        user_id=user_id,
-        agent_id=agent_id,
+        session_id=str(session_id or ""),
+        user_id=str(user_id) if user_id is not None else "",
+        agent_id=agent_id or "",
         raw=raw or {},
     )
+    return 0

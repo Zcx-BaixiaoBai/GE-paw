@@ -173,6 +173,7 @@ class WeChatQRCodeAuthHandler(QRCodeAuthHandler):
 
 _WECOM_AUTH_ORIGIN = "https://work.weixin.qq.com"
 _WECOM_SOURCE = PROJECT_NAME.lower()
+_FEISHU_SOURCE = "gepaw"
 
 
 class WecomQRCodeAuthHandler(QRCodeAuthHandler):
@@ -510,9 +511,9 @@ class FeishuQRCodeAuthHandler(QRCodeAuthHandler):
 
                 # Build the final QR code URL with source parameter
                 if "?" in verification_uri:
-                    scan_url = f"{verification_uri}&source={PROJECT_NAME}"
+                    scan_url = f"{verification_uri}&source={_FEISHU_SOURCE}"
                 else:
-                    scan_url = f"{verification_uri}?source={PROJECT_NAME}"
+                    scan_url = f"{verification_uri}?source={_FEISHU_SOURCE}"
 
                 return QRCodeResult(
                     scan_url=scan_url,
@@ -695,7 +696,7 @@ class QQQRCodeAuthHandler(QRCodeAuthHandler):
             )
 
         params = urlencode(
-            {"task_id": task_id, "_wv": "2", "source": PROJECT_NAME},
+            {"task_id": task_id, "_wv": "2", "source": _FEISHU_SOURCE},
         )
         scan_url = f"https://{self._PORTAL_HOST}{self._FRONTEND_PATH}?{params}"
         poll_token = _encode_poll_token(task_id, aes_key)
