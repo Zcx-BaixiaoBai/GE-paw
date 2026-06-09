@@ -1,0 +1,14 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Default capability for the GE-paw desktop shell: front-end may talk to the local gepaw sidecar via fetch, open external links, and request no-store HTTP cache behaviour.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:window:default",
+    "core:webview:default",
+    "core:app:default",
+    "core:event:default",
+    "core:resources:default"
+  ]
+}

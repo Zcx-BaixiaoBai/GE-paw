@@ -1,0 +1,9 @@
+{
+  "projectName": "gepaw",
+  "projectTaglineEn": "Works for you, grows with you",
+  "projectTaglineZh": "?,
+  "repoUrl": "https://github.com/agentscope-ai/gepaw",
+  "docsPath": "/docs/",
+  "showTestimonials": true,
+  "modelScopeForkUrl": "https://modelscope.cn/studios/fork?target=AgentScope/gepaw"
+}

@@ -1,0 +1,8 @@
+# Tauri build artefacts
+target/
+gen/schemas/
+WixTools/
+**/*.rs.bk
+# Sidecar binaries (built per platform; see README)
+binaries/gepaw-*
+!binaries/.gitkeep

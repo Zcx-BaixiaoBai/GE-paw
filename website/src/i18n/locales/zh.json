@@ -1,0 +1,497 @@
+{
+  "nav": {
+    "docs": "",
+    "more": "",
+    "releaseNotes": "",
+    "gepaw": "gepaw",
+    "download": "",
+    "github": "GitHub",
+    "githubComingSoon": "Coming Soon",
+    "lang": "ENG",
+    "agentscopeTeam": "AgentScope"
+  },
+  "hero": {
+    "titleleft": "",
+    "titleright": "AI",
+    "slogan": "?,
+    "sub": "{{version}} ?,
+    "sub1": "?gepaw ?,
+    "releaseNote": "gepaw {{version}}",
+    "cta": "",
+    "quickStart": "?
+  },
+  "follow": {
+    "title": "",
+    "sub": " gepaw ?,
+    "xiaohongshu": "",
+    "x": "X?
+  },
+  "channels": {
+    "titleWe": "",
+    "titleEverything": "",
+    "sub": " 10+ "
+  },
+  "finalCta": {
+    "titleBefore": "",
+    "titleEmphasis": "gepaw",
+    "titleAfter": "?,
+    "titleLine2": "?,
+    "downloadFromGithub": " GitHub "
+  },
+  "whygepaw": {
+    "headingPrefix": "Why",
+    "headingEmphasis": "gepaw?",
+    "sub": "\n IM ?,
+    "heroLine": "gepaw  Qwen Personal Agent Workstation Qwen Paw ?,
+    "secondPrefix": "?
+  },
+  "worksForYou": {
+    "title": "?,
+    "sub": "?,
+    "learnMore": "",
+    "cards": {
+      "skills": {
+        "title": "",
+        "desc": "gepaw 1.0 ?
+      },
+      "control": {
+        "title": "",
+        "desc": " gepaw 1.0 ?
+      },
+      "apps": {
+        "title": "gepaw ",
+        "desc": "gepaw 1.0 ?gepaw-Flash ?,
+        "learnMoreHref": "https://www.modelscope.cn/organization/AgentScope"
+      },
+      "memory": {
+        "title": "",
+        "desc": "?
+      },
+      "toolkit": {
+        "title": "",
+        "desc": " MCP?
+      }
+    }
+  },
+  "clientVoices": {
+    "title": "?,
+    "sub": " gepaw ?,
+    "items": {
+      "t1": {
+        "text": "gepaw ?AI Agent ?,
+        "role": ""
+      },
+      "t2": {
+        "text": "QwenPaw ? AI ?,
+        "role": "?
+      },
+      "t3": {
+        "text": "?,
+        "role": "?
+      },
+      "t4": {
+        "text": "?,
+        "role": "?
+      },
+      "t5": {
+        "text": "?MCP ?Agent ?gepaw Skill Hub + Claw Hub ?,
+        "role": "?
+      },
+      "t6": {
+        "text": " gepaw ?AI Agent  gepaw ?,
+        "role": "?
+      }
+    }
+  },
+  "features": {
+    "title": "",
+    "channels": {
+      "title": "",
+      "desc": "QQDiscordiMessage ?gepaw ?
+    },
+    "private": {
+      "title": "",
+      "desc": "?
+    },
+    "skills": {
+      "title": "Skills ",
+      "desc": "gepaw ?
+    }
+  },
+  "testimonials": {
+    "title": "?,
+    "viewAll": "",
+    "1": "gepaw Python ?,
+    "2": "Skills ?,
+    "3": "?
+  },
+  "usecases": {
+    "title": "gepaw?,
+    "sub": "?,
+    "categories": {
+      "social": {
+        "title": "",
+        "description": "gepaw ?
+      },
+      "creative": {
+        "title": "?,
+        "description": "gepaw ?
+      },
+      "productivity": {
+        "title": "?,
+        "description": "gepaw ?
+      },
+      "research": {
+        "title": "?,
+        "description": "gepaw ?
+      }
+    }
+  },
+  "quickstart": {
+    "title": "?,
+    "heroTitle": "?,
+    "heroSub": " AI ?,
+    "serviceNotice": "AI?,
+    "hintBefore": " ??? ",
+    "hintLink": "",
+    "hintAfter": "QQ ?gepaw?,
+    "method": {
+      "pip": "pip",
+      "script": "",
+      "docker": "Docker",
+      "cloud": "?,
+      "desktop": ""
+    },
+    "desc": {
+      "pip": " Python ?pip ?,
+      "script": " Python?,
+      "docker": " Docker ?,
+      "cloud": "?,
+      "desktop": " Python ?
+    },
+    "platform": {
+      "mac": "macOS / Linux",
+      "windows": "Windows"
+    },
+    "shell": {
+      "cmd": "CMD",
+      "ps": "PowerShell"
+    },
+    "docker": {
+      "hub": "Docker Hub"
+    },
+    "cloud": {
+      "aliyun": "?,
+      "modelscope": "",
+      "aliyunDeploy": "?,
+      "aliyunDoc": "",
+      "modelscopeGo": "?
+    },
+    "desktop": {
+      "platforms": "",
+      "viewDownloads": "?,
+      "downloadGithub": " GitHub ",
+      "viewGuide": "",
+      "recommended": ""
+    },
+    "badgeBeta": "Beta"
+  },
+  "contributors": {
+    "titlePrefix": "?,
+    "titleHighlight": "?,
+    "sub": "gepaw ?PR?,
+    "prev": "?,
+    "next": "?,
+    "noteLine1Prefix": " GitHub ID ?,
+    "contactUs": "",
+    "noteLine1Suffix": "?,
+    "noteLine2Prefix": "?
+  },
+  "footer": {
+    "text": "gepaw ??,
+    "sections": {
+      "builtBy": "?,
+      "resources": "",
+      "terms": ""
+    },
+    "links": {
+      "docs": "",
+      "blog": "",
+      "changelog": "",
+      "termsOfService": "",
+      "privacyPolicy": ""
+    },
+    "social": {
+      "x": "X",
+      "github": "GitHub",
+      "discord": "Discord",
+      "dingtalk": "",
+      "xiaohongshu": "?,
+      "wechat": "?,
+      "douyin": ""
+    },
+    "copyright": " 2026 gepaw PRIVATE LIMITED?,
+    "poweredBy": {
+      "p1": "?",
+      "p2": "  ",
+      "p3": "?,
+      "p3b": " ?",
+      "p4": " ?,
+      "team": "AgentScope ",
+      "agentscope": "AgentScope",
+      "runtime": "AgentScope Runtime",
+      "reme": "ReMe"
+    },
+    "inspiredBy": {
+      "text": "?",
+      "name": "OpenClaw"
+    },
+    "thanksSkills": {
+      "text": " ",
+      "name": "anthropics/skills",
+      "suffix": "  Agent Skills ?
+    }
+  },
+  "docs": {
+    "intro": "",
+    "quickstart": "?,
+    "desktop": "",
+    "demo": "",
+    "console": "?,
+    "multiAgent": "",
+    "models": "",
+    "channels": "",
+    "skills": "Skills",
+    "mcp": "MCP ?,
+    "acpServer": "ACP ",
+    "memory": "",
+    "memoryEvolvingAndProactive": "?,
+    "codingMode": "Coding ",
+    "context": "?,
+    "commands": "",
+    "plan": "",
+    "cron": "",
+    "heartbeat": "",
+    "config": "?,
+    "security": "",
+    "backup": "?,
+    "cli": "CLI",
+    "plugins": "",
+    "faq": "",
+    "apiTutorial": "RESTful API ",
+    "community": "?,
+    "contributing": "",
+    "roadmap": "?,
+    "practiceAgentTeam": "Agent Team ",
+    "groupWelcome": "",
+    "groupControl": "",
+    "groupAgent": "?,
+    "groupSettings": "",
+    "groupPractice": "",
+    "groupOthers": "",
+    "toggleSidebar": "?,
+    "closeSidebar": "?,
+    "onThisPage": "",
+    "videoNotSupported": " video ?,
+    "demoTitle": "",
+    "demoVideos": {
+      "skill": "/skills",
+      "doctor": "gepaw Doctor?,
+      "missionMode": "gepaw ",
+      "autoContinue": "?
+    },
+    "textVersion": "?,
+    "backToTop": "",
+    "copy": "",
+    "copied": "?,
+    "searchPlaceholder": "",
+    "searchLoading": "?,
+    "searchNoResults": "?,
+    "searchResultsTitle": "",
+    "searchResultsTitleEmpty": "",
+    "searchHint": "?,
+    "agentPersona": ""
+  },
+  "homeFaq": {
+    "title": "",
+    "sub": "?,
+    "intro": "?,
+    "categories": {
+      "quickStart": "?,
+      "features": "",
+      "troubleshooting": ""
+    },
+    "quickStart": {
+      "install": {
+        "q": " gepaw",
+        "p1": "gepaw ",
+        "li1": "Beta?App?,
+        "li2": " Python ?,
+        "li3": "pip  Python ?,
+        "li4": "Docker?Docker Hub ?ACR?,
+        "li5": "ModelScope Studio?,
+        "li6": "?ECS?,
+        "ctaPrefix": "?,
+        "ctaLink": "Quick Start",
+        "ctaSuffix": "?
+      },
+      "update": {
+        "q": " gepaw",
+        "p1": " gepaw ?,
+        "li1": "?,
+        "li2Prefix": " pip ",
+        "li3": "?,
+        "li4": "?Docker?,
+        "li5Prefix": "?Windows exe?,
+        "li5a": " gepaw?,
+        "li5bPrefix": "",
+        "li5bLink": "GitHub Releases",
+        "li5bSuffix": "?,
+        "li5c": "?,
+        "p2": "?CoPaw  gepaw gepaw  CoPaw ?
+      },
+      "initialize": {
+        "q": " gepaw ",
+        "p1": "?,
+        "p2": "?,
+        "p3Prefix": " Console ?,
+        "p3Suffix": " Console ?
+      },
+      "upgrade": {
+        "q": "?,
+        "p1": " Console ?Change Log  gepaw ?,
+        "link": "GitHub Releases",
+        "p2": "?
+      }
+    },
+    "features": {
+      "jobs": {
+        "q": "Cron Jobs?,
+        "a": " gepaw Create a scheduled task that reminds me to drink water every five minutes. ?Console ?Control ?Cron Jobs ?
+      },
+      "models": {
+        "q": "",
+        "p1Prefix": "?Console ?,
+        "p1Strong": "Settings ?Models",
+        "p1Mid": "",
+        "modelsLink": "Models",
+        "p1Suffix": "?,
+        "li1": " API Key?ModelScopeDashScope ?,
+        "li2Prefix": "?,
+        "li2Suffix": " Ollama?,
+        "p2": "?Models ?Default LLM ?,
+        "p3": " Agent ?Console ?Agent Chat  Agent ?,
+        "p4Prefix": "",
+        "p4Mid": "?,
+        "cliLink": "CLI ?Models and environment variables ?gepaw models",
+        "p4Suffix": "?
+      },
+      "skills": {
+        "q": " Skills",
+        "p1Prefix": "?Console ?,
+        "p1Strong": "Agent ?Skills",
+        "p1Mid": "/ Skills Skills?Skills Hub ?,
+        "link": "Skills",
+        "p1Suffix": "?
+      },
+      "mcp": {
+        "q": " MCP",
+        "p1Prefix": "?Console ?,
+        "p1Strong": "Agent ?MCP",
+        "p1Mid": "?// MCP clients?,
+        "link": "MCP",
+        "p1Suffix": "?
+      }
+    },
+    "troubleshooting": {
+      "error401": {
+        "q": " 401 ?,
+        "p1": "",
+        "err": "Error code: 401 - {'error': {'message': \"You didn't provide an API key. You need to provide your API key in an Authorization header using Bearer auth (i.e. Authorization: Bearer YOUR_KEY).\"}}",
+        "p2": "",
+        "li1": "?API key API key  Console ?Settings ?Models ?,
+        "li2Prefix": "?API key ",
+        "li2a": "Base URL?,
+        "li2b": "API key?,
+        "li2c": "Model name?
+      },
+      "localModels": {
+        "q": "",
+        "p1": "?gepaw ?bugcontext length?,
+        "p2": "?Ollama ?LM Studio  context length QwenPaw ?,
+        "li1": "",
+        "li2": "",
+        "li3": "?,
+        "li4": "",
+        "fixTitle": "?,
+        "fix1": " gepaw  context length  32K?,
+        "fix2": "?32K ?
+      },
+      "cron": {
+        "q": "Cron Jobs?,
+        "p1": "",
+        "s1": " gepaw ?,
+        "s2": "?Console ?Control ?Cron Jobs?Status ?Enabled?,
+        "s3": "?Dispatch Channel  ConsoleDiscordiMessage?,
+        "s4": " Dispatch Target User ID ?Dispatch Target Session ID ?,
+        "s5": "?Console ?Control ?Sessions?session User ID ?Session ID  Dispatch Target User ID / Dispatch Target Session ID ?,
+        "s6": "?Control ?Cron Jobs ?ScheduleCron?,
+        "s7": " Cron Jobs  Execute Now?gepaw\"Trigger the 'drink water reminder' task I just created.\""
+      },
+      "help": {
+        "q": "?,
+        "p1": "?,
+        "s1Prefix": "?,
+        "s1Mid": "?,
+        "s1Suffix": "?,
+        "dingtalk": "",
+        "discord": "Discord",
+        "s2Prefix": "?,
+        "githubIssues": "gepaw GitHub",
+        "s2Mid": " issue",
+        "s2Suffix": " gepaw ?
+      }
+    }
+  },
+  "downloads": {
+    "title": "",
+    "subtitle": " gepaw ?,
+    "loading": "?..",
+    "emptyTitle": "?,
+    "emptyDesc": "?,
+    "emptyCta": "",
+    "tabNavLabel": "",
+    "desktopTitle": "",
+    "desktopDesc": " Python ?,
+    "recommended": "",
+    "selectVersion": "",
+    "latest": "?,
+    "download": "",
+    "version": "",
+    "size": "",
+    "updated": "",
+    "otherMethodsTitle": "",
+    "otherMethodsDesc": "",
+    "pip": "pip",
+    "pipDesc": " pip ?Python ",
+    "script": "",
+    "scriptDesc": "",
+    "docker": "Docker",
+    "dockerDesc": " Docker ?,
+    "cloud": "?,
+    "cloudDesc": "?,
+    "verifyTitle": "",
+    "verifyDesc": "?SHA256 ?,
+    "helpTitle": "",
+    "helpPrefix": "",
+    "helpLink": "",
+    "helpSuffix": "?,
+    "pluginsTitle": "",
+    "pluginsDesc": "gepaw ?Bundle ?Tool ?zip ?,
+    "downloadZip": " zip"
+  },
+  "releaseNotes": {
+    "title": "",
+    "noReleases": ""
+  }
+}

@@ -1,0 +1,47 @@
+[project]
+name = "gepaw"
+version = "0.1.0"
+description = "GE-paw: multi-tenant intelligent agent platform with assistant mode (sessions, channels, cron, tokens) and wiki-based Q&A mode (server-side corpus)."
+readme = "README.md"
+requires-python = ">=3.10,<3.14"
+license = { text = "Apache-2.0" }
+authors = [{ name = "GE-paw Authors" }]
+dependencies = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.27",
+    "pydantic>=2.6",
+    "pydantic-settings>=2.2",
+    "sqlalchemy>=2.0",
+    "passlib[bcrypt]>=1.7.4",
+    "bcrypt<4.1",
+    "python-multipart>=0.0.9",
+    "PyJWT>=2.8",
+    "apscheduler>=3.11,<4",
+    "croniter>=2.0",
+    "cryptography>=42",
+    "httpx>=0.27",
+    "markdown>=3.6",
+    "bleach>=6.1",
+    "markitdown[all]>=0.0.1",
+    "html2text>=2024.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.23",
+    "httpx>=0.27",
+]
+
+[project.scripts]
+gepaw = "gepaw.cli.main:cli"
+
+[tool.setuptools]
+package-dir = { '' = 'src' }
+
+packages = ["gepaw", "gepaw.app", "gepaw.app.routers", "gepaw.cli", "gepaw.models", "gepaw.security", "gepaw.utils", "gepaw.wiki"]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+

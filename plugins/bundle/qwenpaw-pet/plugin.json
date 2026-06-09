@@ -1,0 +1,27 @@
+{
+  "id": "gepaw-pet",
+  "name": "gepaw Pet",
+  "version": "0.1.1",
+  "description": "Emit gepaw backend lifecycle events to gepaw Pet Desktop.",
+  "description_i18n": {
+    "zh-CN": "?gepaw ?gepaw Pet ?,
+    "en-US": "Emit gepaw backend lifecycle events to gepaw Pet Desktop."
+  },
+  "author": "gepaw Pet",
+  "entry": {
+    "backend": "plugin.py",
+    "frontend": "dist/index.js"
+  },
+  "dependencies": [
+    "httpx>=0.27.0",
+    "fastapi>=0.110",
+    "uvicorn>=0.27",
+    "python-multipart>=0.0.9",
+    "pillow>=10.0",
+    "pyside6-essentials>=6.6"
+  ],
+  "min_version": "1.1.5",
+  "meta": {
+    "desktop_url": "http://127.0.0.1:8765"
+  }
+}

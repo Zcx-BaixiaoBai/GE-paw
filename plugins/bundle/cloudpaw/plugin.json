@@ -1,0 +1,28 @@
+{
+  "id": "cloudpaw",
+  "name": "CloudPaw",
+  "version": "0.0.2",
+  "type": "general",
+  "description": "CloudPaw ?gepaw 1) ?AK-SKALIBABA_CLOUD_ACCESS_KEY_ID / ALIBABA_CLOUD_ACCESS_KEY_SECRET2) ?,
+  "description_i18n": {
+    "zh-CN": "CloudPaw ?gepaw 1) ?AK-SKALIBABA_CLOUD_ACCESS_KEY_ID / ALIBABA_CLOUD_ACCESS_KEY_SECRET2) ?,
+    "en-US": "CloudPaw plugin for gepaw ?Alibaba Cloud deployment orchestration with ROS templates, multi-agent collaboration, Terraform integration, and ACP support. After install: 1) Set Alibaba Cloud credentials (ALIBABA_CLOUD_ACCESS_KEY_ID / ALIBABA_CLOUD_ACCESS_KEY_SECRET) in Environment Variables; 2) Refresh the page to load the plugin."
+  },
+  "author": "CloudPaw Team",
+  "entry": {
+    "frontend": "ui/dist/index.js",
+    "backend": "plugin.py"
+  },
+  "dependencies": [],
+  "min_version": "1.1.7",
+  "meta": {
+    "category": "cloud-deployment",
+    "features": [
+      "alicloud-ros-deployment",
+      "multi-agent-orchestration",
+      "terraform-integration",
+      "acp-support",
+      "proposal-choice-interaction"
+    ]
+  }
+}

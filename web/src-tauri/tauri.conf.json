@@ -1,0 +1,44 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "GE-paw",
+  "version": "0.1.0",
+  "identifier": "ai.gepaw.desktop",
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "devUrl": "http://localhost:5173",
+    "beforeBuildCommand": "pnpm build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "GE-paw",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 960,
+        "minHeight": 600,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true,
+        "decorations": true,
+        "transparent": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' ipc: http://ipc.localhost; frame-src http://127.0.0.1:8765"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/icon.png"
+    ],
+    "category": "DeveloperTool",
+    "shortDescription": "GE-paw \u667a\u80fd\u4f53\u63a7\u5236\u53f0",
+    "longDescription": "GE-paw \u63d0\u4f9b\u52a9\u624b\u6a21\u5f0f\u4e0e\u95ee\u7b54\u6a21\u5f0f\uff0c\u95ee\u7b54\u8bed\u6599\u5168\u90e8\u5b58\u653e\u670d\u52a1\u7aef\u3002",
+    "externalBin": [
+      "binaries/gepaw"
+    ]
+  }
+}

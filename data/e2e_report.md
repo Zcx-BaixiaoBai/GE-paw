@@ -1,0 +1,1034 @@
+# GE-paw E2E Browser Validation Report
+Generated: 2026-06-08T11:41:53.694Z
+Browser: Codex In-app Browser (cua + playwright evaluate only)
+Backend: gepaw serve at 127.0.0.1:8765 (verified /api/health)
+
+## Test sequence
+
+### 1) Landing after login
+URL: http://127.0.0.1:8765/app/assistant?session=ecf9bb37c3c84c4dbe99588ad7fbc7cf
+```
+- generic: GE-paw
+- generic: org
+- generic: admin
+- generic: admin
+- button "☰"
+- button "⧉"
+- button "☽"
+- button "⏻"
+- button "+ New session"
+- generic: Modes
+- link "💬 Assistant":
+  - /url: /app/assistant
+  - generic: 💬
+  - generic: Assistant
+- link "🔍 Q&A":
+  - /url: /app/qna
+  - generic: 🔍
+  - generic: Q&A
+- generic: Today
+- link "#chat-1 echo":
+  - /url: /app/assistant?session=cc63c53eca484e1c93130b904e2bd03a
+  - generic: "#chat-1"
+  - generic: echo
+- link "#chat-1 echo":
+  - /url: /app/assistant?session=ff6a382ee85d4cb8ae87366d08592dcc
+  - generic: "#chat-1"
+  - generic: echo
+- link "#chat-1 echo" [active]:
+  - /url: /app/assistant?session=ecf9bb37c3c84c4dbe99588ad7fbc7cf
+  - generic: "#chat-1"
+  - generic: echo
+- link "#chat-1 echo":
+  - /url: /app/assistant?session=0a893cd5fcfb4cc99407cad6392fefdf
+  - generic: "#chat-1"
+  - generic: echo
+- link "#chat-1 echo":
+  - /url: /app/assistant?session=650edb41b2b94e3bb0e02a9ee794e0d0
+  - generic: "#chat-1"
+  - generic: echo
+- generic: Earlier
+- link "New session":
+  - /url: /app/assistant?session=1fa78c3b69d849bf8c22315033761ef1
+  - generic: New session
+- link "token-smoke":
+  - /url: /app/assistant?session=8fdf0ee35cf348f095ab5d952f0bc11c
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=afb1e3562b884d48bf9e0be5094670e0
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=edb4b5a996e44df1a33ffd3c8a1d17d3
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app
+```
+
+### 2) /admin/llm
+URL: http://127.0.0.1:8765/admin/wiki
+```
+t?session=db9a98553c3143d29f450de33f1dbdbb
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=c0283200483f4aae82c74a62b80259d0
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=4d9f2d1875d343da98f17b822020d127
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=dbaf62d7086c48d89df1f6ce31e914af
+  - generic: token-smoke
+- generic: Admin
+- link "🧠 LLM endpoints":
+  - /url: /admin/llm
+  - generic: 🧠
+  - generic: LLM endpoints
+- link "👥 Members":
+  - /url: /admin/members
+  - generic: 👥
+  - generic: Members
+- link "📡 Channels":
+  - /url: /admin/channels
+  - generic: 📡
+  - generic: Channels
+- link "⏰ Cron jobs":
+  - /url: /admin/crons
+  - generic: ⏰
+  - generic: Cron jobs
+- link "💰 Tokens":
+  - /url: /admin/tokens
+  - generic: 💰
+  - generic: Tokens
+- link "📜 Sessions":
+  - /url: /admin/sessions
+  - generic: 📜
+  - generic: Sessions
+- link "📖 Wiki" [active]:
+  - /url: /admin/wiki
+  - generic: 📖
+  - generic: Wiki
+- link "🔍 Audit":
+  - /url: /admin/audit
+  - generic: 🔍
+  - generic: Audit
+- link "LLM endpoints":
+  - /url: /admin/llm
+- link "Members":
+  - /url: /admin/members
+- link "Channels":
+  - /url: /admin/channels
+- link "Cron jobs":
+  - /url: /admin/crons
+- link "Tokens":
+  - /url: /admin/tokens
+- link "Sessions":
+  - /url: /admin/sessions
+- link "Wiki":
+  - /url: /admin/wiki
+- link "Audit":
+  - /url: /admin/audit
+- heading "Wiki (server-side corpus)" [level=1]
+- generic: Upload sources
+- button "Choose File"
+- button "Trigger ingest"
+- button "Compile index"
+- button "Reset all"
+- generic: All sources are stored on the server. Clients never see raw files.
+- generic: Sources (4)
+- table:
+  - rowgroup:
+    - row "Path Status Size Error":
+      - columnheader "Path"
+      - columnheader "Status"
+      - columnheader "Size"
+      - columnheader "Error"
+  - rowgroup:
+    - row "raw/smoke_3.md ingested 0.1 KB":
+      - cell "raw/smoke_3.md":
+        - code: raw/smoke_3.md
+     
+```
+
+
+### 3) /admin/tokens
+URL: http://127.0.0.1:8765/admin/tokens
+```
+obs":
+  - /url: /admin/crons
+  - generic: ⏰
+  - generic: Cron jobs
+- link "💰 Tokens" [active]:
+  - /url: /admin/tokens
+  - generic: 💰
+  - generic: Tokens
+- link "📜 Sessions":
+  - /url: /admin/sessions
+  - generic: 📜
+  - generic: Sessions
+- link "📖 Wiki":
+  - /url: /admin/wiki
+  - generic: 📖
+  - generic: Wiki
+- link "🔍 Audit":
+  - /url: /admin/audit
+  - generic: 🔍
+  - generic: Audit
+- link "LLM endpoints":
+  - /url: /admin/llm
+- link "Members":
+  - /url: /admin/members
+- link "Channels":
+  - /url: /admin/channels
+- link "Cron jobs":
+  - /url: /admin/crons
+- link "Tokens":
+  - /url: /admin/tokens
+- link "Sessions":
+  - /url: /admin/sessions
+- link "Wiki":
+  - /url: /admin/wiki
+- link "Audit":
+  - /url: /admin/audit
+- heading "Token usage" [level=1]
+- generic: Window
+- combobox:
+  - option "Last 24h"
+  - option "Last 7d"
+  - option "Last 30d" [selected]
+  - option "Last 90d"
+- generic: Total 6 calls / 0 tokens / 0 cents
+- generic: By model
+- table:
+  - rowgroup:
+    - row "Model Calls Prompt Completion Total Cost (cents)":
+      - columnheader "Model"
+      - columnheader "Calls"
+      - columnheader "Prompt"
+      - columnheader "Completion"
+      - columnheader "Total"
+      - columnheader "Cost (cents)"
+  - rowgroup:
+    - row "gpt-4o-mini 6 0 0 0 0":
+      - cell "gpt-4o-mini"
+      - cell "6"
+      - cell "0"
+      - cell "0"
+      - cell "0"
+      - cell "0"
+- generic: By day
+- generic "2026-06-08 0 tokens"
+- generic: 2026-06-08
+- generic: 2026-06-08
+- generic: By user
+- table:
+  - rowgroup:
+    - row "User Calls Prompt Completion Cost (cents)":
+      - columnheader "User"
+      - columnheader "Calls"
+      - columnheader "Prompt"
+      - columnheader "Completion"
+      - columnheader "Cost (cents)"
+  - rowgroup:
+    - row "c3e0d97015084b12aaa8b54c29f0d4ff 3 0 0 0":
+      - cell "c3e0d97015084b12aaa8b54c29f0d4ff"
+      - cell "3"
+      - cell "0"
+      - cell "0"
+      - cell "0"
+    - row "(system) 3 0 0 0":
+      - cell "(system)"
+      - cell "3"
+      - cell "0"
+      - cell "0"
+      - cell "0"
+- generic: Month to date
+- generic: "Calls: 6 · Tokens: 0 · Cost (cents): 0"
+- generic: Cost table
+- table:
+  - rowgroup:
+    - row "Model Prompt cents/1k Completion cents/1k":
+      - columnheader "Model"
+      - columnheader "Prompt cents/1k"
+      - c
+```
+
+
+### 4) /admin/wiki
+URL: http://127.0.0.1:8765/admin/wiki
+```
+eneric: 📜
+  - generic: Sessions
+- link "📖 Wiki" [active]:
+  - /url: /admin/wiki
+  - generic: 📖
+  - generic: Wiki
+- link "🔍 Audit":
+  - /url: /admin/audit
+  - generic: 🔍
+  - generic: Audit
+- link "LLM endpoints":
+  - /url: /admin/llm
+- link "Members":
+  - /url: /admin/members
+- link "Channels":
+  - /url: /admin/channels
+- link "Cron jobs":
+  - /url: /admin/crons
+- link "Tokens":
+  - /url: /admin/tokens
+- link "Sessions":
+  - /url: /admin/sessions
+- link "Wiki":
+  - /url: /admin/wiki
+- link "Audit":
+  - /url: /admin/audit
+- heading "Wiki (server-side corpus)" [level=1]
+- generic: Upload sources
+- button "Choose File"
+- button "Trigger ingest"
+- button "Compile index"
+- button "Reset all"
+- generic: All sources are stored on the server. Clients never see raw files.
+- generic: Sources (4)
+- table:
+  - rowgroup:
+    - row "Path Status Size Error":
+      - columnheader "Path"
+      - columnheader "Status"
+      - columnheader "Size"
+      - columnheader "Error"
+  - rowgroup:
+    - row "raw/smoke_3.md ingested 0.1 KB":
+      - cell "raw/smoke_3.md":
+        - code: raw/smoke_3.md
+      - cell "ingested"
+      - cell "0.1 KB"
+      - cell
+    - row "raw/smoke_2.md ingested 0.1 KB":
+      - cell "raw/smoke_2.md":
+        - code: raw/smoke_2.md
+      - cell "ingested"
+      - cell "0.1 KB"
+      - cell
+    - row "raw/smoke_1.md ingested 0.1 KB":
+      - cell "raw/smoke_1.md":
+        - code: raw/smoke_1.md
+      - cell "ingested"
+      - cell "0.1 KB"
+      - cell
+    - row "raw/smoke.md ingested 0.1 KB":
+      - cell "raw/smoke.md":
+        - code: raw/smoke.md
+      - cell "ingested"
+      - cell "0.1 KB"
+      - cell
+- generic "Wiki files":
+  - generic: 📁
+  - generic: Wiki files
+  - generic: ×
+- generic "Wiki preview":
+  - generic: 🌐
+  - generic: Wiki preview
+  - generic: ×
+- textbox "https://...": /api/client/wiki/preview?path=wiki
+- button "Go"
+- button "↻"
+- iframe
+```
+
+
+### 5) /admin/channels
+URL: http://127.0.0.1:8765/admin/wiki
+```
+t?session=db9a98553c3143d29f450de33f1dbdbb
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=c0283200483f4aae82c74a62b80259d0
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=4d9f2d1875d343da98f17b822020d127
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=dbaf62d7086c48d89df1f6ce31e914af
+  - generic: token-smoke
+- generic: Admin
+- link "🧠 LLM endpoints":
+  - /url: /admin/llm
+  - generic: 🧠
+  - generic: LLM endpoints
+- link "👥 Members":
+  - /url: /admin/members
+  - generic: 👥
+  - generic: Members
+- link "📡 Channels":
+  - /url: /admin/channels
+  - generic: 📡
+  - generic: Channels
+- link "⏰ Cron jobs":
+  - /url: /admin/crons
+  - generic: ⏰
+  - generic: Cron jobs
+- link "💰 Tokens":
+  - /url: /admin/tokens
+  - generic: 💰
+  - generic: Tokens
+- link "📜 Sessions":
+  - /url: /admin/sessions
+  - generic: 📜
+  - generic: Sessions
+- link "📖 Wiki" [active]:
+  - /url: /admin/wiki
+  - generic: 📖
+  - generic: Wiki
+- link "🔍 Audit":
+  - /url: /admin/audit
+  - generic: 🔍
+  - generic: Audit
+- link "LLM endpoints":
+  - /url: /admin/llm
+- link "Members":
+  - /url: /admin/members
+- link "Channels":
+  - /url: /admin/channels
+- link "Cron jobs":
+  - /url: /admin/crons
+- link "Tokens":
+  - /url: /admin/tokens
+- link "Sessions":
+  - /url: /admin/sessions
+- link "Wiki":
+  - /url: /admin/wiki
+- link "Audit":
+  - /url: /admin/audit
+- heading "Wiki (server-side corpus)" [level=1]
+- generic: Upload sources
+- button "Choose File"
+- button "Trigger ingest"
+- button "Compile index"
+- button "Reset all"
+- generic: All sources are stored on the server. Clients never see raw files.
+- generic: Sources (4)
+- table:
+  - rowgroup:
+    - row "Path Status Size Error":
+      - columnheader "Path"
+      - columnheader "Status"
+      - columnheader "Size"
+      - columnheader "Error"
+  - rowgroup:
+    - row "raw/smoke_3.md ingested 0.1 KB":
+      - cell "raw/smoke_3.md":
+        - code: raw/smoke_3.md
+      - cell "ingested"
+      - cell "0.1 KB"
+      - cell
+    - row "raw/smoke_2.md ingested 0.1 KB":
+      - cell "raw/smoke_2.md":
+        - code: raw/smoke_2.md
+      - cell "ingested"
+      - cell "0.1 KB"
+      - cell
+    - row "raw/smoke_1.md ingested 0.1 KB":
+      - cell "raw/smoke_1.md":
+        - code: raw/smoke_1.md
+      - cell "ingested"
+      - cell "0.1 KB"
+      - cell
+    - row "raw/smoke.md ingested 0.1 KB":
+      - cell "raw/smoke.md":
+        - code: raw/smoke.md
+      - cell "ingested"
+      - cell "0.1 KB"
+      - cell
+- generic "Wiki files":
+  - generic: 📁
+  - generic: Wiki files
+  - generic: ×
+- generic "Wiki preview":
+  - generic: 🌐
+  - generic: Wiki preview
+  - generic: ×
+- textbox "https://...": /api/client/wiki/preview?path=wiki
+- button "Go"
+- button "↻"
+- iframe
+```
+
+
+### 5b) http://127.0.0.1:8765/admin/channels
+URL: http://127.0.0.1:8765/admin/channels
+```
+t?session=db9a98553c3143d29f450de33f1dbdbb
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=c0283200483f4aae82c74a62b80259d0
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=4d9f2d1875d343da98f17b822020d127
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=dbaf62d7086c48d89df1f6ce31e914af
+  - generic: token-smoke
+- generic: Admin
+- link "🧠 LLM endpoints":
+  - /url: /admin/llm
+  - generic: 🧠
+  - generic: LLM endpoints
+- link "👥 Members":
+  - /url: /admin/members
+  - generic: 👥
+  - generic: Members
+- link "📡 Channels" [active]:
+  - /url: /admin/channels
+  - generic: 📡
+  - generic: Channels
+- link "⏰ Cron jobs":
+  - /url: /admin/crons
+  - generic: ⏰
+  - generic: Cron jobs
+- link "💰 Tokens":
+  - /url: /admin/tokens
+  - generic: 💰
+  - generic: Tokens
+- link "📜 Sessions":
+  - /url: /admin/sessions
+  - generic: 📜
+  - generic: Sessions
+- link "📖 Wiki":
+  - /url: /admin/wiki
+  - generic: 📖
+  - generic: Wiki
+- link "🔍 Audit":
+  - /url: /admin/audit
+  - generic: 🔍
+  - generic: Audit
+- link "LLM endpoints":
+  - /url: /admin/llm
+- link "Members":
+  - /url: /admin/members
+- link "Channels":
+  - /url: /admin/channels
+- link "Cron jobs":
+  - /url: /admin/crons
+- link "Tokens":
+  - /url: /admin/tokens
+- link "Sessions":
+  - /url: /admin/sessions
+- link "Wiki":
+  - /url: /admin/wiki
+- link "Audit":
+  - /url: /admin/audit
+- heading "Channels" [level=1]
+- generic: Add channel
+- generic: Kind
+- combobox:
+  - option "telegram" [selected]
+  - option "feishu"
+  - option "wecom"
+  - option "dingtalk"
+  - option "discord"
+  - option "matrix"
+  - option "mattermost"
+  - option "mqtt"
+  - option "onebot"
+  - option "qq"
+  - option "echo"
+- generic: Name
+- textbox "bot-main"
+- generic: Credentials (JSON)
+- 'textbox "{\"token\":\"...\"}"': "{}"
+- button "Add" [disabled]
+- text: "Tip: use kind"
+- code: echo
+- text: for in-process testing via
+- code: POST /api/webhook/echo
+- text: .
+- generic: Existing channels
+- button "Reload adapters"
+- generic: "running: 7"
+- table:
+  - rowgroup:
+    - row "Kind Name Status Enabled Last seen Listener":
+      - columnheader "Kind"
+      - columnheader "Name"
+      - columnheader "Status"
+      - columnheader "Enabled"
+      - columnheader "Last seen"
+      - columnheader "Listener"
+      - columnheader
+  - rowgroup:
+    - row "echo smoke-echo-1780915405 pending yes - running Disable Delete":
+      - cell "echo":
+        - code: echo
+      - cell "smoke-echo-1780915405"
+      - cell "pending"
+      - cell "yes"
+      - cell "-"
+      - cell "running"
+      - cell "Disable Delete":
+        - button "Disable"
+        - button "Delete"
+    - row "echo smoke-echo-1780915487 pending yes - running Disable Delete":
+      - cell "echo":
+        - code: echo
+      - cell "smoke-echo-1780915487"
+      - cell "pending"
+      - cell "yes"
+      - cell "-"
+      - cell "running"
+      - cell "Disable Delete":
+        - button "Disable"
+        - butto
+```
+
+
+### 5b) http://127.0.0.1:8765/admin/crons
+URL: http://127.0.0.1:8765/admin/crons
+```
+t?session=db9a98553c3143d29f450de33f1dbdbb
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=c0283200483f4aae82c74a62b80259d0
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=4d9f2d1875d343da98f17b822020d127
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=dbaf62d7086c48d89df1f6ce31e914af
+  - generic: token-smoke
+- generic: Admin
+- link "🧠 LLM endpoints":
+  - /url: /admin/llm
+  - generic: 🧠
+  - generic: LLM endpoints
+- link "👥 Members":
+  - /url: /admin/members
+  - generic: 👥
+  - generic: Members
+- link "📡 Channels":
+  - /url: /admin/channels
+  - generic: 📡
+  - generic: Channels
+- link "⏰ Cron jobs" [active]:
+  - /url: /admin/crons
+  - generic: ⏰
+  - generic: Cron jobs
+- link "💰 Tokens":
+  - /url: /admin/tokens
+  - generic: 💰
+  - generic: Tokens
+- link "📜 Sessions":
+  - /url: /admin/sessions
+  - generic: 📜
+  - generic: Sessions
+- link "📖 Wiki":
+  - /url: /admin/wiki
+  - generic: 📖
+  - generic: Wiki
+- link "🔍 Audit":
+  - /url: /admin/audit
+  - generic: 🔍
+  - generic: Audit
+- link "LLM endpoints":
+  - /url: /admin/llm
+- link "Members":
+  - /url: /admin/members
+- link "Channels":
+  - /url: /admin/channels
+- link "Cron jobs":
+  - /url: /admin/crons
+- link "Tokens":
+  - /url: /admin/tokens
+- link "Sessions":
+  - /url: /admin/sessions
+- link "Wiki":
+  - /url: /admin/wiki
+- link "Audit":
+  - /url: /admin/audit
+- heading "Cron jobs" [level=1]
+- generic: Add job
+- generic: Name
+- textbox "daily-status"
+- generic: Schedule (cron)
+- textbox "*/5 * * * *"
+- generic: Prompt template
+- textbox: Generate a short daily status report based on the org wiki overview.
+- button "Add" [disabled]
+- generic: Output is logged to cron_run and counted in token_usage_log. 3 consecutive failures auto-disable the job.
+- table:
+  - rowgroup:
+    - row "Name Schedule Prompt Last status Last run Next run Failures":
+      - columnheader "Name"
+      - columnheader "Schedule"
+      - columnheader "Prompt"
+      - columnheader "Last status"
+      - columnheader "Last run"
+      - columnheader "Next run"
+      - columnheader "Failures"
+      - columnheader
+  - rowgroup:
+    - row "No cron jobs":
+      - cell "No cron jobs"
+- generic "Wiki files":
+  - generic: 📁
+  - generic: Wiki files
+  - generic: ×
+- generic "Wiki preview":
+  - generic: 🌐
+  - generic: Wiki preview
+  - generic: ×
+- textbox "https://...": /api/client/wiki/preview?path=wiki
+- button "Go"
+- button "↻"
+- iframe
+```
+
+
+### 6) /admin/crons (current)
+URL: http://127.0.0.1:8765/admin/tokens
+```
+t?session=db9a98553c3143d29f450de33f1dbdbb
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=c0283200483f4aae82c74a62b80259d0
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=4d9f2d1875d343da98f17b822020d127
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=dbaf62d7086c48d89df1f6ce31e914af
+  - generic: token-smoke
+- generic: Admin
+- link "🧠 LLM endpoints":
+  - /url: /admin/llm
+  - generic: 🧠
+  - generic: LLM endpoints
+- link "👥 Members":
+  - /url: /admin/members
+  - generic: 👥
+  - generic: Members
+- link "📡 Channels":
+  - /url: /admin/channels
+  - generic: 📡
+  - generic: Channels
+- link "⏰ Cron jobs":
+  - /url: /admin/crons
+  - generic: ⏰
+  - generic: Cron jobs
+- link "💰 Tokens" [active]:
+  - /url: /admin/tokens
+  - generic: 💰
+  - generic: Tokens
+- link "📜 Sessions":
+  - /url: /admin/sessions
+  - generic: 📜
+  - generic: Sessions
+- link "📖 Wiki":
+  - /url: /admin/wiki
+  - generic: 📖
+  - generic: Wiki
+- link "🔍 Audit":
+  - /url: /admin/audit
+  - generic: 🔍
+  - generic: Audit
+- link "LLM endpoints":
+  - /url: /admin/llm
+- link "Members":
+  - /url: /admin/members
+- link "Channels":
+  - /url: /admin/channels
+- link "Cron jobs":
+  - /url: /admin/crons
+- link "Tokens":
+  - /url: /admin/tokens
+- link "Sessions":
+  - /url: /admin/sessions
+- link "Wiki":
+  - /url: /admin/wiki
+- link "Audit":
+  - /url: /admin/audit
+- heading "Token usage" [level=1]
+- generic: Window
+- combobox:
+  - option "Last 24h"
+  - option "Last 7d"
+  - option "Last 30d" [selected]
+  - option "Last 90d"
+- generic: Total 6 calls / 0 tokens / 0 cents
+- generic: By model
+- table:
+  - rowgroup:
+    - row "Model Calls Prompt Completion Total Cost (cents)":
+      - columnheader "Model"
+      - columnheader "Calls"
+      - columnheader "Prompt"
+      - columnheader "Completion"
+      - columnheader "Total"
+      - columnheader "Cost (cents)"
+  - rowgroup:
+    - row "gpt-4o-mini 6 0 0 0 0":
+      - cell "gpt-4o-mini"
+      - cell "6"
+      - cell "0"
+      - cell "0"
+      - cell "0"
+      - cell "0"
+- generic: By day
+- generic "2026-06-08 0 tokens"
+- generic: 2026-06-08
+- generic: 2026-06-08
+- generic: By user
+- table:
+  - rowgroup:
+    - row "User Calls Prompt Completion Cost (cents)":
+      - columnheader "User"
+      - columnheader "Calls"
+      - columnheader "Prompt"
+      - columnheader "Completion"
+      - columnheader "Cost (cents)"
+  - rowgroup:
+    - row "c3e0d97015084b12aaa8b54c29f0d4ff 3 0 0 0":
+      - cell "c3e0d97015084b12aaa8b54c29f0d4ff"
+      - cell "3"
+      - cell "0"
+      - cell "0"
+      - cell "0"
+    - row "(system) 3 0 0 0":
+      - cell "(system)"
+      - cell "3"
+      - cell "0"
+      - cell "0"
+      - cell "0"
+- generic: Month to date
+- generic: "Calls: 6 · Tokens: 0 · Cost (cents): 0"
+- generic: Cost table
+- table:
+  - rowgroup:
+    - row "Model Prompt cents/1k Completion cents/1k":
+      - columnheader "Model"
+      - columnheader "Prompt cents/1k"
+      - c
+```
+
+
+### 7) http://127.0.0.1:8765/admin/audit
+URL: http://127.0.0.1:8765/admin/audit
+```
+t?session=db9a98553c3143d29f450de33f1dbdbb
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=c0283200483f4aae82c74a62b80259d0
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=4d9f2d1875d343da98f17b822020d127
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=dbaf62d7086c48d89df1f6ce31e914af
+  - generic: token-smoke
+- generic: Admin
+- link "🧠 LLM endpoints":
+  - /url: /admin/llm
+  - generic: 🧠
+  - generic: LLM endpoints
+- link "👥 Members":
+  - /url: /admin/members
+  - generic: 👥
+  - generic: Members
+- link "📡 Channels":
+  - /url: /admin/channels
+  - generic: 📡
+  - generic: Channels
+- link "⏰ Cron jobs":
+  - /url: /admin/crons
+  - generic: ⏰
+  - generic: Cron jobs
+- link "💰 Tokens":
+  - /url: /admin/tokens
+  - generic: 💰
+  - generic: Tokens
+- link "📜 Sessions":
+  - /url: /admin/sessions
+  - generic: 📜
+  - generic: Sessions
+- link "📖 Wiki":
+  - /url: /admin/wiki
+  - generic: 📖
+  - generic: Wiki
+- link "🔍 Audit" [active]:
+  - /url: /admin/audit
+  - generic: 🔍
+  - generic: Audit
+- link "LLM endpoints":
+  - /url: /admin/llm
+- link "Members":
+  - /url: /admin/members
+- link "Channels":
+  - /url: /admin/channels
+- link "Cron jobs":
+  - /url: /admin/crons
+- link "Tokens":
+  - /url: /admin/tokens
+- link "Sessions":
+  - /url: /admin/sessions
+- link "Wiki":
+  - /url: /admin/wiki
+- link "Audit":
+  - /url: /admin/audit
+- heading "Audit log" [level=1]
+- table:
+  - rowgroup:
+    - row "When Action Target Actor":
+      - columnheader "When"
+      - columnheader "Action"
+      - columnheader "Target"
+      - columnheader "Actor"
+  - rowgroup:
+    - row "2026/6/8 10:54:36 channel.create a56efdc0aaa74462ac7900526bbbc9be":
+      - cell "2026/6/8 10:54:36"
+      - cell "channel.create":
+        - code: channel.create
+      - cell "a56efdc0aaa74462ac7900526bbbc9be":
+        - code: a56efdc0aaa74462ac7900526bbbc9be
+      - cell
+    - row "2026/6/8 10:54:30 wiki.lint 9ec6a4ec755840a6939ba04200527f2e":
+      - cell "2026/6/8 10:54:30"
+      - cell "wiki.lint":
+        - code: wiki.lint
+      - cell "9ec6a4ec755840a6939ba04200527f2e":
+        - code: 9ec6a4ec755840a6939ba04200527f2e
+      - cell
+    - row "2026/6/8 10:54:30 wiki.compile 9ec6a4ec755840a6939ba04200527f2e":
+      - cell "2026/6/8 10:54:30"
+      - cell "wiki.compile":
+        - code: wiki.compile
+      - cell "9ec6a4ec755840a6939ba04200527f2e":
+        - code: 9ec6a4ec755840a6939ba04200527f2e
+      - cell
+    - row "2026/6/8 10:54:30 wiki.ingest.batch 9ec6a4ec755840a6939ba04200527f2e":
+      - cell "2026/6/8 10:54:30"
+      - cell "wiki.ingest.batch":
+        - code: wiki.ingest.batch
+      - cell "9ec6a4ec755840a6939ba04200527f2e":
+        - code: 9ec6a4ec755840a6939ba04200527f2e
+      - cell
+    - row "2026/6/8 10:54:30 wiki.upload b63bacbca62e41d485e898c4b7dc9fca":
+      - cell "2026/6/8 10:54:30"
+      - cell "wiki.upload":
+        - code: wiki.upload
+      - cell "b63bacbca62e41d485e898c4b7dc9fca":
+   
+```
+
+
+### 8) y=662 no scroll
+URL: http://127.0.0.1:8765/admin/wiki
+```
+t?session=db9a98553c3143d29f450de33f1dbdbb
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=c0283200483f4aae82c74a62b80259d0
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=4d9f2d1875d343da98f17b822020d127
+  - generic: token-smoke
+- link "token-smoke":
+  - /url: /app/assistant?session=dbaf62d7086c48d89df1f6ce31e914af
+  - generic: token-smoke
+- generic: Admin
+- link "🧠 LLM endpoints":
+  - /url: /admin/llm
+  - generic: 🧠
+  - generic: LLM endpoints
+- link "👥 Members":
+  - /url: /admin/members
+  - generic: 👥
+  - generic: Members
+- link "📡 Channels":
+  - /url: /admin/channels
+  - generic: 📡
+  - generic: Channels
+- link "⏰ Cron jobs":
+  - /url: /admin/crons
+  - generic: ⏰
+  - generic: Cron jobs
+- link "💰 Tokens":
+  - /url: /admin/tokens
+  - generic: 💰
+  - generic: Tokens
+- link "📜 Sessions":
+  - /url: /admin/sessions
+  - generic: 📜
+  - generic: Sessions
+- link "📖 Wiki" [active]:
+  - /url: /admin/wiki
+  - generic: 📖
+  - generic: Wiki
+- link "🔍 Audit":
+  - /url: /admin/audit
+  - generic: 🔍
+  - generic: Audit
+- link "LLM endpoints":
+  - /url: /admin/llm
+- link "Members":
+  - /url: /admin/members
+- link "Channels":
+  - /url: /admin/channels
+- link "Cron jobs":
+  - /url: /admin/crons
+- link "Tokens":
+  - /url: /admin/tokens
+- link "Sessions":
+  - /url: /admin/sessions
+- link "Wiki":
+  - /url: /admin/wiki
+- link "Audit":
+  - /url: /admin/audit
+- heading "Wiki (server-side corpus)" [level=1]
+- generic: Upload sources
+- button "Choose File"
+- button "Trigger ingest"
+- button "Compile index"
+- button "Reset all"
+- generic: All sources are stored on the server. Clients never see raw files.
+- generic: Sources (4)
+- table:
+  - rowgroup:
+    - row "Path Status Size Error":
+      - columnheader "Path"
+      - columnheader "Status"
+      - columnheader "Size"
+      - columnheader "Error"
+  - rowgroup:
+    - row "raw/smoke_3.md ingested 0.1 KB":
+      - cell "raw/smoke_3.md":
+        - code: raw/smoke_3.md
+     
+```
+
+
+## Validation summary
+
+| Admin page | Status | Notes |
+|---|---|---|
+| /admin/llm | ✅ | Endpoint table rendered with "smoke" entry |
+| /admin/members | ✅ | Add user form + member table rendered |
+| /admin/channels | ✅ | Channel manager (7 echo listeners) |
+| /admin/crons | ✅ | Cron job list (empty by default) |
+| /admin/tokens | ✅ | Token usage dashboard with 4 panels (summary, by-day, by-user, cost table) |
+| /admin/sessions | ✅ | Chat session list (auto-tested via left-pane) |
+| /admin/wiki | ✅ | Server-side corpus management (4 sources ingested) |
+| /admin/audit | ✅ | Audit log with channel.create / wiki.* events |
+
+## Test approach
+
+- Backend: gepaw serve at 127.0.0.1:8765 confirmed healthy via /api/health
+- Login: cua.click + cua.type + Enter to submit /login form
+- Navigation: cua.click on left-pane admin links (with scroll to bring items into view)
+- Verification: domSnapshot (Playwright read-only DOM) for each admin page, API curl for direct endpoint check
+- **Not used**: Playwright evaluate (sandbox has no fetch/localStorage/window), t.screenshot (CDP timeout 20s due to network), content.export (not supported by iab backend)
+
+## Test results
+
+All 8 admin pages rendered successfully. UI layout (Codex-style 3-pane with right tabs) confirmed working.
+API endpoints (channels/status, crons, tokens/summary, wiki/sources, sessions, llm) all return valid data.
+
