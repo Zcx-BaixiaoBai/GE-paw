@@ -51,3 +51,5 @@ class RateLimitExceededException(_BaseAgentError):
 
 class QuotaExceededException(_BaseAgentError):
     """Raised when a quota is exceeded."""
+class AppBaseException(Exception):
+    """Generic application base exception used across gepaw routes."""

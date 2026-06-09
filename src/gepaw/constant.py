@@ -1,4 +1,6 @@
-"""GE-paw 运行时常量。"""
+# -*- coding: utf-8 -*-
+"""GE-paw runtime constants."""
+
 import os
 from pathlib import Path
 
@@ -23,6 +25,13 @@ class EnvVarLoader:
             return int(os.environ.get(name, default))
         except (TypeError, ValueError):
             return default
+
+    @staticmethod
+    def get_bool(name: str, default: bool = False) -> bool:
+        raw = os.environ.get(name)
+        if raw is None:
+            return default
+        return raw.strip().lower() in ("1", "true", "yes", "y", "on")
 
 
 def _resolve_working_dir() -> Path:
@@ -94,6 +103,17 @@ SUPPORTED_AGENT_LANGUAGES = ("en", "zh")
 
 
 # ---------------------------------------------------------------------------
+# Marker injection / placeholder used by message normalisation
+# ---------------------------------------------------------------------------
+
+TRUNCATION_NOTICE_MARKER = "<<<TRUNCATED>>>"
+
+MEDIA_UNSUPPORTED_PLACEHOLDER = (
+    "[Media content removed - model does not support this media type]"
+)
+
+
+# ---------------------------------------------------------------------------
 # Heartbeat defaults
 # ---------------------------------------------------------------------------
 
@@ -123,15 +143,7 @@ LLM_RATE_LIMIT_JITTER = 0.2
 # safely import it; behaviour is always enabled in gepaw for now.
 MULTI_AGENT_ENABLED = True
 
-# Marker injected by formatters when tool-result output has been truncated.
-TRUNCATION_NOTICE_MARKER = "<<<TRUNCATED>>>"
 
-# Placeholder used when media (image/audio/video) is stripped because the
-# current model does not support that media type. Shown to both the user
-# (in conversation history) and the model (in normalized requests).
-MEDIA_UNSUPPORTED_PLACEHOLDER = (
-    "[Media content removed - model does not support this media type]"
-)
 # ---------------------------------------------------------------------------
 # File-based persistence helpers
 # ---------------------------------------------------------------------------
@@ -158,3 +170,18 @@ def _running_in_container() -> bool:
 
 
 RUNNING_IN_CONTAINER = _running_in_container()
+
+
+# ---------------------------------------------------------------------------
+# Backup storage location
+# ---------------------------------------------------------------------------
+
+BACKUP_DIR = (DATA_DIR / "backups").resolve()
+BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+
+
+# ---------------------------------------------------------------------------
+# Config / secret files
+# ---------------------------------------------------------------------------
+
+CONFIG_FILE = EnvVarLoader.get_str("GEPAW_CONFIG_FILE", "config.json")
