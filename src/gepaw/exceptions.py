@@ -303,7 +303,13 @@ class ToolNotFoundError(Exception):
 class ChannelError(Exception):
     """Raised on channel-related errors."""
     def __init__(self, *args, **kwargs):
-        super().__init__(*args)
+        # Prefer 'message' kwarg as the primary exception text so that
+        # `str(exc)` exposes it for `pytest.raises(..., match=...)`.
+        msg = kwargs.pop("message", None)
+        if msg is None and args:
+            msg = args[0]
+            args = args[1:]
+        super().__init__(msg, *args)
         for k, v in kwargs.items():
             setattr(self, k, v)
 

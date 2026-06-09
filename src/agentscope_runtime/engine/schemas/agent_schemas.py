@@ -28,6 +28,7 @@ class ContentType(str, Enum):
     VIDEO = "video"
     FILE = "file"
     DATA = "data"
+    REFUSAL = "refusal"
 
 
 class TextContent(BaseModel):
@@ -114,6 +115,7 @@ class Message(BaseModel):
 class AgentRequest(BaseModel):
     """Inbound agent request, used by channel adapters."""
 
+    model_config = {"extra": "allow"}
     session_id: str = Field(default="")
     user_id: str = Field(default="")
     channel: str = Field(default="")
@@ -122,6 +124,8 @@ class AgentRequest(BaseModel):
     text: str = Field(default="")
     metadata: dict = Field(default_factory=dict)
     raw: Any = Field(default=None)
+    channel_meta: Optional[Any] = Field(default=None)
+    input: List[Any] = Field(default_factory=list)
 
     def model_dump(self, **kwargs):
         return {

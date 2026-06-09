@@ -1,6 +1,7 @@
 """GE-paw FastAPI 应用入口。"""
 from __future__ import annotations
 
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -28,17 +29,31 @@ logger = get_logger("app")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     s = get_settings()
-    setup_logger(s.log_level, LOG_FILE_PATH)
+    setup_logger(s.log_level, log_path=LOG_FILE_PATH)
     logger.info("%s v%s 启动", PROJECT_NAME, __version__)
     init_db()
     from .scheduler import start_scheduler, stop_scheduler
-    from .channels import manager as channel_manager
+    # Skip channel startup when disabled via env (tests / no-channel mode).
+    _skip_channels = os.environ.get("GEPAW_DISABLE_CHANNEL_STARTUP") == "1"
+    if not _skip_channels:
+        from .channels.manager import ChannelManager
+        async def _noop_process(*_a, **_k):
+            if False:
+                yield None
+        try:
+            channel_manager = ChannelManager.from_env(_noop_process)
+            await channel_manager.start_all()
+        except NotImplementedError:
+            logger.warning("channels unavailable; skipping startup")
+            channel_manager = None
+    else:
+        channel_manager = None
     start_scheduler()
-    channel_manager.start_all()
     try:
         yield
     finally:
-        channel_manager.stop_all()
+        if channel_manager is not None:
+            await channel_manager.stop_all()
         stop_scheduler()
         logger.info("已退出")
 
