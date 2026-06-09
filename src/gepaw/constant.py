@@ -185,3 +185,9 @@ BACKUP_DIR.mkdir(parents=True, exist_ok=True)
 # ---------------------------------------------------------------------------
 
 CONFIG_FILE = EnvVarLoader.get_str("GEPAW_CONFIG_FILE", "config.json")
+# ---------------------------------------------------------------------------
+# Media directory (channels)
+# ---------------------------------------------------------------------------
+
+DEFAULT_MEDIA_DIR = (DATA_DIR / "media").resolve()
+DEFAULT_MEDIA_DIR.mkdir(parents=True, exist_ok=True)

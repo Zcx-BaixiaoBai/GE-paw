@@ -1,68 +1,196 @@
-"""Channel kind registry.
+# -*- coding: utf-8 -*-
+"""Channel registry: built-in + custom channels from working dir."""
 
-Each IM kind we *advertise* in CHANNEL_KINDS gets a stub adapter that implements
-the same lifecycle. The stubs are intentionally minimal — they are wired into
-the channel manager so that admin-defined accounts are picked up and the data
-path (incoming -> chat_session -> token_usage_log) can be exercised. A real
-adapter can be dropped in later without changing the manager.
-"""
 from __future__ import annotations
 
-from typing import Any, Dict, List, Type
+import importlib
+import logging
+import sys
+import threading
+from typing import TYPE_CHECKING
 
-from ...utils.logging import get_logger
-from .base import ChannelAdapter, IncomingHandler, IncomingMessage, OutgoingMessage
-from .kinds.echo import EchoAdapter
-from .kinds.telegram import TelegramAdapter
+from ...constant import CUSTOM_CHANNELS_DIR
+from .base import BaseChannel
 
-logger = get_logger("channels.registry")
+if TYPE_CHECKING:
+    pass
 
+logger = logging.getLogger(__name__)
 
-# All channel kinds that GE-paw supports in v1. Real network adapters
-# (telegram, feishu, wecom, ...) reuse the same lifecycle; their bodies can be
-# added in kinds/<name>.py and registered below.
-CHANNEL_KINDS: List[str] = [
-    "telegram", "feishu", "wecom", "dingtalk", "discord",
-    "matrix", "mattermost", "mqtt", "onebot", "qq", "echo",
-]
-
-
-_REGISTRY: Dict[str, Type[ChannelAdapter]] = {
-    "echo": EchoAdapter,
-    "telegram": TelegramAdapter,
-    # The remaining kinds fall back to EchoAdapter so the data path still works.
+_BUILTIN_SPECS: dict[str, tuple[str, str]] = {
+    "imessage": (".imessage", "IMessageChannel"),
+    "discord": (".discord_", "DiscordChannel"),
+    "dingtalk": (".dingtalk", "DingTalkChannel"),
+    "feishu": (".feishu", "FeishuChannel"),
+    "qq": (".qq", "QQChannel"),
+    "telegram": (".telegram", "TelegramChannel"),
+    "mattermost": (".mattermost", "MattermostChannel"),
+    "mqtt": (".mqtt", "MQTTChannel"),
+    "console": (".console", "ConsoleChannel"),
+    "matrix": (".matrix", "MatrixChannel"),
+    "voice": (".voice", "VoiceChannel"),
+    "sip": (".sip", "SIPChannel"),
+    "wecom": (".wecom", "WecomChannel"),
+    "xiaoyi": (".xiaoyi", "XiaoYiChannel"),
+    "yuanbao": (".yuanbao", "YuanbaoChannel"),
+    "wechat": (".wechat", "WeChatChannel"),
+    "onebot": (".onebot", "OneBotChannel"),
 }
 
+# Required channels must load; failures are raised, not skipped.
+_REQUIRED_CHANNEL_KEYS: frozenset[str] = frozenset({"console"})
 
-def register(kind: str, cls: Type[ChannelAdapter]) -> None:
-    _REGISTRY[kind] = cls
-
-
-def get_adapter_class(kind: str) -> Type[ChannelAdapter]:
-    cls = _REGISTRY.get(kind)
-    if cls is not None:
-        return cls
-    # Default: echo-shaped adapter, kind is set via class attribute
-    class _Fallback(EchoAdapter):
-        pass
-    _Fallback.kind = kind
-    return _Fallback
+_BUILTIN_CHANNEL_CACHE: dict[str, type[BaseChannel]] | None = None
+_BUILTIN_CHANNEL_CACHE_LOCK = threading.Lock()
 
 
-def build_adapter(
-    kind: str, *, account_id: str, org_id: str, name: str, config: Dict[str, Any]
-) -> ChannelAdapter:
-    cls = get_adapter_class(kind)
-    return cls(account_id=account_id, org_id=org_id, name=name, config=config)
+def _load_builtin_channels() -> dict[str, type[BaseChannel]]:
+    """Load built-in channels safely.
+
+    A single optional dependency failure should not break CLI startup.
+    """
+    out: dict[str, type[BaseChannel]] = {}
+    for key, (module_name, class_name) in _BUILTIN_SPECS.items():
+        try:
+            mod = importlib.import_module(module_name, package=__package__)
+            cls = getattr(mod, class_name)
+            if not (
+                isinstance(cls, type)
+                and issubclass(cls, BaseChannel)
+                and cls is not BaseChannel
+            ):
+                raise TypeError(
+                    f"{module_name}.{class_name} is not a BaseChannel subtype",
+                )
+        except Exception:
+            if key in _REQUIRED_CHANNEL_KEYS:
+                logger.error(
+                    'failed to load required built-in channel "%s"',
+                    key,
+                    exc_info=True,
+                )
+                raise
+            logger.debug(
+                "built-in channel unavailable: %s",
+                key,
+                exc_info=True,
+            )
+            continue
+        out[key] = cls
+    return out
 
 
-__all__ = [
-    "CHANNEL_KINDS",
-    "register",
-    "get_adapter_class",
-    "build_adapter",
-    "ChannelAdapter",
-    "IncomingMessage",
-    "OutgoingMessage",
-    "IncomingHandler",
-]
+def _get_cached_builtin_channels() -> dict[str, type[BaseChannel]]:
+    """Return cached built-in channels (loaded once per process)."""
+    global _BUILTIN_CHANNEL_CACHE
+    with _BUILTIN_CHANNEL_CACHE_LOCK:
+        if _BUILTIN_CHANNEL_CACHE is None:
+            _BUILTIN_CHANNEL_CACHE = _load_builtin_channels()
+        return dict(_BUILTIN_CHANNEL_CACHE)
+
+
+def clear_builtin_channel_cache() -> None:
+    """Reset built-in channel cache. Primarily for tests."""
+    global _BUILTIN_CHANNEL_CACHE
+    with _BUILTIN_CHANNEL_CACHE_LOCK:
+        _BUILTIN_CHANNEL_CACHE = None
+
+
+def _discover_custom_channels() -> dict[str, type[BaseChannel]]:
+    """Load channel classes from CUSTOM_CHANNELS_DIR."""
+    out: dict[str, type[BaseChannel]] = {}
+    if not CUSTOM_CHANNELS_DIR.is_dir():
+        return out
+
+    dir_str = str(CUSTOM_CHANNELS_DIR)
+    if dir_str not in sys.path:
+        sys.path.insert(0, dir_str)
+
+    for path in sorted(CUSTOM_CHANNELS_DIR.iterdir()):
+        if path.suffix == ".py" and path.stem != "__init__":
+            name = path.stem
+        elif path.is_dir() and (path / "__init__.py").exists():
+            name = path.name
+        else:
+            continue
+        try:
+            mod = importlib.import_module(name)
+        except Exception:
+            logger.exception("failed to load custom channel: %s", name)
+            continue
+        for obj in vars(mod).values():
+            if (
+                isinstance(obj, type)
+                and issubclass(obj, BaseChannel)
+                and obj is not BaseChannel
+            ):
+                key = getattr(obj, "channel", None)
+                if key:
+                    out[key] = obj
+                    logger.debug("custom channel registered: %s", key)
+    return out
+
+
+BUILTIN_CHANNEL_KEYS = frozenset(_BUILTIN_SPECS.keys())
+
+
+def register_custom_channel_routes(app) -> None:
+    """Let custom channels register additional HTTP routes on the FastAPI app.
+
+    Custom channel modules may define a module-level callable
+    ``register_app_routes(app)``.  If present, it is called so the
+    channel can mount its own API endpoints (e.g. QR login pages,
+    webhook handlers, etc.).
+
+    Must be called at module level (before the SPA catch-all route)
+    to ensure route priority.  Channels that need access to
+    ``app.state.multi_agent_manager`` should read it lazily at
+    request time.
+
+    **All routes MUST be under the ``/api/`` prefix.** Routes without
+    this prefix will be silently swallowed by the SPA catch-all
+    (``/{full_path:path}``). A warning is emitted at startup if any
+    non-``/api/`` routes are detected.
+
+    Errors in individual channel hooks are logged but never propagated.
+    """
+    if not CUSTOM_CHANNELS_DIR.is_dir():
+        return
+
+    dir_str = str(CUSTOM_CHANNELS_DIR)
+    if dir_str not in sys.path:
+        sys.path.insert(0, dir_str)
+
+    for path in sorted(CUSTOM_CHANNELS_DIR.iterdir()):
+        if path.suffix == ".py" and path.stem != "__init__":
+            name = path.stem
+        elif path.is_dir() and (path / "__init__.py").exists():
+            name = path.name
+        else:
+            continue
+        try:
+            mod = importlib.import_module(name)
+            hook = getattr(mod, "register_app_routes", None)
+            if not callable(hook):
+                continue
+            prev_routes = {r.path for r in app.routes}
+            hook(app)
+            new_routes = {r.path for r in app.routes} - prev_routes
+            non_api = {p for p in new_routes if not p.startswith("/api/")}
+            if non_api:
+                logger.warning(
+                    "Custom channel %s registered routes without /api/ "
+                    "prefix: %s. These will be swallowed by the SPA "
+                    "catch-all.",
+                    name,
+                    non_api,
+                )
+        except Exception:
+            logger.exception("Failed to load custom channel routes: %s", name)
+
+
+def get_channel_registry() -> dict[str, type[BaseChannel]]:
+    """Built-in channel classes + custom channels from custom_channels/."""
+    out = _get_cached_builtin_channels()
+    out.update(_discover_custom_channels())
+    return out

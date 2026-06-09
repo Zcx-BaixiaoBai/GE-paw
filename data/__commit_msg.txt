@@ -1,0 +1,13 @@
+feat(channels + stubs): nio (responses/event_builders/events/crypto), telegram, dingtalk_stream, alibabacloud_dingtalk, paho, segno, google.protobuf, console_push_store; MessageType + Role; PLUGIN_CALL/MCP_TOOL_CALL enum values
+
+- channels/* ported (telegram, console, dingtalk, discord, feishu, imessage, matrix, mattermost, mqtt, onebot, qq, qrcode_auth_handler, voice, wechat, wecom, xiaoyi, yuanbao, sip, base, manager, registry, schema, renderer, utils, unified_queue_manager, command_registry, access_control)
+- 3rd-party stubs: nio (AsyncClientConfig/KeysUploadResponse/KeyVerification*/ToDevice*/RoomEncrypted*/SyncResponse/UploadResponse/LocalProtocolError), telegram (BotCommand/Message/User/Chat/InlineKeyboard*/Update/CallbackQuery/InputFile + ext.Application/MessageHandler/CommandHandler/CallbackQueryHandler/ContextTypes + constants.ParseMode + error.*)
+- 3rd-party stubs: dingtalk_stream (ChatbotMessage/CallbackMessage/Credential/DingTalkStreamClient/CallbackHandler/ChatbotHandler), alibabacloud_tea_openapi (Config/RuntimeOptions/Credential), alibabacloud_tea_util, alibabacloud_dingtalk.{oauth2_1_0,robot_1_0,card_1_0}.{client,models}, Tea.exceptions.TeaException
+- paho.mqtt.client (Client/MQTTMessage/MQTTv311/CallbackAPIVersion/reason_codes), paho.mqtt.MQTTException
+- segno (make + save/png_data/svg_data)
+- google.protobuf stubs (descriptor_pool/descriptor_pb2/FileDescriptorProto/json_format/descriptor/message_factory)
+- gepaw.app.console_push_store (append/get/clear/consume)
+- agent_schemas: add PLUGIN_CALL, PLUGIN_CALL_OUTPUT, MCP_TOOL_CALL, MCP_TOOL_CALL_OUTPUT to MessageType
+- agent_schemas: add Role enum (USER/ASSISTANT/SYSTEM/TOOL/DEVELOPER/...)
+
+Test baseline: 1090 -> 2202 passed (+1112) [255 failed -> 217 failed]
