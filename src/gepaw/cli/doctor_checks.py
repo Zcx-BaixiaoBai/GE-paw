@@ -753,7 +753,7 @@ def workspace_hygiene_notes(cfg: Config) -> list[str]:
     return notes
 
 
-# --- QwenPaw checks (agent.json, channels, MCP, skills, providers) ---
+# --- gepaw checks (agent.json, channels, MCP, skills, providers) ---
 
 
 def _read_workspace_agent_json(ref: AgentProfileRef) -> dict[str, Any] | None:

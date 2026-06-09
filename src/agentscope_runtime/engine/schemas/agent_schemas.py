@@ -204,3 +204,27 @@ class Role(str, Enum):
     ASSISTANT = "assistant"
     TOOL = "tool"
     DEVELOPER = "developer"
+
+
+
+
+class RunStatus(str, Enum):
+    Created = "created"
+    InProgress = "in_progress"
+    Completed = "completed"
+    Failed = "failed"
+    Cancelled = "cancelled"
+    Rejected = "rejected"
+    Unknown = "unknown"
+
+
+class Event(BaseModel):
+    object: str = Field(default="")
+    status: Any = Field(default=None)
+    type: str = Field(default="")
+    id: str = Field(default="")
+    created_at: int = Field(default=0)
+    message: Any = Field(default=None)
+    error: Any = Field(default=None)
+    metadata: dict = Field(default_factory=dict)
+    model_config = {"extra": "allow"}

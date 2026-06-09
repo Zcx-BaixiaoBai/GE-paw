@@ -25,7 +25,7 @@ def _iter_children(p: Path) -> list[Path]:
     help="List what would be deleted, but do not delete",
 )
 def clean_cmd(yes: bool, dry_run: bool) -> None:
-    """Clear QwenPaw WORKING_DIR (~/.gepaw by default)."""
+    """Clear gepaw WORKING_DIR (~/.gepaw by default)."""
     wd = WORKING_DIR
 
     if not wd.exists():

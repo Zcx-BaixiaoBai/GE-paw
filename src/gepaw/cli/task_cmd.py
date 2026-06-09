@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import shutil
 import sys
 import tempfile
 import time
@@ -39,7 +40,12 @@ def _isolated_skills_workspace(
     with tempfile.TemporaryDirectory(prefix="gepaw_headless_") as tmp:
         tmp_path = Path(tmp)
         resolved = Path(skills_dir).resolve()
-        (tmp_path / "skills").symlink_to(resolved)
+        # Windows lacks admin-only symlink privileges; fall back to a copy so
+        # the overlay workspace still resolves skills correctly.
+        try:
+            (tmp_path / "skills").symlink_to(resolved)
+        except (OSError, NotImplementedError):
+            shutil.copytree(resolved, tmp_path / "skills")
 
         skill_entries: dict = {}
         if resolved.is_dir():
@@ -71,7 +77,13 @@ def _isolated_skills_workspace(
                     continue
                 target = tmp_path / item.name
                 if not target.exists():
-                    target.symlink_to(item)
+                    try:
+                        target.symlink_to(item)
+                    except (OSError, NotImplementedError):
+                        if item.is_dir():
+                            shutil.copytree(item, target)
+                        else:
+                            shutil.copy2(item, target)
 
         yield tmp_path
 
@@ -94,7 +106,7 @@ async def _run_task(
     skills_dir: str | None = None,
 ) -> dict:
     from agentscope.message import Msg
-    from ..agents.react_agent import QwenPawAgent
+    from ..agents.react_agent import gepawAgent
 
     agent_config.running.max_iters = max_iters
 
@@ -103,7 +115,7 @@ async def _run_task(
         base_workspace = Path(agent_config.workspace_dir).expanduser()
 
     with _isolated_skills_workspace(skills_dir, base_workspace) as workspace:
-        agent = QwenPawAgent(
+        agent = gepawAgent(
             agent_config=agent_config,
             request_context=request_context,
             workspace_dir=workspace,

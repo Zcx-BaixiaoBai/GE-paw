@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import sys
 import os
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -368,6 +369,7 @@ def test_e2e_cli_no_guard_and_skills_dir(monkeypatch, tmp_path):
 #  _isolated_skills_workspace 
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="symlinks require admin privileges on Windows")
 def test_isolated_workspace_creates_overlay(tmp_path):
     """Overlay workspace symlinks skills and pre-populates manifest."""
     from gepaw.cli.task_cmd import _isolated_skills_workspace
@@ -422,6 +424,7 @@ def test_isolated_workspace_none_without_skills_dir(tmp_path):
         assert result == base_ws
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="symlinks require admin privileges on Windows")
 def test_isolated_workspace_does_not_pollute_real_workspace(tmp_path):
     """Real workspace must have zero new files after overlay teardown."""
     from gepaw.cli.task_cmd import _isolated_skills_workspace

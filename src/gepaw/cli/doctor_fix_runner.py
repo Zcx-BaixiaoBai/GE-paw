@@ -596,7 +596,7 @@ def _plan_fixes(
         repo = find_gepaw_source_repo_root()
         if repo is None:
             skip_msgs.append(
-                "rebuild-console-npm: only in a QwenPaw source checkout "
+                "rebuild-console-npm: only in a gepaw source checkout "
                 "(./console/package.json + ./console/package-lock.json + "
                 "./src/gepaw/)",
             )

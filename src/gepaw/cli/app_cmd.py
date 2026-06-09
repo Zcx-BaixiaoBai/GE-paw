@@ -26,16 +26,16 @@ def _format_bind_address(host: str, port: int) -> str:
 
 
 def _warn_if_auth_off_non_loopback_bind(host: str, port: int) -> None:
-    """Warn when QwenPaw is reachable beyond loopback without auth."""
+    """Warn when gepaw is reachable beyond loopback without auth."""
     if is_auth_enabled() or is_loopback_host(host):
         return
 
     bind_address = _format_bind_address(host, port)
     warning = f"""
 ============================================================
-SECURITY NOTICE: QwenPaw is bound to {bind_address} without authentication.
+SECURITY NOTICE: gepaw is bound to {bind_address} without authentication.
 
-Anyone who can reach this address may access QwenPaw APIs without login.
+Anyone who can reach this address may access gepaw APIs without login.
 
 Recommended:
   - Restrict access to a trusted network interface or protected environment.
@@ -87,7 +87,7 @@ Recommended:
     default=None,
     help="[DEPRECATED] Number of worker processes. "
     "This option is deprecated and will be removed in a future version. "
-    "QwenPaw always uses 1 worker.",
+    "gepaw always uses 1 worker.",
 )
 def app_cmd(
     host: str,
@@ -97,7 +97,7 @@ def app_cmd(
     log_level: str,
     hide_access_paths: tuple[str, ...],
 ) -> None:
-    """Run QwenPaw FastAPI app."""
+    """Run gepaw FastAPI app."""
     # Handle deprecated --workers parameter
     if workers is not None:
         click.echo(
@@ -106,7 +106,7 @@ def app_cmd(
             err=True,
         )
         click.echo(
-            "   QwenPaw always uses 1 worker for stability. "
+            "   gepaw always uses 1 worker for stability. "
             "Your specified value will be ignored.",
             err=True,
         )

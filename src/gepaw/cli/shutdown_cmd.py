@@ -122,7 +122,7 @@ def _find_desktop_wrapper_pids() -> set[int]:
 
 
 def _find_windows_wrapper_ancestor_pids(pids: set[int]) -> set[int]:
-    """Find QwenPaw wrapper/supervisor ancestors for Windows backend PIDs."""
+    """Find gepaw wrapper/supervisor ancestors for Windows backend PIDs."""
     if sys.platform != "win32" or not pids:
         return set()
 
@@ -302,7 +302,7 @@ def _stop_pid_set(pids: set[int]) -> tuple[list[int], list[int]]:
 
 @click.command(
     "shutdown",
-    help="Force stop the running QwenPaw app processes.",
+    help="Force stop the running gepaw app processes.",
 )
 @click.option(
     "--port",
@@ -312,7 +312,7 @@ def _stop_pid_set(pids: set[int]) -> tuple[list[int], list[int]]:
 )
 @click.pass_context
 def shutdown_cmd(ctx: click.Context, port: Optional[int]) -> None:
-    """Stop the running QwenPaw app processes.
+    """Stop the running gepaw app processes.
 
     `gepaw app` only starts the backend process. The web console is normally
     static files served by that backend. During frontend development, a
@@ -345,7 +345,7 @@ def shutdown_cmd(ctx: click.Context, port: Optional[int]) -> None:
     all_targets = backend_pids | frontend_pids | desktop_pids | wrapper_pids
     if not all_targets:
         raise click.ClickException(
-            "No running QwenPaw backend/frontend process was found.",
+            "No running gepaw backend/frontend process was found.",
         )
 
     wrapper_stopped, wrapper_failed = _stop_pid_set(wrapper_pids)
@@ -371,7 +371,7 @@ def shutdown_cmd(ctx: click.Context, port: Optional[int]) -> None:
 
     if stopped:
         click.echo(
-            "Stopped QwenPaw processes: "
+            "Stopped gepaw processes: "
             + ", ".join(str(pid) for pid in sorted(stopped)),
         )
     if failed:

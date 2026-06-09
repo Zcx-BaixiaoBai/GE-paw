@@ -165,7 +165,7 @@ def _process_table() -> list[tuple[int, str]]:
 
 
 def _matches_gepaw_cli_command(command: str, *subcommands: str) -> bool:
-    """Return whether command line looks like a QwenPaw CLI invocation."""
+    """Return whether command line looks like a gepaw CLI invocation."""
     lowered = f" {command.lower()}"
     return any(
         pattern in lowered
@@ -181,12 +181,12 @@ def _matches_gepaw_cli_command(command: str, *subcommands: str) -> bool:
 
 
 def _is_gepaw_service_command(command: str) -> bool:
-    """Return whether the command line looks like a local QwenPaw app."""
+    """Return whether the command line looks like a local gepaw app."""
     return _matches_gepaw_cli_command(command, "app")
 
 
 def _is_gepaw_wrapper_process(name: str, command: str) -> bool:
-    """Return whether the process looks like a QwenPaw CLI wrapper."""
+    """Return whether the process looks like a gepaw CLI wrapper."""
     lowered_name = name.lower().removesuffix(".exe")
     return lowered_name == "gepaw" or _matches_gepaw_cli_command(
         command,
@@ -210,7 +210,7 @@ def _base_url(host: str, port: int) -> str:
 
 
 def _candidate_hosts(host: str | None) -> list[str]:
-    """Return host variants that can reach a local QwenPaw service."""
+    """Return host variants that can reach a local gepaw service."""
     if not host:
         return []
 

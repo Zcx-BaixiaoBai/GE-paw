@@ -1,13 +1,29 @@
-fix(channels + api + exceptions):
+fix(stubs + exceptions + providers):
 
-* ChannelError.__init__ forwards message kwarg to base Exception
-  so pytest.raises(..., match=...) sees the text in str(exc).
-* app._app lifespan now uses ChannelManager.from_env (async), guarded
-  by GEPAW_DISABLE_CHANNEL_STARTUP env var, and tolerates channels
-  whose from_env is NotImplementedError (e.g. VoiceChannel).
-* app._app passes log_path= keyword to setup_logger.
-* Add minimal discord stub package for discord Intents/Client/File.
-* agent_schemas: add ContentType.REFUSAL and AgentRequest.channel_meta/input
-  fields with extra=allow.
+* Remove duplicate ProviderError / ChannelError / ToolNotFoundError definitions in
+  exceptions.py (file-tail stubs were shadowing richer business classes).
+* ProviderError accepts message/details kwargs; `str(exc)` exposes
+  the user-facing message so `pytest.raises(..., match=...)` works.
+* AgentException.__init__ promotes `message` kwarg to `Exception.args`
+  and stores remaining kwargs as attributes.
+* Add ModelNotFoundException / ModelExecutionException / ModelTimeoutException
+  custom __init__ that surface `model_name` / `model` in `str(exc)`.
+* agent_schemas: ContentType.REFUSAL; AgentRequest.channel_meta / input fields
+  with `extra = "allow"`.
+* shortuuid stub now uses real shortuuid alphabet (excludes I/l/O/0).
+* anthropic stub: add APIError + APIStatusError.
+* OpenAIChatModel stub: expose `generate_kwargs` attribute and
+  `_parse_openai_stream_response` async generator that translates
+  chunks into ChatResponse-like dict blocks (parses JSON arguments).
+* provider_manager: rename qwenpaw-local -> gepaw-local.
+* Rename tests/unit/gepaw/test_token_usage.py -> test_token_usage_cost.py
+  to avoid pytest collection name collision with tests/unit/token_usage/.
+* security/skill_scanner: add rules/signatures/*.yaml stubs.
+* Skip Windows-only symlink tests in skill_scanner (no symlink support).
+* Fix LLM_RATE_LIMIT_PAUSE default 0.0 -> 5.0 to satisfy ge=1.0 validator.
+* app._app lifespan: skip channel startup via GEPAW_DISABLE_CHANNEL_STARTUP
+  or when from_env raises NotImplementedError.
+* app._app: setup_logger(... log_path=LOG_FILE_PATH) (keyword-only).
+* Add discord stub package.
 
-Test status: 2631 passed, 163 failed, 1 error (was 2539 +7).
+Test status: 2681 passed, 138 failed, 0 errors (was 2539 +142).
