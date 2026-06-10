@@ -72,7 +72,7 @@ export const dict = {
   "tab.empty.title": "还没有可显示的标签页",
   "tab.empty.hint": "鍦ㄤ富鑱婂ぉ椤佃緭鍏?+ 鏂板缓鏍囩",
   "tab.menu.open": "鎵撳紑鏍囩椤?,
-  "tab.menu.kbd.live": "鍙敤",
+  "tab.menu.kbd.live": "可用",
   "tab.menu.kbd.soon": "即将",
   "tab.none": "鏃犳爣绛鹃〉",
   "tab.files.hint": "工作区与知识库树",
