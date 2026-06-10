@@ -193,12 +193,12 @@ export const dict = {
   "admin.common.add": "添加",
   "admin.common.delete": "删除",
   "admin.common.confirmDelete": "确认删除 {name}？",
-  "admin.common.refresh": "鍒锋柊",
-  "admin.common.save": "淇濆瓨",
+  "admin.common.refresh": "刷新",
+  "admin.common.save": "保存",
   "admin.common.cancel": "取消",
-  "admin.common.loading": "鍔犺浇涓€?,
-  "admin.common.empty": "鏆傛棤鏁版嵁",
-  "admin.common.unknown": "鏈煡",
+  "admin.common.loading": "加载中…",
+  "admin.common.empty": "暂无数据",
+  "admin.common.unknown": "未知",
 
   // Admin - audit
   "admin.audit.title": "瀹¤鏃ュ織",
