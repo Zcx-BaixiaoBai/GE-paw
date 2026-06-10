@@ -504,7 +504,7 @@ hr { border: 0; border-top: 1px solid var(--border); margin: 8px 0; }
 .admin-page-head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
 .admin-page-head h1 { margin: 0; }
 .admin-page h1 { font-size: 22px; font-weight: 700; margin: 0 0 18px; letter-spacing: .01em; }
-.admin-card { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-elevated); padding: 16px 18px; margin-bottom: 14px; box-shadow: var(--shadow-card); }
+.admin-card { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-elevated); padding: 18px 20px; margin-bottom: 16px; box-shadow: var(--shadow-card); }
 .admin-card-title { font-size: 13px; font-weight: 600; color: var(--fg); margin-bottom: 10px; }
 .admin-card-title-bar { display: flex; align-items: center; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 10px; background: var(--bg); margin: -16px -18px 10px; padding: 10px 18px; border-radius: var(--radius) var(--radius) 0 0; }
 .admin-card-flush { padding: 0; overflow: hidden; }
@@ -513,7 +513,7 @@ hr { border: 0; border-top: 1px solid var(--border); margin: 8px 0; }
 .admin-form { display: flex; flex-direction: column; gap: 8px; }
 .admin-form-inline { display: flex; flex-direction: row; align-items: center; gap: 12px; flex-wrap: wrap; }
 .admin-form-actions { display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
-.admin-field { display: grid; grid-template-columns: 160px 1fr; align-items: center; gap: 12px; }
+.admin-field { display: grid; grid-template-columns: 180px 1fr; align-items: center; gap: 14px; }
 .admin-field-label { width: 100px; font-size: 12px; color: var(--fg-muted); }
 .admin-checkbox { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--fg-muted); cursor: pointer; }
 .admin-file { display: block; padding: 6px 0; }
@@ -580,6 +580,8 @@ hr { border: 0; border-top: 1px solid var(--border); margin: 8px 0; }
 .modal-option-desc { width: 100%; font-size: 11px; color: var(--fg-muted); padding-left: 22px; }
 .modal-free-text { width: 100%; margin-top: 4px; resize: vertical; min-height: 40px; }
 .modal-foot { display: flex; gap: 8px; justify-content: flex-end; padding: 12px 18px; border-top: 1px solid var(--border); }
+
+
 
 
 
