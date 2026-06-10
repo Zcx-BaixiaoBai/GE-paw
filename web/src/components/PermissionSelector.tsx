@@ -1,4 +1,4 @@
-// Codex-style permission pill with a dropdown menu. The visible label uses
+﻿// Codex-style permission pill with a dropdown menu. The visible label uses
 // the zh-CN i18n keys (perm.full / perm.smart / perm.strict / perm.readonly)
 // and the matching icon hint at the severity of the chosen mode.
 //
@@ -52,7 +52,7 @@ export function PermissionSelector({ value, onChange, disabled }: PermissionSele
       <button
         type="button"
         className={"perm-pill-btn perm-pill-" + current}
-        onClick={() => !disabled && setOpen((v) => !v)}
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (!disabled) setOpen((v) => !v); }}
         disabled={disabled}
         title={t("chat.permission.label")}
       >
@@ -67,10 +67,7 @@ export function PermissionSelector({ value, onChange, disabled }: PermissionSele
               key={m}
               value={m}
               active={m === current}
-              onPick={(v) => {
-                setOpen(false);
-                if (v !== current) onChange(v);
-              }}
+              onPick={(v) => { if (v !== current) onChange(v); setOpen(false); }}
             />
           ))}
         </div>
@@ -96,3 +93,5 @@ function Item({ value, active, onPick }: { value: PermissionMode; active: boolea
     </button>
   );
 }
+
+
