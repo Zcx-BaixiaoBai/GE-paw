@@ -99,7 +99,7 @@ export const dict = {
   "goals.status.in_progress": "进行中",
   "goals.status.done": "已完成",
   "goals.status.failed": "失败",
-  "goals.status.label": "鐘舵€?,
+  "goals.status.label": "状态",
   "goals.add": "添加目标",
   "goals.addPlaceholder": "为当前会话添加一个可验证目标",
   "goals.delete": "删除",
