@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { apiGet, apiPost, apiDel, apiPost as _p } from "../../lib/api";
+import { apiGet, apiPost, apiDel } from "../../lib/api";
+import { IconTrash } from "../../components/Icons";
+import { t } from "../../lib/i18n";
 
 type Ch = { id: string; kind: string; name: string; enabled: boolean; status: string; last_seen_at?: string | null };
 type StatusResp = { running: string[] };
 
-const KINDS = ["telegram","feishu","wecom","dingtalk","discord","matrix","mattermost","mqtt","onebot","qq","echo"];
+const KINDS = ["telegram", "feishu", "wecom", "dingtalk", "discord", "matrix", "mattermost", "mqtt", "onebot", "qq", "echo"];
 
 export function AdminChannelsPage() {
   const [list, setList] = useState<Ch[]>([]);
@@ -16,83 +18,110 @@ export function AdminChannelsPage() {
     try {
       setList(await apiGet<Ch[]>("/admin/channels"));
       setStatus(await apiGet<StatusResp>("/admin/channels/status"));
-    } catch (e: any) { setErr(e?.message || "load failed"); }
+    } catch (e: any) { setErr(e?.message || t("error.unknown")); }
   }
   useEffect(() => { load(); }, []);
 
   async function add() {
     setErr(null);
-    let cred: any; try { cred = JSON.parse(form.credentials || "{}"); } catch { cred = { raw: form.credentials }; }
+    let cred: any;
+    try { cred = JSON.parse(form.credentials || "{}"); }
+    catch { cred = { raw: form.credentials }; }
     try {
       await apiPost("/admin/channels", { kind: form.kind, name: form.name, credentials: cred, enabled: true });
       setForm({ kind: form.kind, name: "", credentials: "{}" });
       load();
-    } catch (e: any) { setErr(e?.message || "create failed"); }
+    } catch (e: any) { setErr(e?.message || t("error.unknown")); }
   }
   async function toggle(c: Ch) {
-    await _p("/admin/channels/" + c.id, { enabled: !c.enabled });
+    await apiPost("/admin/channels/" + c.id, { enabled: !c.enabled });
     load();
   }
   async function remove(c: Ch) {
-    if (!confirm("Delete channel " + c.name + "?")) return;
+    if (!confirm(t("admin.common.confirmDelete", { name: c.name }))) return;
     await apiDel("/admin/channels/" + c.id);
     load();
   }
   async function reload() {
     setErr(null);
     try {
-      const r = await _p<{ started: number; running: string[] }>("/admin/channels/reload", {});
+      const r = await apiPost<{ started: number; running: string[] }>("/admin/channels/reload", {});
       setStatus({ running: r.running });
-    } catch (e: any) { setErr(e?.message || "reload failed"); }
+    } catch (e: any) { setErr(e?.message || t("error.unknown")); }
   }
   function isRunning(c: Ch) { return status.running.includes(c.kind + ":" + c.id); }
 
   return (
-    <div>
-      <h1>Channels</h1>
-      {err && <div className="admin-card" style={{ color: "var(--danger)" }}>{err}</div>}
+    <div className="admin-page">
+      <h1>{t("admin.channels.title")}</h1>
+      {err && <div className="admin-card admin-err">{err}</div>}
 
       <div className="admin-card">
-        <div style={{ fontWeight: 600, marginBottom: 10 }}>Add channel</div>
-        <div className="row">
-          <label>Kind</label>
-          <select value={form.kind} onChange={(e) => setForm({ ...form, kind: e.target.value })}>
-            {KINDS.map((k) => <option key={k} value={k}>{k}</option>)}
-          </select>
+        <div className="admin-card-title">{t("admin.channels.addTitle")}</div>
+        <div className="admin-form">
+          <label className="admin-field">
+            <span className="admin-field-label">{t("admin.channels.kind")}</span>
+            <select value={form.kind} onChange={(e) => setForm({ ...form, kind: e.target.value })}>
+              {KINDS.map((k) => <option key={k} value={k}>{k}</option>)}
+            </select>
+          </label>
+          <label className="admin-field">
+            <span className="admin-field-label">{t("admin.channels.name")}</span>
+            <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="bot-main" />
+          </label>
+          <label className="admin-field">
+            <span className="admin-field-label">{t("admin.channels.credentials")}</span>
+            <textarea value={form.credentials} onChange={(e) => setForm({ ...form, credentials: e.target.value })} rows={4} placeholder='{"token":"..."}' />
+          </label>
         </div>
-        <div className="row"><label>Name</label><input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="bot-main" /></div>
-        <div className="row"><label>Credentials (JSON)</label><textarea value={form.credentials} onChange={(e) => setForm({ ...form, credentials: e.target.value })} rows={4} placeholder='{"token":"..."}' /></div>
-        <button className="primary" onClick={add} disabled={!form.name}>Add</button>
-        <span style={{ marginLeft: 8, fontSize: 11, color: "var(--fg-muted)" }}>Tip: use kind <code>echo</code> for in-process testing via <code>POST /api/webhook/echo</code>.</span>
+        <div className="admin-form-actions">
+          <button className="primary" onClick={add} disabled={!form.name}>{t("admin.common.add")}</button>
+          <span className="admin-hint">
+            {t("admin.channels.hint")}
+          </span>
+        </div>
       </div>
 
-      <div className="admin-card">
-        <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
-          <div style={{ fontWeight: 600 }}>Existing channels</div>
-          <span style={{ flex: 1 }} />
-          <button onClick={reload}>Reload adapters</button>
-          <span style={{ marginLeft: 8, fontSize: 11, color: "var(--fg-muted)" }}>running: {status.running.length}</span>
+      <div className="admin-card admin-card-flush">
+        <div className="admin-card-title admin-card-title-bar">
+          <span>{t("admin.channels.list")}</span>
+          <span className="admin-spacer" />
+          <button onClick={reload}>{t("admin.channels.reload")}</button>
+          <span className="admin-hint">{t("admin.channels.runningCount", { count: status.running.length })}</span>
         </div>
-        <table className="admin-table">
-          <thead><tr><th>Kind</th><th>Name</th><th>Status</th><th>Enabled</th><th>Last seen</th><th>Listener</th><th></th></tr></thead>
-          <tbody>
-            {list.length === 0 && <tr><td colSpan={7} style={{ color: "var(--fg-faint)" }}>No channels</td></tr>}
-            {list.map((c) => (
-              <tr key={c.id}>
-                <td><code>{c.kind}</code></td>
-                <td><b>{c.name}</b></td>
-                <td>{c.status}</td>
-                <td>{c.enabled ? "yes" : "no"}</td>
-                <td>{c.last_seen_at ? new Date(c.last_seen_at).toLocaleString() : "-"}</td>
-                <td>{isRunning(c) ? <span style={{ color: "var(--ok)" }}>running</span> : <span style={{ color: "var(--fg-muted)" }}>stopped</span>}</td>
-                <td style={{ whiteSpace: "nowrap" }}>
-                  <button onClick={() => toggle(c)}>{c.enabled ? "Disable" : "Enable"}</button>
-                  <button onClick={() => remove(c)} style={{ marginLeft: 4, color: "var(--danger)" }}>Delete</button>
-                </td>
+        {list.length === 0 ? (
+          <div className="admin-empty">{t("admin.channels.empty")}</div>
+        ) : (
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>{t("admin.channels.kind")}</th>
+                <th>{t("admin.channels.name")}</th>
+                <th>{t("admin.channels.status")}</th>
+                <th>{t("admin.channels.enabled")}</th>
+                <th>{t("admin.channels.lastSeen")}</th>
+                <th>{t("admin.channels.listener")}</th>
+                <th></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {list.map((c) => (
+                <tr key={c.id}>
+                  <td><code className="code-chip">{c.kind}</code></td>
+                  <td><strong>{c.name}</strong></td>
+                  <td>{c.status}</td>
+                  <td>{c.enabled ? <span className="pill pill-ok">{t("admin.channels.enabled")}</span> : <span className="pill pill-off">{t("common.dash")}</span>}</td>
+                  <td>{c.last_seen_at ? new Date(c.last_seen_at).toLocaleString() : t("common.dash")}</td>
+                  <td>{isRunning(c) ? <span className="pill pill-ok">{t("admin.channels.running")}</span> : <span className="pill pill-off">{t("admin.channels.stopped")}</span>}</td>
+                  <td className="admin-row-action">
+                    <button onClick={() => toggle(c)}>{c.enabled ? t("admin.channels.enabled") : t("common.dash")}</button>
+                    <button className="icon-btn danger" onClick={() => remove(c)} title={t("admin.common.delete")}><IconTrash size={13} /></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

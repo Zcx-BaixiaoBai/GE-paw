@@ -46,7 +46,7 @@ export function RightPane() {
     <div className="right-pane">
       <div className="tabs-bar">
         {tabs.length === 0 && (
-          <div className="tab" style={{ color: "var(--fg-faint)", cursor: "default" }}>No tabs</div>
+          <div className="tab" style={{ color: "var(--fg-faint)", cursor: "default" }}>无标签页</div>
         )}
         {tabs.map((t) => {
           const meta = TabRegistry[t.kind];
@@ -58,7 +58,7 @@ export function RightPane() {
           );
         })}
         <div className="tab-add" ref={menuRef}>
-          <button className="icon-btn" title="Open tab" onClick={() => setMenuOpen((v) => !v)}>{"+"}</button>
+          <button className="icon-btn" title="打开标签页" onClick={() => setMenuOpen((v) => !v)}>{"+"}</button>
           {menuOpen && (
             <div className="tab-menu">
               {AllTabKinds.map((k) => {
@@ -66,7 +66,7 @@ export function RightPane() {
                 return (
                   <button key={k} className="tab-menu-item" onClick={() => openTab(k)} title={m.hint}>
                     <span>{m.icon}</span><span>{m.title}</span>
-                    <span className="kbd">{m.available ? "live" : "soon"}</span>
+                    <span className="kbd">{m.available ? "可用" : "即将"}</span>
                   </button>
                 );
               })}
@@ -75,7 +75,7 @@ export function RightPane() {
         </div>
       </div>
       <div className="tab-body">
-        {tabs.length === 0 && <div className="tab-empty">No tab open. Press + to add one.</div>}
+        {tabs.length === 0 && <div className="tab-empty">暂无标签页，点击 + 添加。</div>}
         {tabs.map((t) => {
           if (t.id !== active) return null;
           const Comp = TabRegistry[t.kind].component;
@@ -85,3 +85,5 @@ export function RightPane() {
     </div>
   );
 }
+
+

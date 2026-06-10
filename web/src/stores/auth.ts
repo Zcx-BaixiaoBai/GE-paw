@@ -23,7 +23,7 @@ export const useAuthStore = create<AuthState>()(
       orgId: null,
       orgName: null,
       setTokens: (accessToken, refreshToken) => set({ accessToken, refreshToken }),
-      setIdentity: (i) => set({ username: i.username, role: i.role, orgId: i.orgId, orgName: i.orgName }),
+      setIdentity: (i: any) => set({ username: i.username, role: i.role, orgId: i.orgId || i.org_id || null, orgName: i.orgName || i.org_name || null }),
       clear: () => set({ accessToken: null, refreshToken: null, username: null, role: null, orgId: null, orgName: null }),
     }),
     { name: "gepaw-auth", partialize: (s) => ({ accessToken: s.accessToken, refreshToken: s.refreshToken }) },

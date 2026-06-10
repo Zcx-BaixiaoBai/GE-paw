@@ -1,7 +1,7 @@
-import { create } from "zustand";
+﻿import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type TabKind = "files" | "web" | "diff" | "preview" | "plan";
+export type TabKind = "files" | "web" | "diff" | "preview" | "plan" | "goals";
 export type TabState = {
   id: string;
   kind: TabKind;

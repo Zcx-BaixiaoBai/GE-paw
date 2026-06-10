@@ -1,9 +1,0 @@
-﻿from pathlib import Path
-p = Path("src/gepaw/token_usage/model_wrapper.py")
-data = p.read_bytes()
-old = b'''    if db is not None:\r\n        from .manager import TokenUsageLog\r\n        row = TokenUsageLog(\r\n            org_id=org_id,\r\n            user_id=user_id,\r\n            session_id=str(session_id or ""),\r\n            agent_id=agent_id or "",\r\n            model_name=model_name,\r\n            provider_id=provider_id or model_name,\r\n            prompt_tokens=prompt_tokens,\r\n            completion_tokens=completion_tokens,\r\n            cache_read_tokens=cache_read_tokens,\r\n            cache_write_tokens=cache_write_tokens,\r\n            cost_cents=cost_cents,\r\n            raw=raw or {},\r\n        )'''
-new = b'''    if db is not None:\r\n        try:\r\n            from ..models.assistant import TokenUsageLog\r\n        except Exception:\r\n            TokenUsageLog = None  # type: ignore[assignment]\r\n        if TokenUsageLog is None:\r\n            return 0\r\n        # model_name is the canonical model field; provider_id is ignored here.\r\n        kwargs = {\r\n            "org_id": org_id,\r\n            "user_id": user_id,\r\n            "session_id": str(session_id or "") or None,\r\n            "model": model_name or "",\r\n            "prompt_tokens": int(prompt_tokens or 0),\r\n            "completion_tokens": int(completion_tokens or 0),\r\n            "total_tokens": int(prompt_tokens or 0) + int(completion_tokens or 0),\r\n            "cost_cents": int(cost_cents or 0),\r\n        }\r\n        # Filter to columns the table actually has.\r\n        valid = {k: v for k, v in kwargs.items() if k in TokenUsageLog.__table__.columns}\r\n        row = TokenUsageLog(**valid)'''
-print("found:", old in data)
-data = data.replace(old, new)
-p.write_bytes(data)
-print("done")

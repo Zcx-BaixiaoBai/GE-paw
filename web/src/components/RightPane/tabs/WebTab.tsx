@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 type Props = { data?: { initialUrl?: string } };
 export function WebTab({ data }: Props) {
   const [url, setUrl] = useState(data?.initialUrl || "about:blank");

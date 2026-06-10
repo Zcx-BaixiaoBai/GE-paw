@@ -1,4 +1,4 @@
-// Thin fetch wrapper. Stores access token via authStore.
+﻿// Thin fetch wrapper. Stores access token via authStore.
 import { useAuthStore } from "../stores/auth";
 
 export type ApiError = { status: number; message: string };
@@ -65,5 +65,6 @@ export const apiPost = <T = any>(p: string, body?: any) =>
 export const apiPut = <T = any>(p: string, body?: any) =>
   api<T>(p, { method: "PUT", body: body ? JSON.stringify(body) : undefined });
 export const apiDel = <T = any>(p: string) => api<T>(p, { method: "DELETE" });
+export const apiPatch = <T = any>(p: string, body?: any) => api<T>(p, { method: "PATCH", body: body !== undefined ? JSON.stringify(body) : undefined });
 export const apiPostForm = <T = any>(p: string, form: FormData) =>
   api<T>(p, { method: "POST", body: form });

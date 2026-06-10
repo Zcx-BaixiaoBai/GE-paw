@@ -1,6 +1,11 @@
-﻿import { useEffect, useState } from "react";
+// Codex-style plan tab: vertical timeline of the plan steps the assistant
+// committed to. Pulls the current session from the URL (?session=) so the
+// right pane "just works" without manual entry.
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { apiGet } from "../../../lib/api";
+import { t } from "../../../lib/i18n";
+import { IconRefresh, IconPlan } from "../../../components/Icons";
 
 type PlanStep = {
   message_id: string;
@@ -10,17 +15,24 @@ type PlanStep = {
   at: string | null;
 };
 type PlanData = {
-  session_id: string;
+  session_id?: string;
   steps: PlanStep[];
   status: "ok" | "empty";
-  hint: string | null;
+  hint?: string | null;
 };
 type Props = { data?: { sessionId?: string } };
 
+function toolGlyph(tool: string) {
+  if (tool.startsWith("read")) return "📄";
+  if (tool.startsWith("edit") || tool.startsWith("write")) return "✏";
+  if (tool.startsWith("run") || tool.startsWith("exec")) return "▶";
+  if (tool.startsWith("web") || tool.startsWith("fetch")) return "🌐";
+  return "•";
+}
+
 export function PlanTab({ data }: Props) {
   const [params] = useSearchParams();
-  const initial = data?.sessionId || params.get("session") || "";
-  const [sid, setSid] = useState<string>(initial);
+  const sid = data?.sessionId || params.get("session") || "";
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [plan, setPlan] = useState<PlanData | null>(null);
@@ -32,42 +44,52 @@ export function PlanTab({ data }: Props) {
       const r = await apiGet<PlanData>("/client/plan?session_id=" + encodeURIComponent(sid));
       setPlan(r);
     } catch (e: any) {
-      setErr(e?.message || "plan failed");
+      setErr(e?.message || t("plan.failed"));
       setPlan(null);
     } finally { setBusy(false); }
   }
-  useEffect(() => { if (initial) load(); }, [initial]);
+  useEffect(() => { if (sid) load(); }, [sid]);
 
   return (
     <div className="plan-tab">
       <div className="plan-toolbar">
-        <label>Session</label>
-        <input value={sid} onChange={(e) => setSid(e.target.value)} placeholder="session id" />
-        <button className="primary" disabled={busy || !sid} onClick={load}>{busy ? "Loading..." : "Load"}</button>
+        <span className="plan-toolbar-title"><IconPlan size={13} /> {t("tab.plan")}</span>
+        <span className="plan-toolbar-spacer" />
+        <span className="plan-toolbar-sid" title={sid}>{sid || t("plan.sessionPlaceholder")}</span>
+        <button className="icon-btn" onClick={load} disabled={busy || !sid} title={t("goals.refresh")}><IconRefresh size={13} /></button>
       </div>
       {err && <div className="plan-err">{err}</div>}
-      {plan && plan.status === "empty" && (
+      {!sid && <div className="tab-empty"><div className="tab-empty-title">{t("plan.tabHint")}</div></div>}
+      {sid && plan && plan.status === "empty" && (
         <div className="tab-empty">
-          <div style={{ fontSize: 14, marginBottom: 8 }}>No plan steps recorded yet.</div>
-          <div style={{ fontSize: 12 }}>{plan.hint}</div>
+          <div className="tab-empty-title">{t("plan.empty.title")}</div>
+          <div className="tab-empty-hint">{plan.hint || t("plan.empty.hint")}</div>
         </div>
       )}
-      {plan && plan.status === "ok" && (
+      {sid && plan && plan.status === "ok" && (
         <div className="plan-list">
           {plan.steps.map((s, i) => (
-            <div key={s.message_id + ":" + i} className="plan-step">
-              <div className="plan-step-head">
-                <span className="kbd">{i + 1}</span>
-                <span className="plan-tool">{s.tool}</span>
-                <span className={"plan-status " + (s.status === "ok" ? "ok" : s.status === "failed" ? "err" : "")}>{s.status}</span>
-                {s.at && <span className="plan-time">{new Date(s.at).toLocaleTimeString()}</span>}
+            <div key={s.message_id + ":" + i} className={"plan-step plan-" + s.status}>
+              <div className="plan-step-rail">
+                <span className="plan-step-num">{i + 1}</span>
+                {i < plan.steps.length - 1 && <span className="plan-step-line" />}
               </div>
-              <pre className="plan-args">{JSON.stringify(s.args, null, 2)}</pre>
+              <div className="plan-step-body">
+                <div className="plan-step-head">
+                  <span className="plan-step-glyph" aria-hidden>{toolGlyph(s.tool)}</span>
+                  <span className="plan-tool">{s.tool}</span>
+                  <span className={"plan-status plan-status-" + s.status}>{s.status}</span>
+                  {s.at && <span className="plan-time">{new Date(s.at).toLocaleTimeString()}</span>}
+                </div>
+                {Object.keys(s.args || {}).length > 0 && (
+                  <pre className="plan-args">{JSON.stringify(s.args, null, 2)}</pre>
+                )}
+              </div>
             </div>
           ))}
         </div>
       )}
-      {!plan && !err && !busy && <div className="tab-empty">Open this tab from a chat session to see its plan.</div>}
+      {sid && !plan && !err && busy && <div className="tab-empty">{t("plan.loading")}</div>}
     </div>
   );
 }

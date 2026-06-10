@@ -1,9 +1,0 @@
-﻿from pathlib import Path
-p = Path("src/gepaw/app/channels/onebot/channel.py")
-data = p.read_bytes()
-old = b'''        if self._site is None:\r\n            return False\r\n        probe_host = (\r\n            "127.0.0.1" if self._ws_host == "0.0.0.0" else self._ws_host\r\n        )\r\n        probe_port = self._get_listen_port()\r\n        try:\r\n            _, writer = await asyncio.wait_for(\r\n                asyncio.open_connection(probe_host, probe_port),\r\n                timeout=3.0,\r\n            )\r\n            writer.close()\r\n            await writer.wait_closed()\r\n            return True\r\n        except (OSError, asyncio.TimeoutError):\r\n            return False'''
-new = b'''        if self._site is None:\r\n            return False\r\n        # Honor explicit site state (e.g. stub or explicitly stopped).\r\n        if getattr(self._site, "_started", None) is False:\r\n            return False\r\n        # If we have a real listen port, use it; otherwise trust site state.\r\n        try:\r\n            probe_port = self._get_listen_port()\r\n        except Exception:\r\n            return True\r\n        if probe_port == 0:\r\n            # No real socket bound (stub/test). Trust site state.\r\n            return True\r\n        probe_host = (\r\n            "127.0.0.1" if self._ws_host == "0.0.0.0" else self._ws_host\r\n        )\r\n        try:\r\n            _, writer = await asyncio.wait_for(\r\n                asyncio.open_connection(probe_host, probe_port),\r\n                timeout=3.0,\r\n            )\r\n            writer.close()\r\n            await writer.wait_closed()\r\n            return True\r\n        except (OSError, asyncio.TimeoutError):\r\n            return False'''
-print("found:", old in data)
-data = data.replace(old, new)
-p.write_bytes(data)
-print("done")
