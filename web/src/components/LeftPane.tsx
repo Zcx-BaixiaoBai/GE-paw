@@ -1,4 +1,4 @@
-// Codex-style left pane:
+﻿// Codex-style left pane:
 //   - New-session button at the top.
 //   - Mode links (Assistant / QnA).
 //   - Grouped session list (Today / This week / ...) with per-row actions:
@@ -282,3 +282,5 @@ function SessionRow({
     </div>
   );
 }
+
+

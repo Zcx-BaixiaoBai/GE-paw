@@ -121,15 +121,15 @@ export const dict = {
   "chat.errorPrefix": "锛堝嚭閿欙級",
   "chat.noResponse": "锛堟棤鍝嶅簲锛?,
   "chat.tokensTip": "鏈浼氳瘽绱娑堣€?token",
-  "chat.thinking.label": "姝ｅ湪鎬濊€?,
-  "chat.thinking.collapsed": "宸叉姌鍙犳€濊€?,
+  "chat.thinking.label": "正在思考",
+  "chat.thinking.collapsed": "已思考 {seconds}s",
   "chat.thinking.toggle": "灞曞紑/鏀惰捣",
   "chat.tool.label": "宸ュ叿璋冪敤",
-  "chat.tool.running": "杩愯涓?,
-  "chat.tool.ok": "鎴愬姛",
-  "chat.tool.err": "澶辫触",
-    "chat.tool.result": "杈撳嚭",
-  "chat.tool.args": "鍙傛暟",
+  "chat.tool.running": "运行中",
+  "chat.tool.ok": "成功",
+  "chat.tool.err": "失败",
+    "chat.tool.result": "输出",
+  "chat.tool.args": "参数",
   "chat.welcome.title": "娆㈣繋浣跨敤 GE-paw",
   "chat.welcome.sub": "浠ｇ悊绌洪棿 路 鏈湴杩愯",
   "chat.welcome.hint": "鎸?Ctrl+Enter 鍙戦€侊紝/ 鍞よ捣鍛戒护",
@@ -339,6 +339,13 @@ export function t(key: Key, vars?: Record<string, string | number>): string {
   if (vars) for (const [k, v] of Object.entries(vars)) s = s.split("{" + k + "}").join(String(v));
   return s;
 }
+
+
+
+
+
+
+
 
 
 
