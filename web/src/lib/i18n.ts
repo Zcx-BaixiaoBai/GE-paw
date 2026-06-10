@@ -35,7 +35,7 @@ export const dict = {
   // Left pane
   "left.newSession": "新建会话",
   "left.section.modes": "妯″紡",
-  "left.section.admin": "绠＄悊",
+  "left.section.admin": "管理",
   "left.section.today": "今天",
   "left.section.week": "本周",
   "left.section.month": "本月",
@@ -52,14 +52,14 @@ export const dict = {
   "left.session.confirmDelete": "确认删除会话 \"{title}\"？此操作不可撤销。",
   "left.mode.assistant": "助手",
   "left.mode.qna": "知识问答",
-  "left.admin.llm": "LLM 鎺ュ彛",
-  "left.admin.members": "鎴愬憳",
-  "left.admin.channels": "閫氶亾",
-  "left.admin.crons": "瀹氭椂浠诲姟",
-  "left.admin.tokens": "Token 璁板綍",
-  "left.admin.sessions": "浼氳瘽",
-  "left.admin.wiki": "鐭ヨ瘑搴?,
-  "left.admin.audit": "瀹¤鏃ュ織",
+  "left.admin.llm": "LLM 接口",
+  "left.admin.members": "成员",
+  "left.admin.channels": "通道",
+  "left.admin.crons": "定时任务",
+  "left.admin.tokens": "Token 记录",
+  "left.admin.sessions": "会话",
+  "left.admin.wiki": "知识库",
+  "left.admin.audit": "审计日志",
   "left.empty.threads": "尚无会话，点击上方新建一个吧",
 
   // Right pane tabs
@@ -179,15 +179,15 @@ export const dict = {
   "login.failed": "鐧诲綍澶辫触",
 
   // Modal (request user input)
-  "modal.requestUserInput.title": "闇€瑕佹洿澶氫俊鎭?,
-  "modal.requestUserInput.desc": "璇烽€夋嫨涓€涓€夐」锛屾垨杈撳叆鑷畾涔夊洖澶?,
-  "modal.requestUserInput.other": "鑷畾涔?,
-  "modal.requestUserInput.submit": "鎻愪氦",
-  "modal.requestUserInput.cancel": "鍙栨秷",
-  "modal.requestUserInput.placeholder": "璇疯緭鍏モ€?,
+  "modal.requestUserInput.title": "需要更多信息",
+  "modal.requestUserInput.desc": "请选择一个选项，或输入自定义回复",
+  "modal.requestUserInput.other": "自定义",
+  "modal.requestUserInput.submit": "提交",
+  "modal.requestUserInput.cancel": "取消",
+  "modal.requestUserInput.placeholder": "请输入…",
 
   // Errors
-  "error.unknown": "鏈煡閿欒",
+  "error.unknown": "未知错误",
 
   // Admin - common
   "admin.common.add": "添加",
