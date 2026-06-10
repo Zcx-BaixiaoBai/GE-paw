@@ -201,12 +201,12 @@ export const dict = {
   "admin.common.unknown": "未知",
 
   // Admin - audit
-  "admin.audit.title": "瀹¤鏃ュ織",
-  "admin.audit.when": "鏃堕棿",
-  "admin.audit.action": "鎿嶄綔",
-  "admin.audit.target": "瀵硅薄",
-  "admin.audit.actor": "鎿嶄綔鑰?,
-  "admin.audit.empty": "鏆傛棤瀹¤璁板綍",
+  "admin.audit.title": "审计日志",
+  "admin.audit.when": "时间",
+  "admin.audit.action": "操作",
+  "admin.audit.target": "对象",
+  "admin.audit.actor": "操作者",
+  "admin.audit.empty": "暂无审计记录",
 
   // Admin - llm
   "admin.llm.title": "LLM 接口",
