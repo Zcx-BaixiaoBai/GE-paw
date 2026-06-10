@@ -63,38 +63,38 @@ export const dict = {
   "left.empty.threads": "灏氭棤浼氳瘽锛岀偣鍑讳笂鏂规柊寤轰竴涓惂",
 
   // Right pane tabs
-  "tab.files": "鏂囦欢",
-  "tab.web": "缃戦〉",
-  "tab.diff": "瀵规瘮",
-  "tab.preview": "棰勮",
-  "tab.plan": "璁″垝",
-  "tab.goals": "鐩爣",
+  "tab.files": "文件",
+  "tab.web": "网页",
+  "tab.diff": "对比",
+  "tab.preview": "预览",
+  "tab.plan": "计划",
+  "tab.goals": "目标",
   "tab.empty.title": "还没有可显示的标签页",
   "tab.empty.hint": "鍦ㄤ富鑱婂ぉ椤佃緭鍏?+ 鏂板缓鏍囩",
   "tab.menu.open": "鎵撳紑鏍囩椤?,
   "tab.menu.kbd.live": "鍙敤",
   "tab.menu.kbd.soon": "即将",
   "tab.none": "鏃犳爣绛鹃〉",
-  "tab.files.hint": "宸ヤ綔鍖轰笌鐭ヨ瘑搴撴爲",
-  "tab.web.hint": "鍦ㄥ閮ㄧ綉椤典腑娴忚 URL锛屼究浜庡闃呭璇濆紩鐢?,
-  "tab.diff.hint": "瀵规瘮鏈細璇濅腑缂栬緫杩囩殑鏂囦欢鏀瑰姩",
-  "tab.preview.hint": "澶氭牸寮忕煡璇嗗簱棰勮",
-  "tab.plan.hint": "鍔╂墜鐢熸垚鐨勫彲楠岃瘉璁″垝姝ラ",
-  "tab.goals.hint": "褰撳墠浼氳瘽鐨勫彲楠岃瘉鐩爣",
+  "tab.files.hint": "工作区与知识库树",
+  "tab.web.hint": "在外部网页中浏览 URL，便于审阅对话引用",
+  "tab.diff.hint": "对比本会话中编辑过的文件改动",
+  "tab.preview.hint": "多格式知识库预览",
+  "tab.plan.hint": "助手生成的可验证计划步骤",
+  "tab.goals.hint": "当前会话的可验证目标",
 
   // Plan tab / drawer
   "plan.session": "浼氳瘽",
   "plan.sessionPlaceholder": "浼氳瘽 ID",
   "plan.load": "鍔犺浇",
   "plan.loading": "鍔犺浇涓€?,
-  "plan.empty.title": "灏氭湭璁板綍浠讳綍璁″垝姝ラ",
-  "plan.empty.hint": "寮€濮嬩竴娈垫柊浼氳瘽锛屽姪鎵嬩細鍦ㄥ悎閫傜殑鏃舵満鎻愬嚭鍙獙璇佺殑璁″垝姝ラ",
-  "plan.tabHint": "鍦ㄥ彸渚ч€夋嫨浼氳瘽骞舵寜鍔犺浇鏌ョ湅璇ヤ細璇濈殑宸叉壒鍑嗘楠?,
+  "plan.empty.title": "尚未记录任何计划步骤",
+  "plan.empty.hint": "开始一段新会话，助手会在合适时机提出可验证的计划步骤",
+  "plan.tabHint": "在右侧选择会话并按加载查看该会话的已批准步骤",
   "plan.failed": "璁″垝鍔犺浇澶辫触",
 
   // Goals tab / drawer
-  "goals.empty.title": "涓鸿浼氳瘽璁惧畾鍙獙璇佺洰鏍?,
-  "goals.empty.hint": "鍔╂墜浼氬湪鍚堥€傛椂鏈烘妸浠诲姟鎷嗘垚鍙獙璇佺洰鏍?,
+  "goals.empty.title": "为该会话设定可验证目标",
+  "goals.empty.hint": "助手会在合适时机把任务拆成可验证目标",
   "goals.status.pending": "寰呭姙",
   "goals.status.in_progress": "杩涜涓?,
   "goals.status.done": "宸插畬鎴?,
@@ -105,9 +105,9 @@ export const dict = {
   "goals.delete": "鍒犻櫎",
   "goals.refresh": "鍒锋柊",
   "goals.loading": "鍔犺浇涓€?,
-  "goals.tabHint": "涓哄綋鍓嶄細璇濇坊鍔犲彲楠岃瘉鐩爣锛屼究浜庡姪鎵嬭仛鐒︿笌鍥炴函",
+  "goals.tabHint": "为当前会话添加可验证目标，便于助手聚焦与回溯",
   "goals.count.short": "{done}/{total}",
-  "goals.count.label": "宸插畬鎴?{done} / 鍏?{total}",
+  "goals.count.label": "已完成 {done} / 共 {total}",
 
   // Chat composer
   "chat.placeholder": "杈撳叆娑堟伅锛圕trl+Enter 鍙戦€侊級",
@@ -339,6 +339,7 @@ export function t(key: Key, vars?: Record<string, string | number>): string {
   if (vars) for (const [k, v] of Object.entries(vars)) s = s.split("{" + k + "}").join(String(v));
   return s;
 }
+
 
 
 

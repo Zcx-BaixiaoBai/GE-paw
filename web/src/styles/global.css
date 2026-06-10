@@ -136,7 +136,7 @@ hr { border: 0; border-top: 1px solid var(--border); margin: 8px 0; }
 .topbar-icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-elevated); color: var(--fg-muted); cursor: pointer; transition: var(--transition); }
 .topbar-icon-btn:hover { background: var(--bg-hover); border-color: var(--border-strong); color: var(--fg); }
 .topbar-icon-btn:active { transform: scale(0.96); }
-.topbar-icon-btn.compact { width: 28px; height: 28px; }
+.topbar-icon-btn.compact { width: 30px; height: 30px; }
 .topbar-icon-btn.ghost { background: transparent; border: 0; }
 .topbar-org-pill {
   font-size: 11px; padding: 3px 10px; border-radius: var(--radius-pill);
@@ -580,6 +580,7 @@ hr { border: 0; border-top: 1px solid var(--border); margin: 8px 0; }
 .modal-option-desc { width: 100%; font-size: 11px; color: var(--fg-muted); padding-left: 22px; }
 .modal-free-text { width: 100%; margin-top: 4px; resize: vertical; min-height: 40px; }
 .modal-foot { display: flex; gap: 8px; justify-content: flex-end; padding: 12px 18px; border-top: 1px solid var(--border); }
+
 
 
 
