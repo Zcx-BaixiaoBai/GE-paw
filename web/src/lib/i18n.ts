@@ -5,7 +5,7 @@ export type Locale = "zh-CN";
 export const dict = {
   // Brand
   "brand.name": "GE-paw",
-  "brand.tagline": "浠ｇ悊绌洪棿 路 鏈湴杩愯",
+  "brand.tagline": "代理空间 · 本地运行",
   "favicon.title": "GE-paw 控制台",
 
   // Top bar
@@ -110,17 +110,17 @@ export const dict = {
   "goals.count.label": "已完成 {done} / 共 {total}",
 
   // Chat composer
-  "chat.placeholder": "杈撳叆娑堟伅锛圕trl+Enter 鍙戦€侊級",
-  "chat.send": "鍙戦€?,
-  "chat.sending": "鍙戦€佷腑",
-  "chat.stop": "鍋滄",
+  "chat.placeholder": "输入消息（Ctrl+Enter 发送）",
+  "chat.send": "发送",
+  "chat.sending": "发送中",
+  "chat.stop": "停止",
   "chat.regenerate": "閲嶆柊鐢熸垚",
   "chat.copy": "澶嶅埗",
   "chat.copied": "宸插鍒?,
   "chat.empty": "锛堢┖锛?,
-  "chat.errorPrefix": "锛堝嚭閿欙級",
-  "chat.noResponse": "锛堟棤鍝嶅簲锛?,
-  "chat.tokensTip": "鏈浼氳瘽绱娑堣€?token",
+  "chat.errorPrefix": "（出错）",
+  "chat.noResponse": "（无响应）",
+  "chat.tokensTip": "本次会话累计消耗 token",
   "chat.thinking.label": "正在思考",
   "chat.thinking.collapsed": "已思考 {seconds}s",
   "chat.thinking.toggle": "灞曞紑/鏀惰捣",
@@ -130,9 +130,9 @@ export const dict = {
   "chat.tool.err": "失败",
     "chat.tool.result": "输出",
   "chat.tool.args": "参数",
-  "chat.welcome.title": "娆㈣繋浣跨敤 GE-paw",
-  "chat.welcome.sub": "浠ｇ悊绌洪棿 路 鏈湴杩愯",
-  "chat.welcome.hint": "鎸?Ctrl+Enter 鍙戦€侊紝/ 鍞よ捣鍛戒护",
+  "chat.welcome.title": "欢迎使用 GE-paw",
+  "chat.welcome.sub": "代理空间 · 本地运行",
+  "chat.welcome.hint": "按 Ctrl+Enter 发送，/ 唤起命令",
   "chat.permission.suffix": "鏉冮檺锛歿mode}",
   "chat.drawer.goals": "鐩爣",
   "chat.drawer.plan": "璁″垝",
