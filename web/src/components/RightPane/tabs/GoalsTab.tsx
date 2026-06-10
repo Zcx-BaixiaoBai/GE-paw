@@ -1,4 +1,4 @@
-// Codex-style goal tab: per-session checklist with progress ring. The user
+﻿// Codex-style goal tab: per-session checklist with progress ring. The user
 // can add, complete, and remove goals; the assistant reads them when
 // drafting plans. State persists in localStorage via the goals store.
 import { useEffect, useMemo, useState } from "react";
@@ -67,11 +67,7 @@ export function GoalsTab({ data }: Props) {
             </button>
           </div>
           {goals.length === 0 ? (
-            <div className="tab-empty">
-              <div className="tab-empty-icon"><IconGoals size={26} /></div>
-              <div className="tab-empty-title">{t("goals.empty.title")}</div>
-              <div className="tab-empty-hint">{t("goals.empty.hint")}</div>
-            </div>
+            <div className="tab-empty">\r\n              <div className="tab-empty-icon"><IconGoals size={26} /></div>\r\n              <div className="tab-empty-title">{t("goals.empty.title")}</div>\r\n              <div className="tab-empty-hint">{t("goals.empty.hint")}</div>\r\n              <div className="tab-empty-hint">{t("goals.tabHint")}</div>\r\n            </div>
           ) : (
             <div className="plan-list">
               {goals.map((g) => (

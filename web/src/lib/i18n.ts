@@ -89,7 +89,7 @@ export const dict = {
   "plan.loading": "加载中…",
   "plan.empty.title": "尚未记录任何计划步骤",
   "plan.empty.hint": "开始一段新会话，助手会在合适时机提出可验证的计划步骤",
-  "plan.tabHint": "在右侧选择会话并按加载查看该会话的已批准步骤",
+  "plan.tabHint": "没有会话时请先在左上角新建，再回到这里查看已批准步骤",
   "plan.failed": "计划加载失败",
 
   // Goals tab / drawer
@@ -105,7 +105,7 @@ export const dict = {
   "goals.delete": "删除",
   "goals.refresh": "刷新",
   "goals.loading": "鍔犺浇涓€?,
-  "goals.tabHint": "为当前会话添加可验证目标，便于助手聚焦与回溯",
+  "goals.tabHint": "没有会话时请先在左上角新建，再回到这里添加可验证目标",
   "goals.count.short": "{done}/{total}",
   "goals.count.label": "已完成 {done} / 共 {total}",
 

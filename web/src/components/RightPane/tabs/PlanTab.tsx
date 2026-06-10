@@ -1,4 +1,4 @@
-// Codex-style plan tab: vertical timeline of the plan steps the assistant
+﻿// Codex-style plan tab: vertical timeline of the plan steps the assistant
 // committed to. Pulls the current session from the URL (?session=) so the
 // right pane "just works" without manual entry.
 import { useEffect, useState } from "react";
@@ -23,11 +23,11 @@ type PlanData = {
 type Props = { data?: { sessionId?: string } };
 
 function toolGlyph(tool: string) {
-  if (tool.startsWith("read")) return "📄";
-  if (tool.startsWith("edit") || tool.startsWith("write")) return "✏";
-  if (tool.startsWith("run") || tool.startsWith("exec")) return "▶";
-  if (tool.startsWith("web") || tool.startsWith("fetch")) return "🌐";
-  return "•";
+  if (tool.startsWith("read")) return "馃搫";
+  if (tool.startsWith("edit") || tool.startsWith("write")) return "鉁?;
+  if (tool.startsWith("run") || tool.startsWith("exec")) return "鈻?;
+  if (tool.startsWith("web") || tool.startsWith("fetch")) return "馃寪";
+  return "鈥?;
 }
 
 export function PlanTab({ data }: Props) {
@@ -62,8 +62,7 @@ export function PlanTab({ data }: Props) {
       {!sid && <div className="tab-empty"><div className="tab-empty-title">{t("plan.tabHint")}</div></div>}
       {sid && plan && plan.status === "empty" && (
         <div className="tab-empty">
-          <div className="tab-empty-title">{t("plan.empty.title")}</div>
-          <div className="tab-empty-hint">{plan.hint || t("plan.empty.hint")}</div>
+          <div className="tab-empty-title">{t("plan.empty.title")}</div>\r\n          <div className="tab-empty-hint">{plan.hint || t("plan.empty.hint")}</div>\r\n          <div className="tab-empty-hint">{t("plan.tabHint")}</div>
         </div>
       )}
       {sid && plan && plan.status === "ok" && (
