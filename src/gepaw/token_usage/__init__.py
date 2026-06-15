@@ -1,13 +1,8 @@
-"""GE-paw token usage tracking package.
+"""GE-paw token usage tracking package."""
 
-Public API:
-    record_usage(...)   - write a TokenUsageLog row (call this once per LLM call)
-    summarize / by_day / by_user / by_model / month_to_date / last_days
-                        - read-side aggregation helpers
-    compute_cost_cents, quote_for, list_overrides, set_override, known_models
-                        - cost table helpers
-"""
-from .cost_table import (  # noqa: F401
+from __future__ import annotations
+
+from .cost_table import (
     compute_cost_cents,
     quote_for,
     list_overrides,
@@ -15,8 +10,17 @@ from .cost_table import (  # noqa: F401
     clear_override,
     known_models,
 )
-from .model_wrapper import record_usage, TokenRecordingModelWrapper  # noqa: F401
-from . import manager  # noqa: F401
+from .manager import (
+    TokenUsageStats,
+    TokenUsageRecord,
+    TokenUsageByModel,
+    TokenUsageByDateModel,
+    TokenUsageSummary,
+    TokenUsageManager,
+    get_token_usage_manager,
+)
+from .model_wrapper import record_usage, TokenRecordingModelWrapper
+from . import manager
 
 __all__ = [
     "record_usage",
@@ -28,7 +32,11 @@ __all__ = [
     "clear_override",
     "known_models",
     "manager",
+    "TokenUsageStats",
+    "TokenUsageRecord",
+    "TokenUsageByModel",
+    "TokenUsageByDateModel",
+    "TokenUsageSummary",
+    "TokenUsageManager",
+    "get_token_usage_manager",
 ]
-
-
-from .manager import get_token_usage_manager  # noqa: E402, F401

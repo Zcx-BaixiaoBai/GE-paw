@@ -1,0 +1,44 @@
+﻿Read with utf-16, len=62399
+Parsed 345 rows
+
+=== Unit coverage TOP15 (best) ===
+   99%  stmts=   80 miss=    1  src\gepaw\security\tool_guard\models.py
+   98%  stmts=   57 miss=    1  src\gepaw\tauri\sidecar_logging.py
+   97%  stmts=   67 miss=    2  src\gepaw\agents\utils\message_request_normalizer.py
+   97%  stmts=   66 miss=    2  src\gepaw\security\tool_guard\utils.py
+   96%  stmts=   46 miss=    2  src\gepaw\agents\memory\agent_md_manager.py
+   96%  stmts=   26 miss=    1  src\gepaw\backup\_utils\signing\trust.py
+   96%  stmts=  165 miss=    6  src\gepaw\security\skill_scanner\scan_policy.py
+   95%  stmts=   44 miss=    2  src\gepaw\app\channels\dingtalk\ai_card.py
+   95%  stmts=   20 miss=    1  src\gepaw\cli\http.py
+   95%  stmts=  107 miss=    5  src\gepaw\security\skill_scanner\models.py
+   94%  stmts=   36 miss=    2  src\gepaw\agents\skill_system\models.py
+   94%  stmts=   36 miss=    2  src\gepaw\agents\templates.py
+   94%  stmts=   18 miss=    1  src\gepaw\app\runner\control_commands\base.py
+   94%  stmts=  107 miss=    6  src\gepaw\security\tool_guard\engine.py
+   93%  stmts=   30 miss=    2  src\gepaw\agents\acp\core.py
+
+=== Unit coverage BOTTOM15 (worst) ===
+    0%  stmts=    3 miss=    3  src\gepaw\__main__.py
+    0%  stmts=    5 miss=    5  src\gepaw\agents\memory\proactive\__init__.py
+    0%  stmts=    2 miss=    2  src\gepaw\agents\memory\proactive\proactive_prompts.py
+    0%  stmts=  145 miss=  145  src\gepaw\agents\memory\proactive\proactive_responder.py
+    0%  stmts=  133 miss=  133  src\gepaw\agents\memory\proactive\proactive_trigger.py
+    0%  stmts=   22 miss=   22  src\gepaw\agents\memory\proactive\proactive_types.py
+    0%  stmts=  227 miss=  227  src\gepaw\agents\memory\proactive\proactive_utils.py
+    0%  stmts=  167 miss=  167  src\gepaw\agents\mission\mission_runner.py
+    0%  stmts=   43 miss=   43  src\gepaw\agents\routing_chat_model.py
+    0%  stmts=   42 miss=   42  src\gepaw\agents\skill_system.py
+    0%  stmts=   10 miss=   10  src\gepaw\agents\tools\browser_use.py
+    0%  stmts=   99 miss=   99  src\gepaw\app\agent_config_watcher.py
+    0%  stmts=    5 miss=    5  src\gepaw\app\approvals.py
+    0%  stmts=  160 miss=  160  src\gepaw\app\channels\sip\livekit_backend.py
+    0%  stmts=   90 miss=   90  src\gepaw\app\channels\sip\mini_registrar.py
+
+Files: 345  Stmts: 60086  Miss: 36737  Overall: 38.9%
+
+  0%     :  37 files, stmts= 3741
+  1-19%  :  58 files, stmts=15597
+  20-59% : 152 files, stmts=27254
+  60-89% :  72 files, stmts=11654
+  >=90%  :  26 files, stmts= 1840

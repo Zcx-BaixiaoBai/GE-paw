@@ -38,7 +38,7 @@ export function RequestUserInputModal() {
   }
 
   return (
-    <div className="modal-backdrop" onKeyDown={onKey} role="dialog" aria-modal>
+    <div className="modal-backdrop request-user-input" onKeyDown={onKey} role="dialog" aria-modal>
       <div className="modal-card modal-user-input">
         <div className="modal-head">
           <div className="modal-title">{t("modal.requestUserInput.title")}</div>

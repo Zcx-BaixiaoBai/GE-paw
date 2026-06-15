@@ -19,6 +19,7 @@ export function ThreadHeader({ sessionId, orgName, role }: Props) {
   const archive = useSessionStore((s) => s.archive);
   const load = useSessionStore((s) => s.load);
   const [open, setOpen] = useState(false);
+  const [opensUp, setOpensUp] = useState(false);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState("");
   const [err, setErr] = useState<string | null>(null);
@@ -35,6 +36,15 @@ export function ThreadHeader({ sessionId, orgName, role }: Props) {
     };
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
+  }, [open]);
+
+  // Flip the thread-header dropdown upward when the title is near
+  // the bottom of the viewport so the menu never spills off-screen.
+  useEffect(() => {
+    if (!open || !menuRef.current) return;
+    const rect = menuRef.current.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    setOpensUp(spaceBelow < 220);
   }, [open]);
 
   useEffect(() => {
@@ -100,7 +110,7 @@ export function ThreadHeader({ sessionId, orgName, role }: Props) {
           <button type="button" className="topbar-icon-btn ghost" onClick={() => setOpen((v) => !v)} title={t("topbar.toggleTheme")} style={{ display: "none" }} />
         )}
         {open && (
-          <div className="dropdown-menu thread-menu" role="menu">
+          <div className={"dropdown-menu thread-menu" + (opensUp ? " opens-up" : "")} role="menu">
             <button type="button" className="dropdown-item" onClick={() => { setOpen(false); setEditing(true); }}>
               <span className="dropdown-item-icon"><IconPencil size={14} /></span>
               <span className="dropdown-item-text">{t("topbar.rename")}</span>
@@ -129,6 +139,7 @@ export function ThreadHeader({ sessionId, orgName, role }: Props) {
     </div>
   );
 }
+
 
 
 

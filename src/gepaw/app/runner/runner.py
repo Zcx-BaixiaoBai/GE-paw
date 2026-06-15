@@ -127,6 +127,16 @@ class AgentRunner(Runner):
         self._task_tracker = task_tracker  # Task tracker for background tasks
         self._agent_name: str | None = None
 
+    async def start(self) -> None:
+        """Initialize runner state (session, env)."""
+        try:
+            await self.init_handler()
+        except Exception as e:  # noqa: BLE001
+            import logging
+            logging.getLogger(__name__).warning(
+                "AgentRunner.start failed (continuing): %s", e,
+            )
+
     @property
     def agent_name(self) -> str:
         """Agent display name from config, cached after first access."""

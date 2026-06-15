@@ -9,14 +9,14 @@
 // All session operations are wired through the session store which talks to
 // the real backend (or the mock plugin in dev).
 import { useEffect, useMemo, useRef, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { apiGet, apiPost, apiDel } from "../lib/api";
 import { useAuthStore } from "../stores/auth";
 import { useSessionStore, type Session, type PermissionMode } from "../stores/session";
 import {
   IconPlus, IconAssistant, IconQnA,
-  IconLLM, IconMembers, IconChannels, IconCron, IconTokens, IconSessions, IconWiki, IconAudit,
   IconPin, IconArchive, IconTrash, IconPencil, IconCheck, IconClose, IconChevronDown,
+  IconSettings,
 } from "./Icons";
 import { t } from "../lib/i18n";
 
@@ -63,8 +63,7 @@ export function LeftPane() {
   const rename = useSessionStore((s) => s.rename);
   const pin = useSessionStore((s) => s.pin);
   const archive = useSessionStore((s) => s.archive);
-
-  async function load() {
+    async function load() {
     try {
       const rows = await apiGet<ApiSession[]>("/client/sessions");
       setList(rows);
@@ -130,6 +129,7 @@ export function LeftPane() {
         </button>
       </div>
 
+      <div className="left-pane-body">
       <div className="left-section">
         <NavLink to="/app/assistant" className={({ isActive }) => "left-item" + (isActive ? " active" : "")}>
           <span className="left-item-icon"><IconAssistant size={15} /></span>
@@ -166,7 +166,7 @@ export function LeftPane() {
       {archivedCount > 0 && !showArchived && (
         <div className="left-section">
           <button type="button" className="left-show-archived" onClick={() => setShowArchived(true)}>
-            <IconArchive size={13} />
+            <IconArchive size={14} />
             <span>{t("left.session.showArchived")} ({archivedCount})</span>
           </button>
         </div>
@@ -174,35 +174,24 @@ export function LeftPane() {
       {showArchived && (
         <div className="left-section">
           <button type="button" className="left-show-archived" onClick={() => setShowArchived(false)}>
-            <IconClose size={13} />
+            <IconClose size={14} />
             <span>{t("left.session.archived")} ({archivedCount})</span>
           </button>
         </div>
       )}
 
-      {role === "admin" && (
-        <div className="left-section left-section-bottom">
-          <div className="left-section-title">{t("left.section.admin")}</div>
-          <AdminLink to="/admin/llm"      icon={<IconLLM size={15} />}      label={t("left.admin.llm")} />
-          <AdminLink to="/admin/members"  icon={<IconMembers size={15} />}  label={t("left.admin.members")} />
-          <AdminLink to="/admin/channels" icon={<IconChannels size={15} />} label={t("left.admin.channels")} />
-          <AdminLink to="/admin/crons"    icon={<IconCron size={15} />}     label={t("left.admin.crons")} />
-          <AdminLink to="/admin/tokens"   icon={<IconTokens size={15} />}   label={t("left.admin.tokens")} />
-          <AdminLink to="/admin/sessions" icon={<IconSessions size={15} />} label={t("left.admin.sessions")} />
-          <AdminLink to="/admin/wiki"     icon={<IconWiki size={15} />}     label={t("left.admin.wiki")} />
-          <AdminLink to="/admin/audit"    icon={<IconAudit size={15} />}    label={t("left.admin.audit")} highlight />
-        </div>
-      )}
+      </div>
+      <div className="left-section left-section-footer">
+        <NavLink
+          to="/app/settings"
+          className={({ isActive }) => "left-item left-item-quick" + (isActive ? " active" : "")}
+          title={t("left.footer.settings")}
+        >
+          <span className="left-item-icon"><IconSettings size={14} /></span>
+          <span>{t("left.footer.settings")}</span>
+        </NavLink>
+      </div>
     </div>
-  );
-}
-
-function AdminLink({ to, icon, label, highlight }: { to: string; icon: React.ReactNode; label: string; highlight?: boolean }) {
-  return (
-    <NavLink to={to} className={({ isActive }) => "left-item left-item-admin" + (isActive ? " active" : "") + (highlight ? " highlight" : "")} title={label}>
-      <span className="left-item-icon">{icon}</span>
-      <span>{label}</span>
-    </NavLink>
   );
 }
 
@@ -222,8 +211,28 @@ function SessionRow({
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(session.title);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [ctx, setCtx] = useState<{ x: number; y: number } | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+  // Only the session whose id matches the current URL's ?session= query
+  // is treated as active. Without this, React Router's NavLink treats every
+  // /app/assistant?session=xxx link as "active" (prefix match), so the whole
+  // left column would light up at once.
+  const currentSessionId = useMemo(
+    () => new URLSearchParams(location.search).get("session"),
+    [location.search],
+  );
+  const isActive = currentSessionId === session.id;
 
   useEffect(() => { if (editing) inputRef.current?.select(); }, [editing]);
+  useEffect(() => {
+    if (!ctx) return;
+    const close = (e: MouseEvent) => {
+      if (!menuRef.current?.contains(e.target as Node)) setCtx(null);
+    };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [ctx]);
   useEffect(() => { setDraft(session.title); }, [session.title]);
 
   function commit() {
@@ -233,10 +242,13 @@ function SessionRow({
   }
 
   return (
-    <div className={"left-row" + (session.pinned ? " pinned" : "") + (session.archived ? " archived" : "") + (editing ? " editing" : "")}>
+    <div
+      className={"left-row" + (session.pinned ? " pinned" : "") + (session.archived ? " archived" : "") + (editing ? " editing" : "")}
+      onContextMenu={(e) => { e.preventDefault(); setCtx({ x: e.clientX, y: e.clientY }); }}
+    >
       <NavLink
         to={`/app/assistant?session=${session.id}`}
-        className={({ isActive }) => "left-item left-item-session" + (isActive ? " active" : "")}
+        className={() => "left-item left-item-session" + (isActive ? " active" : "")}
         title={session.title}
         onDoubleClick={(e) => { e.preventDefault(); setEditing(true); }}
       >
@@ -258,7 +270,7 @@ function SessionRow({
           />
         ) : (
           <>
-            {session.pinned && <span className="left-row-pin"><IconPin size={11} /></span>}
+            {session.pinned && <span className="left-row-pin"><IconPin size={12} /></span>}
             <span className="left-item-text">{session.title || t("left.untitled")}</span>
             {session.channel_kind && <span className="left-item-channel">{session.channel_kind}</span>}
             {session.archived && <span className="left-item-channel">{t("left.session.archived")}</span>}
@@ -267,20 +279,49 @@ function SessionRow({
       </NavLink>
       <div className="left-row-actions">
         <button type="button" className="left-row-action" title={session.pinned ? t("left.session.unpin") : t("left.session.pin")} onClick={onPin}>
-          <IconPin size={12} />
+          <IconPin size={13} />
         </button>
         <button type="button" className="left-row-action" title={session.archived ? t("left.session.unarchive") : t("left.session.archive")} onClick={onArchive}>
-          <IconArchive size={12} />
+          <IconArchive size={14} />
         </button>
         <button type="button" className="left-row-action" title={t("left.session.rename")} onClick={(e) => { e.preventDefault(); setEditing(true); }}>
-          <IconPencil size={12} />
+          <IconPencil size={13} />
         </button>
         <button type="button" className="left-row-action danger" title={t("left.session.delete")} onClick={onDelete}>
-          <IconTrash size={12} />
+          <IconTrash size={13} />
         </button>
       </div>
+      {ctx && (
+        <div
+          ref={menuRef}
+          className="dropdown-menu left-ctx-menu"
+          role="menu"
+          style={{ position: "fixed", left: ctx.x, top: ctx.y, zIndex: 9999 }}
+        >
+          <button type="button" className="dropdown-item" onClick={() => { setCtx(null); setEditing(true); }}>
+            <span className="dropdown-item-icon"><IconPencil size={14} /></span>
+            <span className="dropdown-item-text">{t("left.session.rename")}</span>
+          </button>
+          <button type="button" className="dropdown-item" onClick={() => { setCtx(null); onPin(); }}>
+            <span className="dropdown-item-icon"><IconPin size={14} /></span>
+            <span className="dropdown-item-text">{session.pinned ? t("left.session.unpin") : t("left.session.pin")}</span>
+          </button>
+          <button type="button" className="dropdown-item" onClick={() => { setCtx(null); onArchive(); }}>
+            <span className="dropdown-item-icon"><IconArchive size={14} /></span>
+            <span className="dropdown-item-text">{session.archived ? t("left.session.unarchive") : t("left.session.archive")}</span>
+          </button>
+          <div className="dropdown-sep" />
+          <button type="button" className="dropdown-item err" onClick={() => { setCtx(null); onDelete(); }}>
+            <span className="dropdown-item-icon"><IconTrash size={14} /></span>
+            <span className="dropdown-item-text">{t("left.session.delete")}</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
+
+
+
 
 

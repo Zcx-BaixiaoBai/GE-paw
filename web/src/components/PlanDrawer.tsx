@@ -1,4 +1,4 @@
-// Inline drawer that shows the current session's recorded plan steps.
+﻿// Inline drawer that shows the current session's recorded plan steps.
 // Fetches the same /client/plan payload that the right-pane PlanTab uses,
 // and re-polls every 5s while open so a long-running agent updates land.
 import { useEffect, useState } from "react";
@@ -72,7 +72,7 @@ export function PlanDrawer({ sessionId, onClose }: { sessionId: string; onClose:
                 <div className="plan-step-head">
                   <span className="kbd">{i + 1}</span>
                   <span className="plan-tool">{s.tool}</span>
-                  <span className={"plan-status " + (s.status === "ok" ? "ok" : s.status === "failed" ? "err" : "")}>{s.status}</span>
+                  <span className={"plan-status plan-status-" + s.status}>{t(("plan.status." + s.status) as any, undefined, s.status)}</span>
                   {s.at && <span className="plan-time">{new Date(s.at).toLocaleTimeString()}</span>}
                 </div>
                 <pre className="plan-args">{JSON.stringify(s.args, null, 2)}</pre>
@@ -85,3 +85,4 @@ export function PlanDrawer({ sessionId, onClose }: { sessionId: string; onClose:
     </div>
   );
 }
+

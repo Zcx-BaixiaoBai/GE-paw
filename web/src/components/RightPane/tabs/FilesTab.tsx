@@ -1,5 +1,6 @@
 ﻿import { useEffect, useState, useCallback } from "react";
 import { apiGet } from "../../../lib/api";
+import { t } from "../../../lib/i18n";
 
 type FsItem = { name: string; path: string; type: "dir" | "file"; size: number; mtime: number };
 type Props = { data?: { dataSource?: "local" | "wiki" } };
@@ -47,7 +48,7 @@ export function FilesTab({ data }: Props) {
   return (
     <div className="files-tab">
       <div className="breadcrumb">
-        <span className="crumb" onClick={() => go(dataSource === "wiki" ? "wiki" : ".")}>{dataSource === "wiki" ? "wiki" : "workspace"}</span>
+        <span className="crumb" onClick={() => go(dataSource === "wiki" ? "wiki" : ".")}>{dataSource === "wiki" ? t("tab.wiki") : t("tab.workspace")}</span>
         {crumbs.slice(dataSource === "wiki" ? 1 : 0).map((c, i, arr) => {
           const target = (dataSource === "wiki" ? "wiki/" : "") + arr.slice(0, i + 1).join("/");
           const isLast = i === arr.length - 1;
@@ -59,14 +60,14 @@ export function FilesTab({ data }: Props) {
           );
         })}
         <span style={{ flex: 1 }} />
-        <span className="kbd">{dataSource}</span>
-        <button onClick={up} title="Up">{"↑"}</button>
-        <button onClick={load} title="Refresh">{"↻"}</button>
+        <span className="kbd">{dataSource === "wiki" ? t("tab.wiki") : t("tab.workspace")}</span>
+        <button className="icon-btn" onClick={up} title={t("common.up")} aria-label={t("common.up")}>{"↑"}</button>
+        <button className="icon-btn" onClick={load} title={t("common.refresh")} aria-label={t("common.refresh")}>{"↻"}</button>
       </div>
       {err && <div style={{ padding: 12, color: "var(--danger)" }}>{err}</div>}
-      {loading && <div style={{ padding: 12, color: "var(--fg-muted)" }}>Loading...</div>}
+      {loading && <div className="tab-loading">{t("common.loading")}</div>}
       <div className="files-list">
-        {items.length === 0 && !loading && !err && <div className="tab-empty">No items</div>}
+        {items.length === 0 && !loading && !err && <div className="tab-empty">{t("common.emptyList")}</div>}
         {items.map((it) => (
           <div key={it.path} className="files-row" onDoubleClick={() => it.type === "dir" && go(it.path)}>
             <span className="icon">{it.type === "dir" ? "📁" : "📄"}</span>
@@ -84,3 +85,6 @@ function humanSize(n: number) {
   if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
   return (n / 1024 / 1024).toFixed(1) + " MB";
 }
+
+
+

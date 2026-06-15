@@ -19,6 +19,7 @@ from pydantic import BaseModel, Field
 from agentscope_runtime.engine.schemas.exception import (
     AppBaseException,
 )
+from ...exceptions import ProviderError
 
 from ..agent_context import get_agent_for_request
 from ..utils import schedule_agent_reload
@@ -661,6 +662,7 @@ async def set_active_model(
             RuntimeError,
             ValueError,
             AppBaseException,
+            ProviderError,
         ) as exc:
             message = str(exc)
             lower_msg = message.lower()

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """ReMeLight-backed memory manager for agents."""
 import importlib.metadata
 import json
@@ -95,7 +95,29 @@ class ReMeLightMemoryManager(BaseMemoryManager):
 
         memory_manager_backend = _detect_memory_manager_backend()
 
-        from reme.reme_light import ReMeLight
+        try:
+            from reme.reme_light import ReMeLight
+        except ImportError:
+            logger.warning(
+                "reme package not installed; falling back to stub ReMeLight implementation."
+            )
+
+            class _StubReMeLight:  # pragma: no cover - defensive fallback
+                def __init__(self, *_a, **_k):
+                    self.working_dir = _a[0] if _a else _k.get("working_dir")
+
+                async def start(self):
+                    return None
+
+                async def close(self):
+                    return True
+
+                def __getattr__(self, name):
+                    async def _async_noop(*_a, **_k):
+                        return None
+                    return _async_noop
+
+            ReMeLight = _StubReMeLight
 
         emb_config = self.get_embedding_config()
         vector_enabled = bool(emb_config["base_url"]) and bool(

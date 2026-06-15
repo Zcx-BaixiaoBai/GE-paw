@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """Workspace and skill-pool APIs."""
 
 from __future__ import annotations
@@ -22,6 +22,7 @@ from pydantic import BaseModel, Field
 from agentscope_runtime.engine.schemas.exception import (
     AppBaseException,
 )
+from ...exceptions import SkillsError
 
 from ...agents.skill_system.hub import (
     SkillImportCancelled,
@@ -780,6 +781,8 @@ async def create_skill(
         )
     except SkillScanError as exc:
         return _scan_error_response(exc)
+    except SkillsError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     except (ValueError, AppBaseException) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     if not created:

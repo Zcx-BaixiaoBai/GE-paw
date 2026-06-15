@@ -29,6 +29,7 @@ class ChatSession(Base):
     title: Mapped[str] = mapped_column(String(200), nullable=False, default="新会话")
     channel_kind: Mapped[Optional[str]] = mapped_column(String(40), nullable=True)
     channel_account_id: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)
+    permission: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)  # Codex-style: full|smart|strict|readonly|null
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="active")
     pinned: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     archived: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)

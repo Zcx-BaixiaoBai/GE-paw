@@ -1,0 +1,21 @@
+[31m✗[39m Build failed in 1.03s
+[31merror during build:
+[31msrc/pages/Admin/Members.tsx (3:20): "IconCopy" is not exported by "src/components/Icons.tsx", imported by "src/pages/Admin/Members.tsx".[31m
+file: [36mC:/Users/Admin/Documents/GE-paw/web/src/pages/Admin/Members.tsx:3:20[31m
+[33m
+1: import { useEffect, useState, useMemo } from "react";
+2: import { apiGetArray, apiGet, apiPost, apiDel } from "../../lib/api";
+3: import { IconTrash, IconCopy, IconRefresh } from "../../components/Icons";
+                       ^
+4: import { t } from "../../lib/i18n";
+[31m
+    at getRollupError (file:///C:/Users/Admin/Documents/GE-paw/web/node_modules/rollup/dist/es/shared/parseAst.js:317:41)
+    at error (file:///C:/Users/Admin/Documents/GE-paw/web/node_modules/rollup/dist/es/shared/parseAst.js:313:42)
+    at Module.error (file:///C:/Users/Admin/Documents/GE-paw/web/node_modules/rollup/dist/es/shared/node-entry.js:17391:16)
+    at Module.traceVariable (file:///C:/Users/Admin/Documents/GE-paw/web/node_modules/rollup/dist/es/shared/node-entry.js:17824:29)
+    at ModuleScope.findVariable (file:///C:/Users/Admin/Documents/GE-paw/web/node_modules/rollup/dist/es/shared/node-entry.js:15414:39)
+    at FunctionScope.findVariable (file:///C:/Users/Admin/Documents/GE-paw/web/node_modules/rollup/dist/es/shared/node-entry.js:5682:38)
+    at FunctionBodyScope.findVariable (file:///C:/Users/Admin/Documents/GE-paw/web/node_modules/rollup/dist/es/shared/node-entry.js:5682:38)
+    at Identifier.bind (file:///C:/Users/Admin/Documents/GE-paw/web/node_modules/rollup/dist/es/shared/node-entry.js:5449:40)
+    at CallExpression.bind (file:///C:/Users/Admin/Documents/GE-paw/web/node_modules/rollup/dist/es/shared/node-entry.js:2827:28)
+    at CallExpression.bind (file:///C:/Users/Admin/Documents/GE-paw/web/node_modules/rollup/dist/es/shared/node-entry.js:12523:15)[39m

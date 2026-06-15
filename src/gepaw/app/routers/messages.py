@@ -6,6 +6,7 @@ import logging
 from typing import Optional
 
 from agentscope_runtime.engine.schemas.exception import (
+    ConfigurationException,
     AppBaseException,
 )
 from fastapi import APIRouter, Header, HTTPException, Request
@@ -119,7 +120,7 @@ async def send_message(
     # Get workspace for the agent
     try:
         workspace = await multi_agent_manager.get_agent(agent_id)
-    except (ValueError, AppBaseException) as e:
+    except (ValueError, AppBaseException, ConfigurationException) as e:
         logger.error("Agent not found: %s", e)
         raise HTTPException(
             status_code=404,

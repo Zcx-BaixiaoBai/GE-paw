@@ -42,4 +42,32 @@ async def consume(session_id: str) -> list:
         return list(dq or [])
 
 
-__all__ = ["append", "get", "clear", "consume"]
+async def get_recent(session_id: str = "", limit: int = 50) -> list:
+    """Return up to ``limit`` most recent messages for ``session_id``.
+    If ``session_id`` is empty, return recent messages from ALL sessions."""
+    async with _lock:
+        if not session_id:
+            combined: list = []
+            for dq in _store.values():
+                combined.extend(list(dq))
+            return combined[-limit:]
+        dq = _store.get(session_id, ())
+        if not dq:
+            return []
+        return list(dq)[-limit:]
+
+
+async def take(session_id: str, limit: int = 50) -> list:
+    """Return up to ``limit`` messages and clear them for ``session_id``."""
+    async with _lock:
+        dq = _store.get(session_id)
+        if not dq:
+            return []
+        items = list(dq)[-limit:]
+        for _ in items:
+            if dq:
+                dq.popleft()
+        return items
+
+
+__all__ = ["append", "get", "clear", "consume", "get_recent", "take"]

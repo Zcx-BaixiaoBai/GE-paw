@@ -16,6 +16,7 @@ from ...models import RefreshToken, User
 from ...security.jwt import create_access_token, create_refresh_token, decode_token
 from ...security.passwords import verify_password
 from ..settings import get_settings
+from ..auth import has_registered_users, is_auth_enabled
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -45,6 +46,10 @@ class MeResp(BaseModel):
     orgs: List[Dict[str, Any]]
     current_org: Dict[str, Any]
     role: str
+
+class AuthStatusResponse(BaseModel):
+    enabled: bool
+    has_users: bool
 
 
 def _build_pair(user: User, org_id: str, role: str) -> TokenPair:
@@ -149,4 +154,13 @@ def me(principal: Principal = Depends(get_current_principal)) -> MeResp:
         orgs=[{"id": m.org_id, "name": m.org.name, "slug": m.org.slug, "role": m.role} for m in principal.user.memberships],
         current_org={"id": principal.org.id, "name": principal.org.name, "slug": principal.org.slug},
         role=principal.role,
+    )
+
+@router.get("/status", response_model=AuthStatusResponse)
+def auth_status() -> AuthStatusResponse:
+    """Check whether authentication is enabled and whether any
+    user has registered."""
+    return AuthStatusResponse(
+        enabled=is_auth_enabled(),
+        has_users=has_registered_users(),
     )

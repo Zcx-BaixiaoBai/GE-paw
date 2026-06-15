@@ -5,8 +5,8 @@ import { IconCheck, IconMoon, IconSun } from "./Icons";
 import { t } from "../lib/i18n";
 
 const OPTIONS: { value: ThemeMode; label: string; icon: React.ReactNode }[] = [
-  { value: "light", label: t("theme.menu.light"), icon: <IconSun size={14} /> },
-  { value: "dark", label: t("theme.menu.dark"), icon: <IconMoon size={14} /> },
+  { value: "light", label: t("theme.menu.light"), icon: <IconSun size={15} /> },
+  { value: "dark", label: t("theme.menu.dark"), icon: <IconMoon size={15} /> },
   { value: "system", label: t("theme.menu.system"), icon: <IconCheck size={14} /> },
 ];
 

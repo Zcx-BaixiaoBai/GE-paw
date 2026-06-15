@@ -23,12 +23,12 @@ type PlanData = {
 type Props = { data?: { sessionId?: string } };
 
 function toolGlyph(tool: string) {
-  if (tool.startsWith("read")) return "馃搫";
-  if (tool.startsWith("edit") || tool.startsWith("write")) return "鉁?;
-  if (tool.startsWith("run") || tool.startsWith("exec")) return "鈻?;
-  if (tool.startsWith("web") || tool.startsWith("fetch")) return "馃寪";
-  return "鈥?;
-}
+    if (tool.startsWith("read")) return "📖";
+    if (tool.startsWith("edit") || tool.startsWith("write")) return "✏️";
+    if (tool.startsWith("run") || tool.startsWith("exec")) return "▶";
+    if (tool.startsWith("web") || tool.startsWith("fetch")) return "🌐";
+    return "—";
+  }
 
 export function PlanTab({ data }: Props) {
   const [params] = useSearchParams();
@@ -77,7 +77,7 @@ export function PlanTab({ data }: Props) {
                 <div className="plan-step-head">
                   <span className="plan-step-glyph" aria-hidden>{toolGlyph(s.tool)}</span>
                   <span className="plan-tool">{s.tool}</span>
-                  <span className={"plan-status plan-status-" + s.status}>{s.status}</span>
+                  <span className={"plan-status plan-status-" + s.status}>{t(("plan.status." + s.status) as any, undefined, s.status)}</span>
                   {s.at && <span className="plan-time">{new Date(s.at).toLocaleTimeString()}</span>}
                 </div>
                 {Object.keys(s.args || {}).length > 0 && (
@@ -92,3 +92,6 @@ export function PlanTab({ data }: Props) {
     </div>
   );
 }
+
+
+

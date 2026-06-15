@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """Multi-agent management API.
 
 Provides RESTful API for managing multiple agent instances.
@@ -13,6 +13,7 @@ from pydantic import BaseModel, field_validator
 
 from agentscope_runtime.engine.schemas.exception import (
     AppBaseException,
+    ConfigurationException,
 )
 
 from ...agents.utils.file_handling import read_text_file_with_encoding_fallback
@@ -246,7 +247,7 @@ async def get_agent(agentId: str = PathParam(...)) -> AgentProfileConfig:
     try:
         agent_config = load_agent_config(agentId)
         return agent_config
-    except (ValueError, AppBaseException) as e:
+    except (ValueError, AppBaseException, ConfigurationException) as e:
         raise HTTPException(status_code=404, detail=str(e)) from e
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e

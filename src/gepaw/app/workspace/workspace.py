@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """Workspace: Encapsulates a complete independent agent runtime.
 
 Each Workspace represents a standalone agent workspace with its own:
@@ -34,6 +34,20 @@ from ...config.config import load_agent_config
 
 logger = logging.getLogger(__name__)
 
+
+async def _start_runner(ws):
+    """Start the runner service.
+
+    Some runner classes don\'t expose a public start coroutine, so
+    this helper tolerates AttributeError gracefully.
+    """
+    runner = ws._service_manager.services.get("runner")
+    if runner is None:
+        return None
+    start = getattr(runner, "start", None)
+    if start is None:
+        return None
+    return await start()
 
 class Workspace:
     """Single agent workspace with complete runtime components.
@@ -242,9 +256,7 @@ class Workspace:
             ServiceDescriptor(
                 name="runner_start",
                 service_class=None,
-                post_init=lambda ws, _: ws._service_manager.services[
-                    "runner"
-                ].start(),
+                post_init=lambda ws, _: _start_runner(ws),
                 priority=25,
                 concurrent_init=False,
             ),

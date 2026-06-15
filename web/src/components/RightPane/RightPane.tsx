@@ -1,6 +1,8 @@
 ﻿import { useEffect, useRef, useState } from "react";
 import { usePaneStore } from "../../stores/tabs";
 import { TabRegistry, AllTabKinds, TabKind } from "./registry";
+import { t } from "../../lib/i18n";
+import { IconClose, IconPlus } from "../Icons";
 
 export function RightPane() {
   const { open, tabs, active, remove, activate, add } = usePaneStore();
@@ -46,19 +48,19 @@ export function RightPane() {
     <div className="right-pane">
       <div className="tabs-bar">
         {tabs.length === 0 && (
-          <div className="tab" style={{ color: "var(--fg-faint)", cursor: "default" }}>无标签页</div>
+          <div className="tab" style={{ color: "var(--fg-faint)", cursor: "default" }}>{t("tab.none")}</div>
         )}
-        {tabs.map((t) => {
-          const meta = TabRegistry[t.kind];
+        {tabs.map((tab) => {
+          const meta = TabRegistry[tab.kind];
           return (
-            <div key={t.id} className={"tab" + (t.id === active ? " active" : "")} onClick={() => activate(t.id)} title={meta.hint || meta.title}>
-              <span>{meta.icon}</span><span>{t.title}</span>
-              <span className="close" onClick={(e) => { e.stopPropagation(); remove(t.id); }}>{"×"}</span>
+            <div key={tab.id} className={"tab" + (tab.id === active ? " active" : "")} onClick={() => activate(tab.id)} title={meta.hint || meta.title}>
+              <span>{meta.icon}</span><span>{tab.title}</span>
+              <span className="close" onClick={(e) => { e.stopPropagation(); remove(tab.id); }}>{"×"}</span>
             </div>
           );
         })}
         <div className="tab-add" ref={menuRef}>
-          <button className="icon-btn" title="打开标签页" onClick={() => setMenuOpen((v) => !v)}>{"+"}</button>
+          <button className="icon-btn" title={t("tab.menu.open")} aria-label={t("tab.menu.open")} onClick={() => setMenuOpen((v) => !v)}><IconPlus size={13} /></button>
           {menuOpen && (
             <div className="tab-menu">
               {AllTabKinds.map((k) => {
@@ -66,7 +68,7 @@ export function RightPane() {
                 return (
                   <button key={k} className="tab-menu-item" onClick={() => openTab(k)} title={m.hint}>
                     <span>{m.icon}</span><span>{m.title}</span>
-                    <span className="kbd">{m.available ? "可用" : "即将"}</span>
+                    <span className="kbd">{m.available ? t("tab.menu.kbd.live") : t("tab.menu.kbd.soon")}</span>
                   </button>
                 );
               })}
@@ -75,16 +77,13 @@ export function RightPane() {
         </div>
       </div>
       <div className="tab-body">
-        {tabs.length === 0 && <div className="tab-empty">暂无标签页，点击 + 添加。</div>}
-        {tabs.map((t) => {
-          if (t.id !== active) return null;
-          const Comp = TabRegistry[t.kind].component;
-          return <Comp key={t.id} data={t.data} />;
+        {tabs.length === 0 && <div className="tab-empty">{t("tab.none")}</div>}
+        {tabs.map((tab) => {
+          if (tab.id !== active) return null;
+          const Comp = TabRegistry[tab.kind].component;
+          return <Comp key={tab.id} data={tab.data} />;
         })}
       </div>
     </div>
   );
 }
-
-
-

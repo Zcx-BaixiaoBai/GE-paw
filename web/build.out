@@ -1,0 +1,4 @@
+
+> gepaw-console@0.1.0 build
+> tsc -b && vite build
+

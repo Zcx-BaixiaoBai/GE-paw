@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { apiGet, apiPut, apiDel } from "../../lib/api";
+import { apiGet, apiGetArray, apiPut, apiDel } from "../../lib/api";
 import { t } from "../../lib/i18n";
 
 type ByModel = { model: string; prompt_tokens: number; completion_tokens: number; total_tokens: number; cost_cents: number; calls: number };
@@ -23,8 +23,8 @@ export function AdminTokensPage() {
     try {
       const [s, d, u, m, c] = await Promise.all([
         apiGet<Summary>("/admin/tokens/summary?days=" + days),
-        apiGet<ByDay[]>("/admin/tokens/by-day?days=" + days),
-        apiGet<ByUser[]>("/admin/tokens/by-user?days=" + days),
+        apiGetArray<ByDay>("/admin/tokens/by-day?days=" + days),
+        apiGetArray<ByUser>("/admin/tokens/by-user?days=" + days),
         apiGet<{ calls: number; total_tokens: number; cost_cents: number }>("/admin/tokens/mtd"),
         apiGet<CostTable>("/admin/tokens/cost_table"),
       ]);
@@ -50,11 +50,36 @@ export function AdminTokensPage() {
   }
 
   const maxDay = Math.max(1, ...byDay.map((d) => d.total_tokens));
+  
+  // Calculate today's usage (assuming byDay last entry is today)
+  const todayUsage = byDay.length > 0 ? byDay[byDay.length - 1] : null;
+  const todayCalls = todayUsage?.calls || 0;
+  const todayTokens = todayUsage?.total_tokens || 0;
 
   return (
     <div className="admin-page">
       <h1>{t("admin.tokens.title")}</h1>
       {err && <div className="admin-card admin-err">{err}</div>}
+
+      {/* Usage Statistics Cards */}
+      <div className="admin-metrics" style={{ marginBottom: "20px" }}>
+        <div className="admin-metric">
+          <div className="admin-metric-value">{summary?.calls ?? 0}</div>
+          <div className="admin-metric-label">Today's Calls</div>
+        </div>
+        <div className="admin-metric">
+          <div className="admin-metric-value font-mono">{summary?.total_tokens ?? 0}</div>
+          <div className="admin-metric-label">Today's Tokens</div>
+        </div>
+        <div className="admin-metric">
+          <div className="admin-metric-value font-mono">{mtd?.total_tokens ?? 0}</div>
+          <div className="admin-metric-label">Month to Date</div>
+        </div>
+        <div className="admin-metric">
+          <div className="admin-metric-value font-mono">${((mtd?.cost_cents ?? 0) / 100).toFixed(2)}</div>
+          <div className="admin-metric-label">Total Cost</div>
+        </div>
+      </div>
 
       <div className="admin-card">
         <div className="admin-form admin-form-inline">
@@ -76,7 +101,7 @@ export function AdminTokensPage() {
 
       <div className="admin-card admin-card-flush">
         <div className="admin-card-title admin-card-title-bar">{t("admin.tokens.byModel")}</div>
-        {(!summary || summary.by_model.length === 0) ? (
+        {(!summary || (summary.by_model || []).length === 0) ? (
           <div className="admin-empty">{t("admin.tokens.empty")}</div>
         ) : (
           <table className="admin-table">
@@ -93,12 +118,12 @@ export function AdminTokensPage() {
             <tbody>
               {summary.by_model.map((m) => (
                 <tr key={m.model}>
-                  <td className="admin-mono">{m.model}</td>
+                  <td className="admin-mono font-mono">{m.model}</td>
                   <td>{m.calls}</td>
-                  <td>{m.prompt_tokens}</td>
-                  <td>{m.completion_tokens}</td>
-                  <td>{m.total_tokens}</td>
-                  <td>{m.cost_cents}</td>
+                  <td className="font-mono">{m.prompt_tokens}</td>
+                  <td className="font-mono">{m.completion_tokens}</td>
+                  <td className="font-mono">{m.total_tokens}</td>
+                  <td className="font-mono">${(m.cost_cents / 100).toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
@@ -108,19 +133,23 @@ export function AdminTokensPage() {
 
       <div className="admin-card">
         <div className="admin-card-title">{t("admin.tokens.byDay")}</div>
-        {byDay.length === 0 ? (
+        {(!byDay || byDay.length === 0) ? (
           <div className="admin-empty">{t("admin.tokens.emptyWindow")}</div>
         ) : (
           <>
             <div className="admin-bar-chart">
-              {byDay.map((d) => (
-                <div key={d.bucket} className="admin-bar" title={d.bucket + " · " + d.total_tokens + " tokens"}
-                  style={{ height: Math.max(4, (d.total_tokens / maxDay) * 70) + "px" }} />
+              {byDay.map((d, i) => (
+                <div 
+                  key={d.bucket} 
+                  className="admin-bar" 
+                  title={`${d.bucket}: ${d.total_tokens} tokens (${d.calls} calls)`}
+                  style={{ height: Math.max(4, (d.total_tokens / maxDay) * 80) + "px" }}
+                />
               ))}
             </div>
             <div className="admin-bar-axis">
-              <span>{byDay[0]?.bucket || ""}</span>
-              <span>{byDay[byDay.length - 1]?.bucket || ""}</span>
+              <span className="font-mono text-muted">{byDay[0]?.bucket || ""}</span>
+              <span className="font-mono text-muted">{byDay[byDay.length - 1]?.bucket || ""}</span>
             </div>
           </>
         )}
@@ -131,7 +160,7 @@ export function AdminTokensPage() {
         <div className="admin-metrics">
           <Metric label={t("admin.tokens.calls")} value={mtd?.calls ?? 0} />
           <Metric label={t("admin.tokens.total")} value={mtd?.total_tokens ?? 0} />
-          <Metric label={t("admin.tokens.cost")} value={mtd?.cost_cents ?? 0} />
+          <Metric label={t("admin.tokens.cost")} value={`$${((mtd?.cost_cents ?? 0) / 100).toFixed(2)}`} />
         </div>
       </div>
 
@@ -164,22 +193,22 @@ export function AdminTokensPage() {
                   style={{ width: 80 }} />
               </td>
               <td className="admin-row-action">
-                <button onClick={setOverride} className="primary">{t("admin.common.save")}</button>
+                <button onClick={setOverride} className="btn-primary">{t("admin.common.save")}</button>
               </td>
             </tr>
             {Object.entries(cost?.overrides || {}).map(([m, q]) => (
               <tr key={m}>
-                <td><code className="code-chip">{m}</code></td>
-                <td>{q.prompt}</td>
-                <td>{q.completion}</td>
+                <td><code className="code-chip font-mono">{m}</code></td>
+                <td className="font-mono">{q.prompt}</td>
+                <td className="font-mono">{q.completion}</td>
                 <td className="admin-row-action">
-                  <button onClick={() => clearOverride(m)}>{t("admin.common.delete")}</button>
+                  <button onClick={() => clearOverride(m)} className="btn-ghost btn-danger-ghost">{t("admin.common.delete")}</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        <div className="admin-hint">
+        <div className="admin-hint text-muted">
           {t("admin.tokens.knownHint", { models: (cost?.known_models || []).slice(0, 12).join(", ") })}
         </div>
       </div>
@@ -190,7 +219,7 @@ export function AdminTokensPage() {
 function Metric({ label, value }: { label: string; value: number | string }) {
   return (
     <div className="admin-metric">
-      <div className="admin-metric-value">{value}</div>
+      <div className="admin-metric-value font-mono">{value}</div>
       <div className="admin-metric-label">{label}</div>
     </div>
   );

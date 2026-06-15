@@ -1,4 +1,4 @@
-// Top-right user menu: shows username + role, links to admin (when admin)
+﻿// Top-right user menu: shows username + role, links to admin (when admin)
 // and a sign-out action.
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -50,7 +50,7 @@ export function UserMenu() {
             <span className="dropdown-item-text">{t("topbar.menu.profile")}</span>
           </button>
           {role === "admin" && (
-            <button type="button" className="dropdown-item" onClick={() => { setOpen(false); nav("/admin/llm"); }}>
+            <button type="button" className="dropdown-item" onClick={() => { setOpen(false); nav("/app/settings?tab=llm"); }}>
               <span className="dropdown-item-icon"><IconSettings size={14} /></span>
               <span className="dropdown-item-text">{t("topbar.menu.admin")}</span>
             </button>
@@ -70,3 +70,4 @@ export function UserMenu() {
     </div>
   );
 }
+

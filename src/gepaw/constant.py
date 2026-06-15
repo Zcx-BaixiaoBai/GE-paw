@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """GE-paw runtime constants."""
 
 import os
@@ -117,8 +117,8 @@ MEDIA_UNSUPPORTED_PLACEHOLDER = (
 # Heartbeat defaults
 # ---------------------------------------------------------------------------
 
-HEARTBEAT_DEFAULT_EVERY = 1800
-HEARTBEAT_DEFAULT_TARGET = 8
+HEARTBEAT_DEFAULT_EVERY = "1800"
+HEARTBEAT_DEFAULT_TARGET = "8"
 
 
 # ---------------------------------------------------------------------------
@@ -261,8 +261,8 @@ PLUGINS_DIR = WORKING_DIR / 'plugins'
 TOKEN_USAGE_FILE = WORKING_DIR / 'token_usage.jsonl'
 
 
-# Upload media max size in MB
-UPLOAD_MAX_SIZE_MB = 50
+# Upload media max size in MB. Can be overridden by the `gepaw_UPLOAD_MAX_SIZE_MB` environment variable so tests can pin a smaller limit.
+UPLOAD_MAX_SIZE_MB = int(os.environ.get("gepaw_UPLOAD_MAX_SIZE_MB", "50"))
 
 # Tool guard approval timeout
 TOOL_GUARD_APPROVAL_TIMEOUT_SECONDS = 60

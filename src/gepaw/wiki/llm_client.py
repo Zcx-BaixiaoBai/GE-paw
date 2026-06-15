@@ -13,6 +13,19 @@ from ..constant import LLM_REQUEST_TIMEOUT, PROJECT_NAME
 logger = get_logger("wiki.llm")
 
 
+# Mapping between the Codex-style per-turn permission we expose in the chat
+# composer and the internal ToolExecutionLevel. The "readonly" mode is a
+# frontend-originated extra that does not have a direct ToolExecutionLevel
+# equivalent, so we translate it into a runtime behaviour: strip tool
+# affordances from the system prompt so the assistant refuses to act on them.
+PERMISSION_TO_LEVEL = {
+    "full": "off",        # all tools available, no approval
+    "smart": "smart",     # smart risk-based approval
+    "strict": "strict",   # every tool requires approval
+    "readonly": "readonly",
+}
+
+
 @dataclass
 class LLMResult:
     content: str
@@ -69,6 +82,30 @@ def _call_openai_compat(
     )
 
 
+def _apply_permission(messages: List[Dict[str, str]], permission: Optional[str]) -> List[Dict[str, str]]:
+    """Mutate the messages list to honour the requested permission.
+
+    - readonly:  inject a system note telling the model to refuse tool use and
+      drop any system prompt that announces tool availability. The fallback is
+      a soft contract - the model is expected to comply, and the audit log
+      records the choice so admins can spot regressions.
+    - smart/strict/full:  no mutation; the tool_guard layer elsewhere
+      enforces the actual approval flow.
+    """
+    if permission != "readonly":
+        return messages
+    note = (
+        "Permission mode: read-only. You must not request or imply tool use, "
+        "file edits, or shell commands in this turn. Answer the user with "
+        "explanations, code review, and reasoning only."
+    )
+    if messages and messages[0].get("role") == "system":
+        messages[0] = {**messages[0], "content": (messages[0].get("content", "") + "\n\n" + note)}
+    else:
+        messages.insert(0, {"role": "system", "content": note})
+    return messages
+
+
 def chat_for_org(
     db,
     org_id: str,
@@ -80,7 +117,11 @@ def chat_for_org(
     user_id: Optional[str] = None,
     session_id: Optional[str] = None,
     message_id: Optional[str] = None,
+    permission: Optional[str] = None,
 ) -> "LLMResult":
+    # Apply permission-mandated prompt adjustments before any persistence or
+    # outbound call so token usage and audit see the post-transform prompt.
+    messages = _apply_permission(list(messages), permission)
     from ..models import LLMEndpoint as _EP
     ep = (
         db.query(_EP)

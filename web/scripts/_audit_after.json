@@ -1,0 +1,130 @@
+{
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "ts": "2026-06-12T03:18:28.109Z",
+  "label": "after",
+  "items": [
+    {
+      "name": "composer-plus-menu",
+      "sel": ".composer-plus-menu",
+      "present": true,
+      "rect": {
+        "h": 64.5999984741211,
+        "w": 280,
+        "x": 610.0875244140625,
+        "y": 688.5499877929688
+      },
+      "oob": []
+    },
+    {
+      "name": "cu-backdrop",
+      "sel": ".cu-backdrop",
+      "present": true,
+      "rect": {
+        "h": 800,
+        "w": 1280,
+        "x": 0,
+        "y": 0
+      },
+      "oob": []
+    },
+    {
+      "name": "left-ctx-menu",
+      "sel": ".left-ctx-menu",
+      "present": true,
+      "rect": {
+        "h": 137,
+        "w": 1156,
+        "x": 124,
+        "y": 233
+      },
+      "oob": []
+    },
+    {
+      "name": "modal-backdrop",
+      "present": false,
+      "error": "no test hook; zustand store not exposed on window"
+    },
+    {
+      "name": "perm-menu",
+      "sel": ".perm-menu",
+      "present": true,
+      "rect": {
+        "display": "block",
+        "h": 219.8000030517578,
+        "opacity": "1",
+        "visibility": "visible",
+        "w": 240,
+        "x": 1016,
+        "y": 431.6000061035156
+      },
+      "oob": []
+    },
+    {
+      "name": "slash-menu",
+      "sel": ".slash-menu",
+      "present": true,
+      "rect": {
+        "h": 195.10000610351562,
+        "w": 568,
+        "x": 276,
+        "y": -145.10000610351562
+      },
+      "oob": [
+        "top=-145"
+      ]
+    },
+    {
+      "name": "tab-menu",
+      "sel": ".tab-menu",
+      "present": true,
+      "rect": {
+        "h": 199.1999969482422,
+        "w": 240,
+        "x": 1255.050048828125,
+        "y": 62
+      },
+      "oob": [
+        "right=1495>1280"
+      ]
+    },
+    {
+      "name": "theme-menu",
+      "sel": ".theme-menu",
+      "present": true,
+      "rect": {
+        "h": 128.5500030517578,
+        "w": 220,
+        "x": 1000,
+        "y": 53.60000228881836
+      },
+      "oob": []
+    },
+    {
+      "name": "thread-menu",
+      "sel": ".thread-menu",
+      "present": true,
+      "rect": {
+        "h": 108.4000015258789,
+        "w": 220,
+        "x": 527.4000244140625,
+        "y": 33.60000228881836
+      },
+      "oob": []
+    },
+    {
+      "name": "user-menu",
+      "sel": ".user-menu",
+      "present": true,
+      "rect": {
+        "h": 177.40000915527344,
+        "w": 220,
+        "x": 1044,
+        "y": 53.60000228881836
+      },
+      "oob": []
+    }
+  ]
+}

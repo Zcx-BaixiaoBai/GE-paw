@@ -1,4 +1,4 @@
-"""Per-agent markdown file manager.
+﻿"""Per-agent markdown file manager.
 
 Manages the small set of ``.md`` files that live either next to the
 agent's working directory (project notes, scratchpads) or in the
@@ -43,11 +43,12 @@ def _list_mds(directory: Path) -> list:
 class AgentMdManager:
     """Read / write markdown files in the agent workspace and memory dirs."""
 
-    def __init__(self, working_dir: Union[str, Path]) -> None:
+    def __init__(self, working_dir: Union[str, Path], agent_id: str = "") -> None:
         self.working_dir = Path(working_dir)
         self.working_dir.mkdir(parents=True, exist_ok=True)
         self.memory_dir = self.working_dir / "memory"
         self.memory_dir.mkdir(parents=True, exist_ok=True)
+        self.agent_id = agent_id
 
     def list_working_mds(self) -> list:
         return _list_mds(self.working_dir)

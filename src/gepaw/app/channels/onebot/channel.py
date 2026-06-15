@@ -338,6 +338,12 @@ class OneBotChannel(BaseChannel):
         # Honor explicit site state (e.g. stub or explicitly stopped).
         if getattr(self._site, "_started", None) is False:
             return False
+        # If aiohttp has shut the underlying server down, the sockets
+        # list becomes empty even though `_site` is still set. Detect that
+        # here so the watchdog can restart.
+        server = getattr(self._site, "_server", None)
+        if server is not None and not getattr(server, "sockets", None):
+            return False
         # If we have a real listen port, use it; otherwise trust site state.
         try:
             probe_port = self._get_listen_port()

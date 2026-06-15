@@ -1,0 +1,28 @@
+{
+  "id": "computer-use",
+  "name": "Computer Use",
+  "version": "0.1.0",
+  "type": "tool",
+  "description": "Codex 风格的计算机使用插件：在授权后让代理直接控制本地屏幕（截图、点击、键入、按键）。配合 Tauri 桥接可在桌面端完整使用。",
+  "description_i18n": {
+    "zh-CN": "Codex 风格的计算机使用插件：在授权后让代理直接控制本地屏幕（截图、点击、键入、按键）。配合 Tauri 桥接可在桌面端完整使用。",
+    "en-US": "Codex-style computer use plugin: lets the agent take over the local screen (screenshots, clicks, typing, hotkeys) once the user has granted permission. Pair with the Tauri bridge for the full desktop experience."
+  },
+  "author": "GE-paw",
+  "entry": {
+    "backend": "plugin.py",
+    "frontend": "ui/dist/index.js"
+  },
+  "dependencies": [],
+  "min_version": "1.1.7",
+  "meta": {
+    "category": "computer-use",
+    "tools": [
+      { "name": "computer_screenshot", "description": "Take a screenshot of the current screen and return as a data URL." },
+      { "name": "computer_click", "description": "Click at screen coordinates (x, y) with optional button." },
+      { "name": "computer_type", "description": "Type the given text into the focused field." },
+      { "name": "computer_key", "description": "Press a single key or combination (e.g. Return, ctrl+l)." }
+    ],
+    "frontend_route": "/computer-use"
+  }
+}

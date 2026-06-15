@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 from __future__ import annotations
 
 import json
@@ -518,6 +518,14 @@ class HeartbeatConfig(BaseModel):
         alias="activeHours",
     )
 
+    @field_validator("every", "target", mode="before")
+    @classmethod
+    def _coerce_to_str(cls, value):
+        """Accept legacy int values from older persisted configs."""
+        if value is None or isinstance(value, str):
+            return value
+        return str(value)
+
 
 class AgentsDefaultsConfig(BaseModel):
     heartbeat: Optional[HeartbeatConfig] = None
@@ -912,7 +920,7 @@ class AgentsRunningConfig(BaseModel):
 
     llm_rate_limit_pause: float = Field(
         default=LLM_RATE_LIMIT_PAUSE,
-        ge=1.0,
+        ge=0.0,
         description=(
             "Default pause duration (seconds) applied globally when a 429 "
             "rate-limit response is received."

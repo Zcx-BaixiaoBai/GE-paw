@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { apiGet, apiPost, apiDel } from "../../lib/api";
+﻿import { useEffect, useState } from "react";
+import { apiGetArray, apiGet, apiPost, apiDel } from "../../lib/api";
 import { IconTrash } from "../../components/Icons";
 import { t } from "../../lib/i18n";
 
@@ -15,7 +15,7 @@ export function AdminSessionsPage() {
   const [showAll, setShowAll] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   async function load() {
-    try { setList(await apiGet<S[]>("/admin/sessions?all=" + (showAll ? "1" : "0"))); }
+    try { setList(await apiGetArray<S>(`/admin/sessions?all=` + (showAll ? "1" : "0"))); }
     catch (e: any) { setErr(e?.message || t("error.unknown")); }
   }
   useEffect(() => { load(); }, [showAll]);
@@ -79,3 +79,7 @@ export function AdminSessionsPage() {
     </div>
   );
 }
+
+
+
+

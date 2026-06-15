@@ -1,4 +1,4 @@
-"""Stub for python-frontmatter."""
+﻿"""Stub for python-frontmatter."""
 from typing import Any, Dict, Optional
 
 
@@ -45,3 +45,15 @@ class Post:
 
     def __setitem__(self, key: str, value: Any) -> None:
         self.metadata[key] = value
+
+    def get(self, key: str, default: Any = None) -> Any:
+        return self.metadata.get(key, default)
+
+    def keys(self):
+        return self.metadata.keys()
+
+    def values(self):
+        return self.metadata.values()
+
+    def items(self):
+        return self.metadata.items()

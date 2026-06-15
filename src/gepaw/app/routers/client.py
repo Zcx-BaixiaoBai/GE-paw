@@ -6,7 +6,7 @@ import json
 import markdown as md_lib
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import PlainTextResponse, StreamingResponse
@@ -21,6 +21,7 @@ from ...utils.logging import get_logger
 from ...wiki.llm_client import chat_for_org
 from ...wiki.pipeline import run_query
 from ...wiki.store import get_wiki_store
+from ..audit import write_audit
 from ..db import get_db
 from ..deps import Principal, require_user
 
@@ -39,6 +40,11 @@ ALLOWED_ATTRS = {
     "span": ["class"],
     "div": ["class"],
 }
+
+# Codex-style four permission tiers. See
+# docs/architecture.md for the frontend wiring.
+PermissionMode = Literal["full", "smart", "strict", "readonly"]
+ALLOWED_PERMISSIONS: set[str] = {"full", "smart", "strict", "readonly"}
 
 
 def _resolve_corpus(db: Session, org_id: str) -> WikiCorpus:
@@ -79,6 +85,19 @@ def _safe_subpath(path: str) -> str:
     return rel
 
 
+def _session_dict(s: ChatSession) -> Dict[str, Any]:
+    return {
+        "id": s.id,
+        "title": s.title,
+        "status": s.status,
+        "pinned": s.pinned,
+        "channel_kind": s.channel_kind,
+        "permission": s.permission,
+        "created_at": s.created_at.isoformat() if s.created_at else None,
+        "last_message_at": s.last_message_at.isoformat() if s.last_message_at else None,
+    }
+
+
 @client_router.get("/config")
 def get_config(principal: Principal = Depends(require_user), db: Session = Depends(get_db)) -> Dict[str, Any]:
     ep: Optional[LLMEndpoint] = (
@@ -108,6 +127,13 @@ class SessionIn(BaseModel):
     title: str = Field(default="New session", max_length=200)
 
 
+class SessionPatchIn(BaseModel):
+    title: Optional[str] = Field(default=None, max_length=200)
+    permission: Optional[PermissionMode] = None
+    archived: Optional[bool] = None
+    pinned: Optional[bool] = None
+
+
 @client_router.get("/sessions")
 def list_sessions(principal: Principal = Depends(require_user), db: Session = Depends(get_db)) -> List[Dict[str, Any]]:
     rows = (
@@ -117,22 +143,54 @@ def list_sessions(principal: Principal = Depends(require_user), db: Session = De
         .limit(200)
         .all()
     )
-    return [
-        {
-            "id": s.id, "title": s.title, "status": s.status, "pinned": s.pinned,
-            "channel_kind": s.channel_kind,
-            "created_at": s.created_at.isoformat() if s.created_at else None,
-            "last_message_at": s.last_message_at.isoformat() if s.last_message_at else None,
-        }
-        for s in rows
-    ]
+    return [_session_dict(s) for s in rows]
 
 
 @client_router.post("/sessions", status_code=201)
 def create_session(payload: SessionIn, principal: Principal = Depends(require_user), db: Session = Depends(get_db)) -> Dict[str, Any]:
     s = ChatSession(org_id=principal.org.id, user_id=principal.user.id, title=payload.title or "New session")
     db.add(s); db.commit(); db.refresh(s)
-    return {"id": s.id, "title": s.title, "status": s.status, "created_at": s.created_at.isoformat()}
+    return _session_dict(s)
+
+
+@client_router.patch("/sessions/{session_id}")
+def patch_session(
+    session_id: str,
+    payload: SessionPatchIn,
+    principal: Principal = Depends(require_user),
+    db: Session = Depends(get_db),
+) -> Dict[str, Any]:
+    s = db.get(ChatSession, session_id)
+    if s is None or s.org_id != principal.org.id or s.user_id != principal.user.id:
+        raise HTTPException(status_code=404, detail="session not found")
+    detail: Dict[str, Any] = {}
+    if payload.title is not None:
+        if not payload.title.strip():
+            raise HTTPException(status_code=422, detail="title cannot be empty")
+        s.title = payload.title.strip()[:200]
+        detail["title"] = s.title
+    if payload.permission is not None:
+        if payload.permission not in ALLOWED_PERMISSIONS:
+            raise HTTPException(status_code=422, detail=f"permission must be one of {sorted(ALLOWED_PERMISSIONS)}")
+        s.permission = payload.permission
+        detail["permission"] = s.permission
+    if payload.archived is not None:
+        s.archived = payload.archived
+        detail["archived"] = s.archived
+    if payload.pinned is not None:
+        s.pinned = payload.pinned
+        detail["pinned"] = s.pinned
+    if detail:
+        write_audit(
+            db,
+            action="session.patch",
+            actor_id=principal.user.id,
+            org_id=principal.org.id,
+            target=f"chat_session:{s.id}",
+            detail=detail,
+        )
+    db.commit(); db.refresh(s)
+    return _session_dict(s)
 
 
 @client_router.get("/sessions/{session_id}/messages")
@@ -170,11 +228,15 @@ def append_message(session_id: str, payload: MessageIn, principal: Principal = D
 class ChatIn(BaseModel):
     session_id: Optional[str] = None
     message: str = Field(min_length=1, max_length=20000)
+    # Codex-style per-turn permission override. If omitted we fall back to
+    # the session's stored permission, then to the global default.
+    permission: Optional[PermissionMode] = None
 
 
 @client_router.post("/chat")
 def chat(payload: ChatIn, principal: Principal = Depends(require_user), db: Session = Depends(get_db)) -> Dict[str, Any]:
     s = _ensure_session(db, principal, payload.session_id)
+    perm = _resolve_permission(payload.permission, s.permission)
     import time
     t0 = time.time()
     msgs = _build_history(db, s.id, with_user=payload.message)
@@ -189,6 +251,7 @@ def chat(payload: ChatIn, principal: Principal = Depends(require_user), db: Sess
             max_tokens=2048,
             user_id=principal.user.id,
             session_id=s.id,
+            permission=perm,
         )
         asst = Message(
             session_id=s.id, role="assistant", content=res.content or "",
@@ -217,19 +280,41 @@ def chat(payload: ChatIn, principal: Principal = Depends(require_user), db: Sess
     db.add(asst)
     if s.title in ("", "New session"):
         s.title = (payload.message[:40] + "...") if len(payload.message) > 40 else payload.message
+    write_audit(
+        db,
+        action="chat.turn",
+        actor_id=principal.user.id,
+        org_id=principal.org.id,
+        target=f"chat_session:{s.id}",
+        detail={"permission": perm, "tokens_in": asst.tokens_in, "tokens_out": asst.tokens_out},
+    )
     db.commit()
-    return {"session_id": s.id, "reply": asst.content, "tokens_in": asst.tokens_in, "tokens_out": asst.tokens_out}
+    return {"session_id": s.id, "reply": asst.content, "tokens_in": asst.tokens_in, "tokens_out": asst.tokens_out, "permission": perm}
 
 
 @client_router.post("/chat/stream")
 def chat_stream(payload: ChatIn, principal: Principal = Depends(require_user), db: Session = Depends(get_db)) -> StreamingResponse:
     s = _ensure_session(db, principal, payload.session_id)
+    perm = _resolve_permission(payload.permission, s.permission)
     msgs = _build_history(db, s.id, with_user=payload.message)
     return StreamingResponse(
-        _sse_chat(db, principal, s, msgs, payload.message),
+        _sse_chat(db, principal, s, msgs, payload.message, perm),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
     )
+
+
+def _resolve_permission(override: Optional[str], stored: Optional[str]) -> Optional[str]:
+    """Pick the effective permission for a chat turn.
+
+    Order of precedence: explicit per-turn override > session-stored value >
+    None (fall back to global default). Unknown values are normalised to None
+    rather than raising so a corrupted legacy row doesn't break chat.
+    """
+    for candidate in (override, stored):
+        if candidate in ALLOWED_PERMISSIONS:
+            return candidate
+    return None
 
 
 def _ensure_session(db: Session, principal: Principal, session_id: Optional[str]) -> ChatSession:
@@ -253,12 +338,12 @@ def _build_history(db: Session, session_id: str, with_user: str) -> List[Dict[st
     return out
 
 
-async def _sse_chat(db: Session, principal: Principal, s: ChatSession, msgs: List[Dict[str, str]], user_text: str):
+async def _sse_chat(db: Session, principal: Principal, s: ChatSession, msgs: List[Dict[str, str]], user_text: str, perm: Optional[str]):
     import time
     t0 = time.time()
     full = ""
     try:
-        for chunk in _chat_stream_iter(db, principal.org.id, msgs):
+        for chunk in _chat_stream_iter(db, principal.org.id, msgs, perm):
             full += chunk
             yield f"event: delta\ndata: {json.dumps({'text': chunk}, ensure_ascii=False)}\n\n"
     except Exception as e:

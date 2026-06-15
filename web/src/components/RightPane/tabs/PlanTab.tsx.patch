@@ -1,0 +1,18 @@
+﻿*** Begin Patch
+*** Update File: C:\Users\Admin\Documents\GE-paw\web\src\components\RightPane\tabs\PlanTab.tsx
+@@ function toolGlyph(tool: string) @@
+-  function toolGlyph(tool: string) {
+-    if (tool.startsWith("read")) return "馃搫";
+-    if (tool.startsWith("edit") || tool.startsWith("write")) return "鉁?;
+-    if (tool.startsWith("run") || tool.startsWith("exec")) return "鈻?;
+-    if (tool.startsWith("web") || tool.startsWith("fetch")) return "馃寪";
+-    return "鈥?;
+-  }
++  function toolGlyph(tool: string) {
++    if (tool.startsWith("read")) return "\u{1F4D6}";
++    if (tool.startsWith("edit") || tool.startsWith("write")) return "\u270F\uFE0F";
++    if (tool.startsWith("run") || tool.startsWith("exec")) return "\u25B6";
++    if (tool.startsWith("web") || tool.startsWith("fetch")) return "\u{1F310}";
++    return "\u2014";
++  }
+*** End Patch

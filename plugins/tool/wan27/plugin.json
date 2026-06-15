@@ -4,10 +4,10 @@
   "version": "1.0.0",
   "description": "Generate videos using Alibaba Wan 2.7 models (text-to-video, image-to-video, reference-to-video)",
   "description_i18n": {
-    "zh-CN": "?Wan 2.7 ?,
+    "zh-CN": "使用阿里云 Wan 2.7 模型生成视频（文生视频、图生视频、参考生视频）",
     "en-US": "Generate videos using Alibaba Wan 2.7 models (text-to-video, image-to-video, reference-to-video)"
   },
-  "author": "gepaw Team",
+  "author": "QwenPaw Team",
   "entry": {
     "backend": "wan27.py"
   },
@@ -18,7 +18,7 @@
       {
         "name": "text_to_video_wan",
         "description": "Generate videos from text prompts using Wan 2.7",
-        "icon": "",
+        "icon": "🎬",
         "requires_config": true,
         "config_fields": [
           {
@@ -52,7 +52,7 @@
       {
         "name": "image_to_video_wan",
         "description": "Generate videos from images using Wan 2.7 (first-frame / first-last-frame / audio-driven / video-continuation modes)",
-        "icon": "?,
+        "icon": "🎞️",
         "requires_config": true,
         "config_fields": [
           {
@@ -86,7 +86,7 @@
       {
         "name": "reference_to_video_wan",
         "description": "Generate videos with character/object references using Wan 2.7",
-        "icon": "",
+        "icon": "🎭",
         "requires_config": true,
         "config_fields": [
           {

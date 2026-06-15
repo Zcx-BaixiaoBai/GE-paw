@@ -12,6 +12,43 @@ from pydantic import BaseModel
 from .buffer import _UsageEvent
 from .manager import get_token_usage_manager
 
+def _try_gateway_check(messages: list[dict], response_text: str = "") -> None:
+    """????????????????"""
+    try:
+        from ..app.agent_context import get_current_session_id, get_current_agent_id
+        from ..app.db import session_scope
+        from ..app.gateway.service import GatewayService
+        from ..config.config import load_agent_config
+
+        session_id = get_current_session_id() or ""
+        agent_id = get_current_agent_id()
+        org_id = "default"
+        if agent_id:
+            try:
+                cfg = load_agent_config(agent_id)
+                org_id = getattr(cfg, "org_id", "default") or "default"
+            except Exception:
+                pass
+
+        with session_scope() as db:
+            svc = GatewayService(db, org_id=org_id)
+            req_result = svc.check_messages(messages, session_id=session_id)
+            if req_result.blocked:
+                raise ValueError(
+                    "???????????: " + ", ".join(h.keyword for h in req_result.hits)
+                )
+            if response_text:
+                resp_result = svc.check_response(response_text, session_id=session_id)
+                if resp_result.blocked:
+                    raise ValueError(
+                        "???????????: " + ", ".join(h.keyword for h in resp_result.hits)
+                    )
+    except ValueError:
+        raise
+    except Exception:
+        pass  # ?????????????
+
+
 
 class TokenRecordingModelWrapper(ChatModelBase):
 
@@ -32,7 +69,7 @@ class TokenRecordingModelWrapper(ChatModelBase):
         self._provider_id = provider_id
 
     def _record_usage(self, usage: ChatUsage | None) -> None:
-        """Enqueue a usage event synchronously — never blocks the caller."""
+        """Enqueue a usage event synchronously 鈥?never blocks the caller."""
         if usage is None:
             return
         pt = getattr(usage, "input_tokens", 0) or 0
@@ -88,6 +125,9 @@ class TokenRecordingModelWrapper(ChatModelBase):
         # while keeping tools available for correct tool calling behavior.
         if tool_choice == "auto":
             tool_choice = None
+
+        # Gateway content filter check
+        _try_gateway_check(messages)
 
         result = await self._model(
             messages=messages,
@@ -191,6 +231,43 @@ def record_usage(
         return getattr(row, "id", 0) or 0
 
     from .manager import get_token_usage_manager
+
+def _try_gateway_check(messages: list[dict], response_text: str = "") -> None:
+    """????????????????"""
+    try:
+        from ..app.agent_context import get_current_session_id, get_current_agent_id
+        from ..app.db import session_scope
+        from ..app.gateway.service import GatewayService
+        from ..config.config import load_agent_config
+
+        session_id = get_current_session_id() or ""
+        agent_id = get_current_agent_id()
+        org_id = "default"
+        if agent_id:
+            try:
+                cfg = load_agent_config(agent_id)
+                org_id = getattr(cfg, "org_id", "default") or "default"
+            except Exception:
+                pass
+
+        with session_scope() as db:
+            svc = GatewayService(db, org_id=org_id)
+            req_result = svc.check_messages(messages, session_id=session_id)
+            if req_result.blocked:
+                raise ValueError(
+                    "???????????: " + ", ".join(h.keyword for h in req_result.hits)
+                )
+            if response_text:
+                resp_result = svc.check_response(response_text, session_id=session_id)
+                if resp_result.blocked:
+                    raise ValueError(
+                        "???????????: " + ", ".join(h.keyword for h in resp_result.hits)
+                    )
+    except ValueError:
+        raise
+    except Exception:
+        pass  # ?????????????
+
     manager = get_token_usage_manager()
     manager.enqueue(
         provider_id=provider_id or model_name,
@@ -206,3 +283,4 @@ def record_usage(
         raw=raw or {},
     )
     return 0
+

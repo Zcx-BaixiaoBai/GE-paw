@@ -68,3 +68,20 @@ export const apiDel = <T = any>(p: string) => api<T>(p, { method: "DELETE" });
 export const apiPatch = <T = any>(p: string, body?: any) => api<T>(p, { method: "PATCH", body: body !== undefined ? JSON.stringify(body) : undefined });
 export const apiPostForm = <T = any>(p: string, form: FormData) =>
   api<T>(p, { method: "POST", body: form });
+
+// Defensive array fetch: some endpoints (e.g. /admin/skills, /admin/mcp,
+// /admin/plugins) historically returned an empty object {} when the table was
+// empty. Calling .map() on that throws and unmounts the whole admin tree, so
+// always coerce to an array here.
+export const apiGetArray = async <T = any>(p: string): Promise<T[]> => {
+  const r = await apiGet<unknown>(p);
+  if (Array.isArray(r)) return r as T[];
+  if (r && typeof r === "object") {
+    const anyR = r as any;
+    if (Array.isArray(anyR.items)) return anyR.items as T[];
+    if (Array.isArray(anyR.data)) return anyR.data as T[];
+    if (Array.isArray(anyR.rows)) return anyR.rows as T[];
+    if (Array.isArray(anyR.list)) return anyR.list as T[];
+  }
+  return [];
+};

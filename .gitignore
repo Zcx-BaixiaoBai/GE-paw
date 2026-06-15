@@ -143,4 +143,6 @@ data/*.log*
 data/*.bak
 data/orgs/
 data/uploads/
+data/backups/
+data/media/
 

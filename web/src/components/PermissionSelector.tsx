@@ -34,6 +34,7 @@ const ORDER: PermissionMode[] = ["full", "smart", "strict", "readonly"];
 
 export function PermissionSelector({ value, onChange, disabled }: PermissionSelectorProps) {
   const [open, setOpen] = useState(false);
+  const [opensUp, setOpensUp] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -43,6 +44,16 @@ export function PermissionSelector({ value, onChange, disabled }: PermissionSele
     };
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
+  }, [open]);
+
+  // Flip up when the pill is in the bottom half of the viewport so the menu
+  // never spills below the page. The menu is roughly 200px tall; if the pill
+  // is within 240px of the bottom, we render it above instead of below.
+  useEffect(() => {
+    if (!open || !ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    setOpensUp(spaceBelow < 240);
   }, [open]);
 
   const current: PermissionMode = value ?? "smart";
@@ -61,7 +72,7 @@ export function PermissionSelector({ value, onChange, disabled }: PermissionSele
         <span className="perm-pill-caret"><IconChevronDown size={12} /></span>
       </button>
       {open && (
-        <div className="perm-menu" role="menu">
+        <div className={"perm-menu" + (opensUp ? " opens-up" : "")} role="menu">
           {ORDER.map((m) => (
             <Item
               key={m}
@@ -93,5 +104,7 @@ function Item({ value, active, onPick }: { value: PermissionMode; active: boolea
     </button>
   );
 }
+
+
 
 

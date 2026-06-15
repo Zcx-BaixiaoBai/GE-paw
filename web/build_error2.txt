@@ -1,0 +1,3 @@
+[33m[plugin vite:reporter] 
+(!) C:/Users/Admin/Documents/GE-paw/web/src/stores/settings.ts is dynamically imported by C:/Users/Admin/Documents/GE-paw/web/src/layouts/AppLayout.tsx but also statically imported by C:/Users/Admin/Documents/GE-paw/web/src/components/MemoryTree.tsx, C:/Users/Admin/Documents/GE-paw/web/src/pages/Assistant.tsx, C:/Users/Admin/Documents/GE-paw/web/src/pages/Settings.tsx, dynamic import will not move module into another chunk.
+[39m

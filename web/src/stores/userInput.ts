@@ -1,4 +1,4 @@
-// Codex-style "request user input" modal queue. The agent runtime calls
+﻿// Codex-style "request user input" modal queue. The agent runtime calls
 // `requestUserInput(...)` (directly or via a server event) which enqueues a
 // modal that the user must dismiss before the agent can continue. Only one
 // modal is shown at a time; the queue is preserved across navigations.
@@ -67,4 +67,23 @@ export function requestUserInput(
   return new Promise((resolve) => {
     useUserInputStore.getState().enqueue({ ...req, resolve });
   });
+}
+
+// DEV-only test hook: expose on window so popup_audit_iab.mjs can trigger the modal.
+if (typeof window !== 'undefined') {
+  (window as any).__gepawTestShowUserInput = () => {
+    useUserInputStore.setState({
+      current: {
+        id: 'test-modal-1',
+        question: 'Which option?',
+        description: 'Test positioning (DEV hook)',
+        options: [
+          { id: 'a', label: 'Option A', description: 'First choice' },
+          { id: 'b', label: 'Option B', description: 'Second choice' },
+        ],
+        allowFreeText: true,
+        resolve: (v) => { (window as any).__gepawLastModalResult = v; },
+      },
+    });
+  };
 }

@@ -1,5 +1,6 @@
 ﻿import { useEffect, useState } from "react";
 import { apiGet } from "../../../lib/api";
+import { t } from "../../../lib/i18n";
 
 type PreviewData = {
   path: string;
@@ -25,7 +26,7 @@ export function PreviewTab({ data }: Props) {
       const r = await apiGet<PreviewData>("/client/preview-data?path=" + encodeURIComponent(path));
       setMeta(r);
     } catch (e: any) {
-      setErr(e?.message || "preview failed");
+      setErr(e?.message || t("common.error.unknown"))
       setMeta(null);
     } finally { setBusy(false); }
   }
@@ -34,9 +35,9 @@ export function PreviewTab({ data }: Props) {
   return (
     <div className="preview-tab">
       <div className="preview-toolbar">
-        <label>Path</label>
+        <label>{t("common.path")}</label>
         <input value={path} onChange={(e) => setPath(e.target.value)} />
-        <button className="primary" disabled={busy} onClick={load}>{busy ? "Loading..." : "Reload"}</button>
+        <button className="primary" disabled={busy} onClick={load}>{busy ? t("common.loading") : t("common.reload")}</button>
       </div>
       {err && <div className="preview-err">{err}</div>}
       {meta && (
@@ -53,7 +54,7 @@ export function PreviewTab({ data }: Props) {
           <iframe className="preview-frame" src={meta.preview_url} sandbox="allow-same-origin" referrerPolicy="no-referrer" />
         </>
       )}
-      {!meta && !err && !busy && <div className="tab-empty">Enter a wiki path to preview.</div>}
+      {!meta && !err && !busy && <div className="tab-empty">{t("tab.preview.empty")}</div>}
     </div>
   );
 }
@@ -63,3 +64,5 @@ function humanSize(n: number): string {
   if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
   return (n / 1024 / 1024).toFixed(1) + " MB";
 }
+
+

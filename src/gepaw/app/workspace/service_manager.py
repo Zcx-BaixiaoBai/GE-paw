@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """Service management system for Workspace components.
 
 Provides unified registration, lifecycle management, and dependency handling
@@ -348,7 +348,12 @@ class ServiceManager:
         if is_reused or not descriptor.start_method or not service:
             return
 
-        start_fn = getattr(service, descriptor.start_method)
+        start_fn = getattr(service, descriptor.start_method, None)
+        if start_fn is None:
+            logger.debug(
+                f"Service '{name}' has no '{descriptor.start_method}' method; skipping start."
+            )
+            return
         if asyncio.iscoroutinefunction(start_fn):
             await start_fn()
         else:

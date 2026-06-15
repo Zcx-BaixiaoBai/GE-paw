@@ -709,6 +709,27 @@ def add_skill(payload: SkillIn, principal=Depends(require_admin), db=Depends(get
     return _skill_to_dict(s)
 
 
+class SkillPatch(BaseModel):
+    name: str | None = Field(default=None, min_length=1, max_length=120)
+    manifest: dict | None = None
+    enabled: bool | None = None
+
+
+@admin_router.patch("/skills/{skill_id}")
+def patch_skill(skill_id: str, payload: SkillPatch, principal=Depends(require_admin), db=Depends(get_db)):
+    s = db.query(Skill).filter(Skill.id == skill_id, Skill.org_id == principal.org.id).first()
+    if s is None:
+        raise HTTPException(status_code=404, detail="not found")
+    if payload.name is not None:
+        s.name = payload.name
+    if payload.manifest is not None:
+        s.manifest_json = json.dumps(payload.manifest, ensure_ascii=False)
+    if payload.enabled is not None:
+        s.enabled = payload.enabled
+    write_audit(db, action="skill.patch", actor_id=principal.user.id, org_id=principal.org.id, target=skill_id, detail=payload.model_dump(exclude_none=True))
+    db.commit(); db.refresh(s)
+    return _skill_to_dict(s)
+
 @admin_router.delete("/skills/{skill_id}", status_code=204)
 def delete_skill(skill_id: str, principal=Depends(require_admin), db=Depends(get_db)):
     s = db.query(Skill).filter(Skill.id == skill_id, Skill.org_id == principal.org.id).first()
@@ -757,6 +778,30 @@ def add_mcp(payload: MCPIn, principal=Depends(require_admin), db=Depends(get_db)
     return _mcp_to_dict(m)
 
 
+class MCPPatch(BaseModel):
+    name: str | None = Field(default=None, min_length=1, max_length=120)
+    transport: str | None = None
+    config: dict | None = None
+    enabled: bool | None = None
+
+
+@admin_router.patch("/mcp/{mcp_id}")
+def patch_mcp(mcp_id: str, payload: MCPPatch, principal=Depends(require_admin), db=Depends(get_db)):
+    m = db.query(MCPServer).filter(MCPServer.id == mcp_id, MCPServer.org_id == principal.org.id).first()
+    if m is None:
+        raise HTTPException(status_code=404, detail="not found")
+    if payload.name is not None:
+        m.name = payload.name
+    if payload.transport is not None:
+        m.transport = payload.transport
+    if payload.config is not None:
+        m.config_json = json.dumps(payload.config, ensure_ascii=False)
+    if payload.enabled is not None:
+        m.enabled = payload.enabled
+    write_audit(db, action="mcp.patch", actor_id=principal.user.id, org_id=principal.org.id, target=mcp_id, detail=payload.model_dump(exclude_none=True))
+    db.commit(); db.refresh(m)
+    return _mcp_to_dict(m)
+
 @admin_router.delete("/mcp/{mcp_id}", status_code=204)
 def delete_mcp(mcp_id: str, principal=Depends(require_admin), db=Depends(get_db)):
     m = db.query(MCPServer).filter(MCPServer.id == mcp_id, MCPServer.org_id == principal.org.id).first()
@@ -803,6 +848,27 @@ def add_plugin(payload: PluginIn, principal=Depends(require_admin), db=Depends(g
     db.commit()
     return _plugin_to_dict(p)
 
+
+class PluginPatch(BaseModel):
+    name: str | None = Field(default=None, min_length=1, max_length=120)
+    manifest: dict | None = None
+    enabled: bool | None = None
+
+
+@admin_router.patch("/plugins/{plugin_id}")
+def patch_plugin(plugin_id: str, payload: PluginPatch, principal=Depends(require_admin), db=Depends(get_db)):
+    p = db.query(Plugin).filter(Plugin.id == plugin_id, Plugin.org_id == principal.org.id).first()
+    if p is None:
+        raise HTTPException(status_code=404, detail="not found")
+    if payload.name is not None:
+        p.name = payload.name
+    if payload.manifest is not None:
+        p.manifest_json = json.dumps(payload.manifest, ensure_ascii=False)
+    if payload.enabled is not None:
+        p.enabled = payload.enabled
+    write_audit(db, action="plugin.patch", actor_id=principal.user.id, org_id=principal.org.id, target=plugin_id, detail=payload.model_dump(exclude_none=True))
+    db.commit(); db.refresh(p)
+    return _plugin_to_dict(p)
 
 @admin_router.delete("/plugins/{plugin_id}", status_code=204)
 def delete_plugin(plugin_id: str, principal=Depends(require_admin), db=Depends(get_db)):

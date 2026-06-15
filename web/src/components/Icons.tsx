@@ -1,4 +1,4 @@
-// Flat SVG icon set for GE-paw. All icons use currentColor and are 16x16 by
+﻿// Flat SVG icon set for GE-paw. All icons use currentColor and are 16x16 by
 // default. Designed to read clearly at 14-20px, the typical toolbar size.
 import type { CSSProperties } from "react";
 
@@ -357,5 +357,30 @@ export const IconSidebar = wrap(
   <>
     <rect x="3" y="4" width="18" height="16" rx="2" />
     <path d="M9 4v16" />
+  </>,
+);
+
+// Three-dot "more" icon, vertical for the composer overflow menu.
+export const IconMore = wrap(
+  <>
+    <circle cx="12" cy="5" r="1.6" fill="currentColor" />
+    <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+    <circle cx="12" cy="19" r="1.6" fill="currentColor" />
+  </>,
+);
+
+// Monitor icon, used by the "computer use" composer overflow entry.
+export const IconMonitor = wrap(
+  <>
+    <rect x="2" y="3" width="20" height="14" rx="2" />
+    <path d="M8 21h8" />
+    <path d="M12 17v4" />
+  </>,
+);
+// Copy icon
+export const IconCopy = wrap(
+  <>
+    <rect x="9" y="9" width="13" height="13" rx="2" />
+    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
   </>,
 );

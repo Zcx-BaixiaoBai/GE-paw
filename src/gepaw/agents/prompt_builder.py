@@ -1,72 +1,84 @@
-"""PromptBuilder: assembles the system prompt from host anchors + plugin sections."""
+# -*- coding: utf-8 -*-
+"""Assemble system prompt from host anchors and plugin sections."""
 from __future__ import annotations
 
 import logging
-from typing import Any, List, Optional
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any, List, Optional
 
-from gepaw.plugins.registry import PluginRegistry
-
+if TYPE_CHECKING:
+    from ..plugins.registry import PluginRegistry
 
 logger = logging.getLogger(__name__)
 
 
-class PromptBuilder:
-    """Compose the system prompt for an agent.
+@dataclass
+class PromptSection:
+    """A named block of system prompt text."""
 
-    Host anchors are visited in the fixed order
-    ``workspace -> multimodal -> env_context``. Plugin sections whose
-    ``after`` field names one of those anchors are inserted directly
-    after it, in registration order. Sections whose ``agent_id`` does
-    not match the caller (and is not None) are hidden. Providers that
-    return an empty string or raise are skipped silently; raised
-    providers additionally log via ``logger.exception``.
+    name: str
+    content: str
+
+
+class PromptBuilder:
+    """Assemble system prompt from host anchors and plugin sections.
+
+    Host anchors are emitted in :pyattr:`HOST_ANCHORS` order.
+    Plugin sections are inserted immediately after their declared anchor.
     """
 
-    _ANCHOR_ORDER = ("workspace", "multimodal", "env_context")
+    HOST_ANCHORS = ("workspace", "multimodal", "env_context")
 
-    def __init__(self, registry: Optional[PluginRegistry] = None) -> None:
-        self.registry = registry or PluginRegistry()
+    def __init__(self, registry: PluginRegistry) -> None:
+        self._registry = registry
 
     def build(
         self,
         *,
-        agent: Any,
-        agent_id: str,
+        agent: Any = None,
+        agent_id: Optional[str] = None,
         workspace: str = "",
         multimodal: str = "",
         env_context: str = "",
     ) -> str:
-        anchors = {
+        """Return the assembled system prompt string."""
+        host = {
             "workspace": workspace,
             "multimodal": multimodal,
             "env_context": env_context,
         }
-        sections = self.registry.get_prompt_sections(agent_id)
-        by_anchor: dict = {a: [] for a in self._ANCHOR_ORDER}
-        for s in sections:
-            by_anchor[s.after].append(s)
 
-        parts: List[str] = []
-        for anchor in self._ANCHOR_ORDER:
-            value = anchors[anchor]
-            if value:
-                parts.append(value)
-            for section in by_anchor[anchor]:
-                text = self._safe_call(section, agent)
-                if text:
-                    parts.append(text)
-        return "\n\n".join(parts)
+        sections: List[PromptSection] = []
+        for anchor in self.HOST_ANCHORS:
+            content = host.get(anchor, "")
+            if content:
+                sections.append(PromptSection(anchor, content))
+            for reg in self._get_plugin_sections(anchor, agent_id):
+                rendered = self._render(reg, agent)
+                if rendered:
+                    sections.append(PromptSection(reg.name, rendered))
 
+        return "\n\n".join(s.content for s in sections)
+
+    def _get_plugin_sections(self, anchor: str, agent_id: Optional[str]):
+        """Filter registered sections by anchor and agent_id."""
+        return [
+            s
+            for s in self._registry.get_prompt_sections()
+            if s.after == anchor
+            and (s.agent_id is None or s.agent_id == agent_id)
+        ]
+
+    # SECURITY: plugin text is concatenated verbatim into the
+    # system prompt. Only trusted plugins can reach this path.
     @staticmethod
-    def _safe_call(section, agent: Any) -> str:
-        provider = section.provider
+    def _render(registration: Any, agent: Any) -> str:
+        """Call provider; swallow and log failures."""
         try:
-            text = provider(agent)
-        except Exception:  # noqa: BLE001 - prompt section errors are non-fatal
+            return registration.provider(agent)
+        except Exception:  # pylint: disable=broad-except
             logger.exception(
-                "prompt section %s (plugin=%s) provider raised",
-                section.name,
-                section.plugin_id,
+                "Prompt section '%s' provider failed",
+                registration.name,
             )
             return ""
-        return text or ""

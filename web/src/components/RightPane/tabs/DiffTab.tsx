@@ -1,5 +1,6 @@
 ﻿import { useEffect, useState } from "react";
 import { apiGet } from "../../../lib/api";
+import { t } from "../../../lib/i18n";
 
 type DiffData = {
   left: string;
@@ -30,7 +31,7 @@ export function DiffTab({ data }: Props) {
       const r = await apiGet<DiffData>("/client/diff?left=" + encodeURIComponent(left) + "&right=" + encodeURIComponent(right));
       setResult(r);
     } catch (e: any) {
-      setErr(e?.message || "diff failed");
+      setErr(e?.message || t("plan.failed"))
       setResult(null);
     } finally { setBusy(false); }
   }
@@ -40,26 +41,29 @@ export function DiffTab({ data }: Props) {
   return (
     <div className="diff-tab">
       <div className="diff-toolbar">
-        <label>Left</label>
+        <label>{t("common.left")}</label>
         <input value={left} onChange={(e) => setLeft(e.target.value)} />
-        <label>Right</label>
+        <label>{t("common.right")}</label>
         <input value={right} onChange={(e) => setRight(e.target.value)} />
-        <button className="primary" disabled={busy} onClick={run}>{busy ? "Diffing..." : "Compare"}</button>
+        <button className="primary" disabled={busy} onClick={run}>{busy ? t("common.diffing") : t("common.compare")}</button>
       </div>
       {err && <div className="diff-err">{err}</div>}
       {result && (
         <>
           <div className="diff-meta">
-            <span className="kbd">{result.left}</span>
-            <span>vs</span>
-            <span className="kbd">{result.right}</span>
+            <span className="kbd" title={result.left}>{result.left}</span>
+            <span className="diff-vs">{t("common.vs")}</span>
+            <span className="kbd" title={result.right}>{result.right}</span>
             <span className="spacer" />
-            <span className="kbd">similarity {Math.round(result.ratio * 100)}%</span>
+            <span className="kbd">{t("common.similar", { pct: Math.round(result.ratio * 100) })}</span>
           </div>
-          <pre className="diff-body">{result.diff || "(no differences)"}</pre>
+          <pre className="diff-body">{result.diff || t("common.noDiff")}</pre>
         </>
       )}
-      {!result && !err && !busy && <div className="tab-empty">Pick two wiki files to compare.</div>}
+      {!result && !err && !busy && <div className="tab-empty">{t("tab.diff.empty")}</div>}
     </div>
   );
 }
+
+
+
