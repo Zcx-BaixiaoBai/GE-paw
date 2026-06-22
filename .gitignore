@@ -146,3 +146,85 @@ data/uploads/
 data/backups/
 data/media/
 
+
+
+# --- gepaw: local audit / dev leftovers (managed by repo custodian) ---
+
+# Audit screenshots / pages
+web/screenshots/audit_*.png
+web/screenshots/audit-*/
+web/screenshots/test_*.png
+web/screenshots/test_settings_*.png
+web/screenshots/_cur_*.png
+web/screenshots/_audit_*.png
+web/screenshots/_check_*.png
+web/screenshots/_clean_*.png
+web/screenshots/_codex_*.png
+web/screenshots/_composer_*.png
+web/screenshots/_current_*.png
+web/screenshots/_final_*.png
+web/screenshots/_fixed_*.png
+web/screenshots/_good_css*.txt
+web/screenshots/_layout_*.png
+web/screenshots/_login_*.png
+web/screenshots/_new_composer*.png
+web/screenshots/_patch_*.png
+web/screenshots/_real_*.png
+web/screenshots/_rollback_*.png
+web/screenshots/_strip_*.png
+web/screenshots/_tab_*.png
+web/screenshots/_test_*.png
+web/screenshots/_thumb.png
+web/screenshots/_verify_*.png
+web/screenshots/_v[0-9]_*.png
+web/screenshots/_with_*.png
+web/screenshots/audit_results.json
+web/screenshots/current.css
+
+# TypeScript incremental build cache
+web/*.tsbuildinfo
+web/tsconfig.tsbuildinfo
+
+# Backup / stale configs
+*.bak
+*.old
+web/src.backup/
+web/src/styles/*.old
+web/vite.config.ts.broken
+web/tsconfig.json.bak
+
+# Ad-hoc dev / audit scripts at repo root
+/check_*.py
+/check_*.js
+/fix_*.py
+/patch_*.py
+/reset_*.py
+/cleanup_sessions.py
+/_api_endpoints.txt
+/_app_head.py
+/tsc-out.txt
+
+# Windows launcher / verifier batches
+dev-safe.cmd
+start-launcher.cmd
+stop.cmd
+verify.cmd
+
+# Vite / dev server run logs
+vite*.log
+vite*_err*.log
+vite*_out*.log
+server_*.log
+server_*_err*.log
+server_*_out*.log
+serve_*.log
+serve_*_err*.log
+serve_*_out*.log
+e2e_login_*.log
+node_serve_*.log
+dev_run.err
+dev_run.out
+
+# Local auth / cookies dropped at repo root
+cookies.txt
+# (.env / .env.* already covered above, kept for clarity)

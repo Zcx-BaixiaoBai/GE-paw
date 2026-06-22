@@ -1,61 +1,39 @@
-## Description
+## Summary
 
-[Describe what this PR does and why]
+<!-- 一两句话讲清楚这次改了什么 -->
 
-**Related Issue:** Fixes #(issue_number) or Relates to #(issue_number)
+## Type of change
 
-**Security Considerations:** [If applicable, e.g. channel auth, env/config handling]
+- [ ] feat: new feature
+- [ ] fix: bug fix
+- [ ] refactor: no behavior change
+- [ ] chore: tooling / docs / CI
+- [ ] perf: performance
+- [ ] test: tests only
 
-## Type of Change
+## Scope
 
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Breaking change
-- [ ] Documentation
-- [ ] Refactoring
+- Affected modules: <!-- e.g. web/src/pages/Admin/Gateway.tsx, src/gepaw/app/routers/gateway.py -->
+- User-visible behavior change: <!-- yes / no; if yes, describe -->
+- Backwards compatible: <!-- yes / no -->
 
-## Component(s) Affected
+## Verification
 
-- [ ] Core / Backend (app, agents, config, providers, utils, local_models)
-- [ ] Console (frontend web UI)
-- [ ] Channels (DingTalk, Feishu, QQ, Discord, iMessage, etc.)
-- [ ] Skills
-- [ ] CLI
-- [ ] Documentation (website)
-- [ ] Tests
-- [ ] CI/CD
-- [ ] Scripts / Deploy
+- [ ] `pytest tests/` passes locally
+- [ ] `cd web && npm run build` passes locally
+- [ ] `cd web && npm run lint` passes locally (if applicable)
+- [ ] Manual smoke test (describe in "Notes")
+- [ ] New/updated tests cover the change
 
-## Checklist
+## Risk & rollback
 
-- [ ] I ran `pre-commit run --all-files` locally and it passes
-- [ ] If pre-commit auto-fixed files, I committed those changes and reran checks
-- [ ] I ran tests locally (`pytest` or as relevant) and they pass
-- [ ] Documentation updated (if needed)
-- [ ] Ready for review
+- Risk level: <!-- low / medium / high -->
+- Rollback plan: <!-- e.g. revert merge commit, disable feature flag -->
 
-### For Channel Changes (DingTalk, Feishu, QQ, Console, etc.)
+## Screenshots / Recordings
 
-- [ ] I ran `./scripts/check-channels.sh` (or `./scripts/check-channels.sh --changed`) and it passes
-- [ ] **Contract test** exists in `tests/contract/channels/test_<channel>_contract.py` (REQUIRED)
-- [ ] Contract test implements `create_instance()` with proper channel initialization
-- [ ] All 19 contract verification points pass (see `tests/contract/channels/__init__.py`)
-- [ ] **Optional**: Unit tests in `tests/unit/channels/test_<channel>.py` for complex internal logic
+<!-- if UI change, paste before/after images -->
 
-## Testing
+## Notes for reviewer
 
-[How to test these changes]
-
-## Local Verification Evidence
-
-```bash
-pre-commit run --all-files
-# paste summary result
-
-pytest
-# paste summary result
-```
-
-## Additional Notes
-
-[Optional: any other context]
+<!-- anything reviewer should pay extra attention to; link to issues -->
