@@ -228,3 +228,32 @@ dev_run.out
 # Local auth / cookies dropped at repo root
 cookies.txt
 # (.env / .env.* already covered above, kept for clarity)
+
+# --- gepaw: round 2 of custodian cleanup ---
+
+# Audit / dev screenshots in scripts/
+scripts/_*.png
+scripts/_*.txt
+
+# Codex local reference / replica materials (not for repo)
+docs/codex-references/
+docs/codex-replica/
+docs/codex-replica-improvements.md
+
+# Windows dev batches at root
+dev.cmd
+
+# Web-local ad-hoc dev / audit scripts
+web/_keep_vite.py
+web/_start_vite_safe.cmd
+web/_start_vite_safe.mjs
+web/audit-2026-06-15_http.err
+web/find_send_row.py
+web/run.js
+web/start_vite.cmd
+web/test-audit.mjs
+web/tmp_out.txt
+
+# gepaw: round 3 ¡ª scripts/_patch_* / _strip_mock ad-hoc patches
+scripts/_patch_*.py
+scripts/_strip_mock.py
